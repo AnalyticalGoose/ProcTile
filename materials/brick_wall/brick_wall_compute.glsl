@@ -51,11 +51,11 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float repeat;
 	
 	// Stage 0 - Grunge Base Texture
-	float tone_value; // Displacement
+	float mingle_warp_strength; // Density
+	float tone_value; // Displacement Level
+	float mingle_smooth; // Plateau Scale
 	float tone_width; // Blending
-	float mingle_smooth; // Plateau Size
-	float mingle_warp_strength; // Texture Density
-	
+
 	// Stage 1 - Mortar Noise
 	float b_noise_contrast; // 'Intensity' - adjusts steepness of curve (contrast)
 

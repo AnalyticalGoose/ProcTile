@@ -270,13 +270,11 @@ func _create_push_constant() -> PackedFloat32Array:
 	pc.push_back(rounding)
 	pc.push_back(repeat)
 
-	pc.push_back(tone_value)
-	pc.push_back(tone_width)
-	
 	#pc.push_back(scale)
-
-	pc.push_back(mingle_smooth)
 	pc.push_back(mingle_warp_strength)
+	pc.push_back(tone_value)
+	pc.push_back(mingle_smooth)
+	pc.push_back(tone_width)
 	
 	#pc.push_back(b_noise_rs)
 	#pc.push_back(b_noise_control_x)
