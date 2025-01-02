@@ -87,7 +87,7 @@ var gradient_colours : PackedByteArray = PackedVector4Array(gradient_colour_arra
 var mingle_smooth : float = 0.5
 #var mingle_warp_x : float = 0.5
 #var mingle_warp_y : float = 0.5
-#var mingle_warp_strength : float = 0.0
+var mingle_warp_strength : float = 2.0
 
 # temp - b-noise params
 #var b_noise_rs : float = 6.0
@@ -113,7 +113,7 @@ var stage_1 : bool = false
 
 @warning_ignore("return_value_discarded")
 func _render_process() -> void:
-	push_constant.set(12, stage)
+	push_constant.set(13, stage)
 	
 	if stage != max_stage:
 			stage += 1
@@ -276,7 +276,8 @@ func _create_push_constant() -> PackedFloat32Array:
 	#pc.push_back(scale)
 
 	pc.push_back(mingle_smooth)
-
+	pc.push_back(mingle_warp_strength)
+	
 	#pc.push_back(b_noise_rs)
 	#pc.push_back(b_noise_control_x)
 	#pc.push_back(b_noise_control_y)
@@ -287,7 +288,10 @@ func _create_push_constant() -> PackedFloat32Array:
 	
 	pc.push_back(0.0)
 	pc.push_back(0.0)
-	pc.push_back(0.0)
+	#pc.push_back(0.0)
+	#pc.push_back(0.0)
+	#pc.push_back(0.0)
+	#pc.push_back(0.0)
 	
 	pc.push_back(stage)
 	

@@ -50,12 +50,11 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float rounding;
 	float repeat;
 	
-	float tone_value;
-	float tone_width;
-	
 	// Stage 0 - Grunge Base Texture
-	float mingle_smooth;
-
+	float tone_value; // Displacement
+	float tone_width; // Blending
+	float mingle_smooth; // Plateau Size
+	float mingle_warp_strength; // Texture Density
 	
 	// Stage 1 - Mortar Noise
 	float b_noise_contrast; // 'Intensity' - adjusts steepness of curve (contrast)
@@ -65,9 +64,9 @@ layout(push_constant, std430) uniform restrict readonly Params {
 
 	float stage;
 
-	float padding_1;
-	float padding_2;
-	float padding_3;
+	// float padding_1;
+	// float padding_2;
+	// float padding_3;
 
 
 } params;
@@ -80,7 +79,7 @@ const float mingle_opacity = 1.0;
 const float mingle_step = 0.5;
 const float mingle_warp_x = 0.5;
 const float mingle_warp_y = 0.5;
-const float mingle_warp_strength = 2.0; // Density of grunge texture, seems to do the same as scale..
+// const float mingle_warp_strength = 2.0; // Density of grunge texture, seems to do the same as scale..
 
 // S1 -
 const float b_noise_brightness = 0.22; // shifts output curve vertically (brightness)
@@ -550,8 +549,8 @@ void main() {
 		float fbm_2 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, misc.perlin_seed_2);
 		float fbm_3 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, misc.perlin_seed_3);
 
-		vec2 warp_1 = (uv) + mingle_warp_strength * vec2(mingle_warp_x * (fbm_1 - 0.5), - mingle_warp_y * (fbm_2) - 0.5);
-		vec2 warp_2 = (uv) - mingle_warp_strength * vec2(mingle_warp_x * (fbm_2 - 0.5), - mingle_warp_y * (fbm_1) - 0.5);
+		vec2 warp_1 = (uv) + params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_1 - 0.5), - mingle_warp_y * (fbm_2) - 0.5);
+		vec2 warp_2 = (uv) - params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_2 - 0.5), - mingle_warp_y * (fbm_1) - 0.5);
 
 		float fbm_1_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_1);
 		float fbm_2_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_2);
@@ -562,13 +561,13 @@ void main() {
 		float fbm_3_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_3);
 
 		// Warp and burn blend operation (darker grunge layer), mixed and controlled by a step.
-		vec2 blend_burn_warp_1 = (warp_2) + mingle_warp_strength * vec2(mingle_warp_x * (fbm_1_warp_2 - 0.5), - mingle_warp_y * (fbm_2_warp_2 - 0.5));
-		vec2 blend_burn_warp_2 = (warp_2) - mingle_warp_strength * vec2(mingle_warp_x * (fbm_2_warp_2 - 0.5), - mingle_warp_y * (fbm_1_warp_2 - 0.5));
+		vec2 blend_burn_warp_1 = (warp_2) + params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_1_warp_2 - 0.5), - mingle_warp_y * (fbm_2_warp_2 - 0.5));
+		vec2 blend_burn_warp_2 = (warp_2) - params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_2_warp_2 - 0.5), - mingle_warp_y * (fbm_1_warp_2 - 0.5));
 		float mingle_burn_opacity_adjust = mingle_opacity * smoothstep(mingle_step - params.mingle_smooth, mingle_step + params.mingle_smooth, fbm_3_warp_2);
 		
 		// Warp and dodge blend operation (lighter grunge layer), mixed and controlled by a step.
-		vec2 mingle_dodge_warp_1 = (warp_1) + mingle_warp_strength * vec2(mingle_warp_x * (fbm_1_warp_1 - 0.5), - mingle_warp_y * (fbm_2_warp_1 - 0.5));
-		vec2 mingle_dodge_warp_2 = (warp_1) - mingle_warp_strength * vec2(mingle_warp_x * (fbm_2_warp_1 - 0.5), - mingle_warp_y * (fbm_1_warp_1 - 0.5));
+		vec2 mingle_dodge_warp_1 = (warp_1) + params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_1_warp_1 - 0.5), - mingle_warp_y * (fbm_2_warp_1 - 0.5));
+		vec2 mingle_dodge_warp_2 = (warp_1) - params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_2_warp_1 - 0.5), - mingle_warp_y * (fbm_1_warp_1 - 0.5));
 		float mingle_dodge_opacity_adjust = mingle_opacity * smoothstep(mingle_step - params.mingle_smooth, mingle_step + params.mingle_smooth, fbm_3_warp_1);
 
 		// Combine burn and dodge layers, with an additional warp and blend (overlay) operation, controlled by a step
