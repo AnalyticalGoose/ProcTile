@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3 uid="uid://dmeof6kgt3rjj"]
+
+[ext_resource type="Script" path="res://ui/parameters/section/section.gd" id="1_0kr8r"]
+[ext_resource type="Texture2D" uid="uid://mkybvj76d2qt" path="res://ui/icons/icon_show.png" id="1_ux4cx"]
+[ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="2_rcf4y"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hkygq"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_itysq"]
+content_margin_bottom = 10.0
+color = Color(0.683077, 0.683077, 0.683077, 1)
+thickness = 2
+
+[node name="Section" type="VBoxContainer" node_paths=PackedStringArray("section_label")]
+offset_right = 240.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+theme_override_constants/separation = -5
+script = ExtResource("1_0kr8r")
+section_label = NodePath("Heading/SectionName")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 2
+
+[node name="SectionName" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxEmpty_hkygq")
+
+[node name="ShowHideButton" type="TextureButton" parent="Heading"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+toggle_mode = true
+action_mode = 0
+texture_normal = ExtResource("1_ux4cx")
+texture_pressed = ExtResource("2_rcf4y")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 20
+theme_override_styles/separator = SubResource("StyleBoxLine_itysq")
+
+[connection signal="pressed" from="Heading/ShowHideButton" to="." method="_on_show_hide_button_pressed"]

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdxs45dq4r5p"]
+
+[ext_resource type="PackedScene" uid="uid://sjoei1q5m1ma" path="res://ui/ui.tscn" id="1_w612r"]
+[ext_resource type="PackedScene" uid="uid://5heo5h26pf75" path="res://engine/render/renderer.tscn" id="2_5hjcx"]
+
+[node name="ProcTile" type="Node"]
+
+[node name="UI" parent="." instance=ExtResource("1_w612r")]
+
+[node name="Renderer" parent="." instance=ExtResource("2_5hjcx")]

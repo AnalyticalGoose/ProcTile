@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://c01quywq314dv"]
+
+[ext_resource type="Script" path="res://ui/parameters/slider/slider.gd" id="1_won5e"]
+
+[node name="Slider" type="VBoxContainer" node_paths=PackedStringArray("slider_label", "slider", "slider_value")]
+script = ExtResource("1_won5e")
+slider_label = NodePath("Label")
+slider = NodePath("Container/Slider")
+slider_value = NodePath("Container/SliderValue")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+
+[node name="Container" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="Slider" type="HSlider" parent="Container"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+scrollable = false
+
+[node name="SliderValue" type="LineEdit" parent="Container"]
+layout_mode = 2
+alignment = 1
+context_menu_enabled = false
+
+[connection signal="value_changed" from="Container/Slider" to="." method="_on_slider_value_changed"]
+[connection signal="text_submitted" from="Container/SliderValue" to="." method="_on_slider_value_text_submitted"]

@@ -1,0 +1,303 @@
+[gd_scene load_steps=23 format=3 uid="uid://sjoei1q5m1ma"]
+
+[ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
+[ext_resource type="Script" path="res://materials/asset_manager.gd" id="2_iuucp"]
+[ext_resource type="Script" path="res://scripts/data_bar.gd" id="2_pqncx"]
+[ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
+[ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
+[ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
+[ext_resource type="PackedScene" uid="uid://d18ju7bnukh46" path="res://ui/parameters/gradient_colour/gradient.tscn" id="6_yy2h4"]
+[ext_resource type="Script" path="res://ui/parameters/section/section.gd" id="7_08hm7"]
+[ext_resource type="Script" path="res://ui/parameters/params_manager.gd" id="7_xyjtw"]
+[ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ya5vo"]
+size = Vector2(20, 20)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_616qv"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_3ltwh"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xj2i0"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_hut6x"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_av6ya"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xlou5"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_suw5e"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_apq77"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ioblm"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_pce4s"]
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NavigationBar" type="PanelContainer" parent="."]
+top_level = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 30.0
+grow_horizontal = 2
+theme = ExtResource("1_x425p")
+
+[node name="NavigationBar" type="HBoxContainer" parent="NavigationBar"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="FileMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
+layout_mode = 2
+theme = ExtResource("1_x425p")
+text = "File"
+item_count = 3
+popup/item_0/text = "TEST1"
+popup/item_0/separator = true
+popup/item_1/text = "TEST2"
+popup/item_1/id = 1
+popup/item_1/separator = true
+popup/item_2/text = "TEST3"
+popup/item_2/id = 2
+popup/item_2/separator = true
+
+[node name="EditMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
+layout_mode = 2
+theme = ExtResource("1_x425p")
+text = "Edit
+"
+item_count = 3
+popup/item_0/text = "TEST1"
+popup/item_0/separator = true
+popup/item_1/text = "TEST2"
+popup/item_1/id = 1
+popup/item_1/separator = true
+popup/item_2/text = "TEST3"
+popup/item_2/id = 2
+popup/item_2/separator = true
+
+[node name="HelpMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
+layout_mode = 2
+theme = ExtResource("1_x425p")
+text = "Help
+"
+item_count = 3
+popup/item_0/text = "TEST1"
+popup/item_0/separator = true
+popup/item_1/text = "TEST2"
+popup/item_1/id = 1
+popup/item_1/separator = true
+popup/item_2/text = "TEST3"
+popup/item_2/id = 2
+popup/item_2/separator = true
+
+[node name="LeftOptions" type="PanelContainer" parent="."]
+z_index = -1
+layout_direction = 1
+layout_mode = 2
+offset_right = 30.0
+offset_bottom = 1080.0
+grow_vertical = 2
+theme = ExtResource("1_x425p")
+
+[node name="TestTopBar" type="PanelContainer" parent="."]
+top_level = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 330.0
+offset_top = 30.0
+offset_right = -330.0
+offset_bottom = 65.0
+grow_horizontal = 2
+theme = ExtResource("1_x425p")
+
+[node name="Test" type="HBoxContainer" parent="TestTopBar"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 2
+
+[node name="RightOptions" type="PanelContainer" parent="."]
+z_index = -1
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -540.0
+offset_bottom = 540.0
+grow_horizontal = 0
+grow_vertical = 2
+theme = ExtResource("1_x425p")
+
+[node name="DataBar" type="PanelContainer" parent="." node_paths=PackedStringArray("fps_output", "logger_output")]
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("1_x425p")
+script = ExtResource("2_pqncx")
+fps_output = NodePath("HBoxContainer/FPSLabel")
+logger_output = NodePath("LoggerHBox/LoggerOutput")
+
+[node name="LoggerHBox" type="HBoxContainer" parent="DataBar"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="LoggerLabel" type="Label" parent="DataBar/LoggerHBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Logger: "
+
+[node name="LoggerOutput" type="Label" parent="DataBar/LoggerHBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="DataBar"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="FPSLabel" type="Label" parent="DataBar/HBoxContainer"]
+layout_mode = 2
+text = "FPS"
+
+[node name="VersionLabel" type="Label" parent="DataBar/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Version: 0.1.0"
+horizontal_alignment = 2
+
+[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_manager")]
+z_index = -2
+layout_mode = 2
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 330.0
+offset_bottom = 1054.0
+theme = ExtResource("1_x425p")
+theme_type_variation = &"LPanelContainer"
+script = ExtResource("2_iuucp")
+params_manager = NodePath("../ParamsWindow")
+
+[node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 17
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 17
+theme_override_constants/margin_bottom = 12
+
+[node name="AssetsVBox" type="VBoxContainer" parent="AssetsWindow/AssetsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AssetsHeading" type="HBoxContainer" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+layout_mode = 2
+
+[node name="AssetsLabel" type="Label" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetsHeading"]
+layout_mode = 2
+text = "Assets"
+
+[node name="AssetsSearch" type="LineEdit" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+layout_mode = 2
+placeholder_text = "Search"
+clear_button_enabled = true
+right_icon = SubResource("PlaceholderTexture2D_ya5vo")
+
+[node name="AssetsFilter" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_type_variation = &"FilterItemList"
+auto_height = true
+item_count = 7
+max_columns = 8
+fixed_icon_size = Vector2i(24, 24)
+item_0/icon = SubResource("PlaceholderTexture2D_616qv")
+item_1/icon = SubResource("PlaceholderTexture2D_3ltwh")
+item_2/icon = SubResource("PlaceholderTexture2D_xj2i0")
+item_3/icon = SubResource("PlaceholderTexture2D_hut6x")
+item_4/icon = SubResource("PlaceholderTexture2D_av6ya")
+item_5/icon = SubResource("PlaceholderTexture2D_xlou5")
+item_6/icon = SubResource("PlaceholderTexture2D_e1l2p")
+
+[node name="AssetSelector" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+custom_minimum_size = Vector2(0, 800)
+layout_direction = 1
+layout_mode = 2
+item_count = 4
+max_columns = 4
+same_column_width = true
+fixed_column_width = 56
+icon_mode = 0
+fixed_icon_size = Vector2i(50, 50)
+item_0/text = "Brick Wall"
+item_0/icon = SubResource("PlaceholderTexture2D_suw5e")
+item_1/text = "Test Tiles"
+item_1/icon = SubResource("PlaceholderTexture2D_apq77")
+item_2/text = "Test Metal"
+item_2/icon = SubResource("PlaceholderTexture2D_ioblm")
+item_3/text = "Test Grass"
+item_3/icon = SubResource("PlaceholderTexture2D_pce4s")
+
+[node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
+z_index = -2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -330.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = 1051.0
+grow_horizontal = 0
+theme = ExtResource("1_x425p")
+theme_type_variation = &"LPanelContainer"
+script = ExtResource("7_xyjtw")
+params_container = NodePath("MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
+section_scene = ExtResource("6_87c7t")
+slider_scene = ExtResource("6_tarje")
+gradient_scene = ExtResource("6_yy2h4")
+colour_scene = ExtResource("8_iq2nk")
+
+[node name="MarginContainer" type="MarginContainer" parent="ParamsWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 200
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 68
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ParamsWindow/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("5_hrfci")
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="ParamsWindow/MarginContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 10
+
+[node name="ParamsContainer" type="VBoxContainer" parent="ParamsWindow/MarginContainer/ScrollContainer/MarginContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("5_hrfci")
+theme_override_constants/separation = 10
+script = ExtResource("7_08hm7")
+
+[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" to="AssetsWindow" method="_on_asset_selector_item_activated"]

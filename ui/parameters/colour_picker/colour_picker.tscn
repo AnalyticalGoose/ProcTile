@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://coaqjyug65xd4"]
+
+[ext_resource type="Script" path="res://ui/parameters/colour_picker/colour_picker.gd" id="1_jq2d1"]
+
+[node name="ColourPickerContainer" type="MarginContainer" node_paths=PackedStringArray("picker")]
+offset_right = 250.0
+offset_bottom = 250.0
+size_flags_horizontal = 0
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 15
+script = ExtResource("1_jq2d1")
+picker = NodePath("ColourPicker")
+
+[node name="ColourPicker" type="ColorPicker" parent="."]
+custom_minimum_size = Vector2(150, 130)
+layout_mode = 2
+theme_override_constants/sv_width = 224
+theme_override_constants/sv_height = 224
+theme_override_constants/h_width = 25
+alignment = 1
+edit_alpha = false
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+
+[connection signal="color_changed" from="ColourPicker" to="." method="_on_colour_changed"]

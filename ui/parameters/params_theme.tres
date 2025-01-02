@@ -1,0 +1,38 @@
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://wrjfe6mxcq45"]
+
+[sub_resource type="Gradient" id="Gradient_apnni"]
+offsets = PackedFloat32Array(0.574074, 0.728395)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_cebng"]
+gradient = SubResource("Gradient_apnni")
+width = 12
+height = 12
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_0tldj"]
+color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+grow_begin = 0.0
+grow_end = 0.0
+thickness = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pwmke"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ctdom"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_10os2"]
+
+[resource]
+HSlider/icons/grabber = SubResource("GradientTexture2D_cebng")
+HSlider/icons/grabber_disabled = null
+HSlider/icons/grabber_highlight = null
+HSlider/styles/slider = SubResource("StyleBoxLine_0tldj")
+Label/font_sizes/font_size = 12
+LineEdit/constants/minimum_character_width = 2
+LineEdit/font_sizes/font_size = 12
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_pwmke")
+LineEdit/styles/normal = SubResource("StyleBoxEmpty_ctdom")
+LineEdit/styles/read_only = SubResource("StyleBoxEmpty_10os2")
+VBoxContainer/constants/separation = -9

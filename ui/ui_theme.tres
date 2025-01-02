@@ -1,0 +1,40 @@
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://dfgva2nypdu6x"]
+
+[ext_resource type="FontFile" uid="uid://cl43lyktll62p" path="res://ui/fonts/poppins/Poppins-Regular.ttf" id="1_q2vdh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qo4v4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pecqt"]
+bg_color = Color(0.180005, 0.180005, 0.180005, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d7uwh"]
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(0.133196, 0.133196, 0.133196, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
+border_blend = true
+corner_detail = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dsllf"]
+
+[resource]
+default_font = ExtResource("1_q2vdh")
+default_font_size = 14
+FilterItemList/base_type = &"ItemList"
+FilterItemList/styles/panel = SubResource("StyleBoxEmpty_qo4v4")
+ItemList/constants/h_separation = 4
+ItemList/font_sizes/font_size = 10
+LPanelContainer/base_type = &"PanelContainer"
+LPanelContainer/styles/panel = SubResource("StyleBoxFlat_pecqt")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_d7uwh")
+ParamLineEdit/base_type = &"LineEdit"
+ParamLineEdit/constants/minimum_character_width = 2
+ParamLineEdit/styles/focus = null
+ParamLineEdit/styles/normal = SubResource("StyleBoxEmpty_dsllf")

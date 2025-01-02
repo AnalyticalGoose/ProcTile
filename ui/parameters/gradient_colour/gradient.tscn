@@ -1,0 +1,71 @@
+[gd_scene load_steps=7 format=3 uid="uid://d18ju7bnukh46"]
+
+[ext_resource type="Script" path="res://ui/parameters/gradient_colour/gradient.gd" id="1_dbge8"]
+[ext_resource type="PackedScene" uid="uid://dd3ut6vm1aacl" path="res://ui/parameters/gradient_colour/gradient_control.tscn" id="2_66s8d"]
+[ext_resource type="PackedScene" uid="uid://coaqjyug65xd4" path="res://ui/parameters/colour_picker/colour_picker.tscn" id="3_o4ekc"]
+[ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="4_r4uxe"]
+
+[sub_resource type="Gradient" id="Gradient_h7iv6"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dmfdo"]
+gradient = SubResource("Gradient_h7iv6")
+width = 250
+height = 20
+
+[node name="Gradient" type="VBoxContainer" node_paths=PackedStringArray("label", "hide_btn", "colour_preview", "gradient_texture_rect", "gradient_controls_container")]
+offset_right = 260.0
+offset_bottom = 56.0
+mouse_filter = 0
+theme_override_constants/separation = 3
+script = ExtResource("1_dbge8")
+label = NodePath("Heading/Label")
+hide_btn = NodePath("Heading/HideButton")
+colour_preview = NodePath("ColourPreview")
+gradient_texture_rect = NodePath("Texture")
+gradient_controls_container = NodePath("Texture/ControlsContainer")
+_gradient_control_scene = ExtResource("2_66s8d")
+_colour_picker_scene = ExtResource("3_o4ekc")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 2
+
+[node name="Label" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HideButton" type="TextureButton" parent="Heading"]
+visible = false
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+toggle_mode = true
+action_mode = 0
+texture_normal = ExtResource("4_r4uxe")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Texture" type="TextureRect" parent="."]
+layout_mode = 2
+texture = SubResource("GradientTexture2D_dmfdo")
+
+[node name="ControlsContainer" type="Control" parent="Texture"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColourPreview" type="ColorRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Spacer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_bottom = 10
+
+[connection signal="pressed" from="Heading/HideButton" to="." method="_on_hide_button_pressed"]
+[connection signal="gui_input" from="Texture/ControlsContainer" to="." method="_on_controls_container_gui_input"]
+[connection signal="gui_input" from="ColourPreview" to="." method="_on_colour_preview_gui_input"]

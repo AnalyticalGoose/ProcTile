@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://ijcpej5evkvf"]
+
+[ext_resource type="Script" path="res://ui/parameters/uniform_colour/colour.gd" id="1_rdovj"]
+[ext_resource type="PackedScene" uid="uid://coaqjyug65xd4" path="res://ui/parameters/colour_picker/colour_picker.tscn" id="2_yt1b7"]
+
+[node name="Colour" type="VBoxContainer" node_paths=PackedStringArray("label", "colour_preview")]
+offset_right = 260.0
+offset_bottom = 44.0
+theme_override_constants/separation = 3
+script = ExtResource("1_rdovj")
+label = NodePath("Heading/Label")
+colour_preview = NodePath("ColourPreview")
+colour_picker_scene = ExtResource("2_yt1b7")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 2
+
+[node name="Label" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ColourPreview" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Spacer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_bottom = 10
+
+[connection signal="gui_input" from="ColourPreview" to="." method="_on_colour_preview_gui_input"]

@@ -1,0 +1,74 @@
+[gd_scene load_steps=3 format=3 uid="uid://dd3ut6vm1aacl"]
+
+[ext_resource type="Script" path="res://ui/parameters/gradient_colour/gradient_control.gd" id="1_dgnwm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uq5o7"]
+bg_color = Color(1, 1, 1, 1)
+border_color = Color(0.25, 0.25, 0.25, 1)
+corner_detail = 1
+
+[node name="GradientControl" type="Control" node_paths=PackedStringArray("colour_indicator", "border", "position_indicator")]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -7.0
+offset_bottom = -7.0
+grow_vertical = 0
+size_flags_vertical = 8
+script = ExtResource("1_dgnwm")
+colour_indicator = NodePath("ColourIndicator")
+border = NodePath("Border")
+position_indicator = NodePath("PositionIndicator")
+
+[node name="PositionIndicator" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.0
+offset_top = -33.0
+offset_right = 1.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="Border" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -5.0
+offset_top = -12.0
+offset_right = 5.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+color = Color(0.25, 0.25, 0.25, 1)
+
+[node name="ColourIndicator" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -11.0
+offset_right = 4.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uq5o7")
+
+[connection signal="gui_input" from="PositionIndicator" to="." method="_on_gui_input"]
+[connection signal="gui_input" from="Border" to="." method="_on_gui_input"]
+[connection signal="gui_input" from="ColourIndicator" to="." method="_on_gui_input"]
