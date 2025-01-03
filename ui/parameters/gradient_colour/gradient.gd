@@ -181,7 +181,7 @@ func _create_control(px_position : float) -> void:
 
 func _on_control_deleted(index : int, node_to_delete : ParamGradientControl) -> void:
 	# recalculate bounds +1 and -1
-	if _control_nodes.size() == 1:
+	if _control_nodes.size() <= 2:
 		return
 	elif index == 0:
 		_control_nodes[1].bounds[0] = 0.0
@@ -211,9 +211,9 @@ func _on_control_deleted(index : int, node_to_delete : ParamGradientControl) -> 
 	_gradient.set_offsets(_position_data)
 	_gradient.set_colors(_colour_data)
 	
-	# recalculate shader uniforms
-	compute_shader.update_storage_buffer(buffer_indexes[1], PackedColorArray(_colour_data).to_byte_array())
-	compute_shader.update_storage_buffer(buffer_indexes[0], _position_data.to_byte_array())
+	# rebuild buffers
+	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(_colour_data).to_byte_array())
 	compute_shader.stage = dependant_stage
 
 

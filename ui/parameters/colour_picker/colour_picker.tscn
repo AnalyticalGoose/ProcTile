@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://ui/parameters/colour_picker/colour_picker.gd" id="1_jq2d1"]
 
 [node name="ColourPickerContainer" type="MarginContainer" node_paths=PackedStringArray("picker")]
-offset_right = 250.0
-offset_bottom = 250.0
+offset_right = 261.0
+offset_bottom = 265.0
 size_flags_horizontal = 0
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_bottom = 15
@@ -14,8 +14,8 @@ picker = NodePath("ColourPicker")
 [node name="ColourPicker" type="ColorPicker" parent="."]
 custom_minimum_size = Vector2(150, 130)
 layout_mode = 2
-theme_override_constants/sv_width = 224
-theme_override_constants/sv_height = 224
+theme_override_constants/sv_width = 213
+theme_override_constants/sv_height = 213
 theme_override_constants/h_width = 25
 alignment = 1
 edit_alpha = false

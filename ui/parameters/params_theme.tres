@@ -1,4 +1,6 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://wrjfe6mxcq45"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://wrjfe6mxcq45"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kcnoo"]
 
 [sub_resource type="Gradient" id="Gradient_apnni"]
 offsets = PackedFloat32Array(0.574074, 0.728395)
@@ -26,6 +28,7 @@ thickness = 3
 
 [resource]
 Button/font_sizes/font_size = 11
+Button/styles/focus = SubResource("StyleBoxEmpty_kcnoo")
 HSlider/icons/grabber = SubResource("GradientTexture2D_cebng")
 HSlider/icons/grabber_disabled = null
 HSlider/icons/grabber_highlight = null
