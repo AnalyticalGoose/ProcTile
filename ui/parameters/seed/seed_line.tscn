@@ -1,17 +1,17 @@
 [gd_scene load_steps=3 format=3 uid="uid://mapw8rs5g7b8"]
 
-[ext_resource type="Script" path="res://ui/parameters/seed/seed_single.gd" id="1_sjeig"]
-[ext_resource type="Texture2D" uid="uid://ckqkknlwwipc6" path="res://ui/icons/icon_refresh.png" id="2_1bxvs"]
+[ext_resource type="Script" path="res://ui/parameters/seed/seed_line.gd" id="1_msm11"]
+[ext_resource type="Texture2D" uid="uid://ckqkknlwwipc6" path="res://ui/icons/icon_refresh.png" id="2_qxd4j"]
 
 [node name="Seed" type="HBoxContainer" node_paths=PackedStringArray("seed_value")]
 theme_override_constants/separation = 10
-script = ExtResource("1_sjeig")
+script = ExtResource("1_msm11")
 seed_value = NodePath("LineEdit")
 
 [node name="RandomiseButton" type="TextureButton" parent="."]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
-texture_normal = ExtResource("2_1bxvs")
+texture_normal = ExtResource("2_qxd4j")
 ignore_texture_size = true
 stretch_mode = 5
 

@@ -45,6 +45,8 @@ var uniform_sets : Array[RID] = [RID(), RID(), RID(), RID()]
 var tone_value : float = 0.80
 var tone_width : float = 0.48
 
+var brick_colour_seed : float = 0.064537466
+
 var perlin_seed_1 : float = 0.612547636
 var perlin_seed_2 : float = 0.587890089
 var perlin_seed_3 : float = 0.509320438
@@ -54,15 +56,9 @@ var perlin_seed_5 : float = 0.459213525
 var perlin_seed_6 : float = 0.762268782
 var b_noise_seed : float = 0.00
 
-#var perlin_seeds : PackedByteArray = PackedFloat32Array(
-		#[
-			#perlin_seed_1, perlin_seed_2, perlin_seed_3, perlin_seed_4, 
-			#perlin_seed_5, perlin_seed_6, b_noise_seed,
-		#]).to_byte_array()
-
 var seeds_array : Array[float] = [
-		perlin_seed_1, perlin_seed_2, perlin_seed_3, perlin_seed_4, 
-		perlin_seed_5, perlin_seed_6, b_noise_seed,
+		brick_colour_seed, perlin_seed_1, perlin_seed_2, perlin_seed_3, 
+		perlin_seed_4, perlin_seed_5, perlin_seed_6, b_noise_seed,
 ]
 
 var seeds : PackedByteArray = PackedFloat32Array(seeds_array).to_byte_array()

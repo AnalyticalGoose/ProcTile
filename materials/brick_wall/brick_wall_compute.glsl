@@ -19,6 +19,7 @@ layout(rgba32f, set = 10, binding = 0) uniform restrict image2D noise_buffer;
 layout(rgba32f, set = 11, binding = 0) uniform restrict image2D grunge_buffer;
 
 layout(set = 12, binding = 0, std430) buffer restrict readonly Seeds {
+	float brick_colour_seed;
 	float perlin_seed_1;
 	float perlin_seed_2;
 	float perlin_seed_3;
@@ -101,7 +102,7 @@ const vec3 mortar_colour = vec3(1.00, 0.93, 0.81); // does need to be exposed
 // const vec4 brick_col_gradient_val[7] = vec4[](vec4(0.78, 0.36, 0.18, 1.00), vec4(0.76, 0.34, 0.17, 1.00), vec4(0.82, 0.40, 0.24, 1.00), vec4(0.76, 0.36, 0.21, 1.00), vec4(0.80, 0.40, 0.24, 1.00), vec4(0.82, 0.41, 0.19, 1.00), vec4(0.89, 0.49, 0.24, 1.00));
 
 // Fill to random color
-const float brick_colour_seed = 0.064537466;
+// const float brick_colour_seed = 0.064537466;
 const vec4 random_edge_col = vec4(1.0, 1.0, 1.0, 1.0); // "Color used for outlines" - fairly sure this isn't needed and never will be, likely remove and code into shader.
 
 
@@ -605,7 +606,7 @@ void main() {
 
 		// brick fill output - sampled and each brick given a random colour
 		vec4 brick_fill = round(vec4(fract(brick_bounding_rect.xy), brick_bounding_rect.zw - brick_bounding_rect.xy)*4096.0)/4096.0;
-		vec3 random_brick_colour = mix(random_edge_col.rgb, rand3(vec2(float((brick_colour_seed+fract(_seed_variation_))), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
+		vec3 random_brick_colour = mix(random_edge_col.rgb, rand3(vec2(float((seed.brick_colour_seed+fract(_seed_variation_))), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
 
 		// decomposed random colour by channel
 		float random_col_r = random_brick_colour.r;

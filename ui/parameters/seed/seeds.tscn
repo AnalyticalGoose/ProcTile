@@ -1,16 +1,16 @@
 [gd_scene load_steps=4 format=3 uid="uid://bsldnikana6eg"]
 
-[ext_resource type="Script" path="res://ui/parameters/seed/seeds_multiple.gd" id="1_vpe8b"]
-[ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_single.tscn" id="2_g2imt"]
-[ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="3_fxr5l"]
+[ext_resource type="Script" path="res://ui/parameters/seed/seeds.gd" id="1_dpp8o"]
+[ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_line.tscn" id="2_b56yj"]
+[ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="3_5om1e"]
 
 [node name="Seeds" type="VBoxContainer" node_paths=PackedStringArray("label", "hide_btn", "buttons_container", "spacer")]
 custom_minimum_size = Vector2(200, 0)
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_constants/separation = 5
-script = ExtResource("1_vpe8b")
-seed_single_scene = ExtResource("2_g2imt")
+script = ExtResource("1_dpp8o")
+seed_single_scene = ExtResource("2_b56yj")
 label = NodePath("Heading/Label")
 hide_btn = NodePath("Heading/HideButton")
 buttons_container = NodePath("ButtonsContainer")
@@ -30,7 +30,7 @@ visible = false
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 action_mode = 0
-texture_normal = ExtResource("3_fxr5l")
+texture_normal = ExtResource("3_5om1e")
 ignore_texture_size = true
 stretch_mode = 0
 
