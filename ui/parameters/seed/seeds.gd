@@ -1,9 +1,16 @@
 class_name ParamSeeds
 extends VBoxContainer
+## Seeds class for a compute shader parameter
+## 
+## Handles rng, instancing children for individual seeds and refreshing the
+## shader with new buffer data
 
 @export var seed_single_scene : PackedScene
 @export var label : Label
 @export var hide_btn : TextureButton
+@export var randomise_btn : Button
+@export var show_all_btn : Button
+@export var edit_btn : TextureButton
 @export var buttons_container : HBoxContainer
 @export var spacer : MarginContainer
 
@@ -25,29 +32,29 @@ func setup_properties(data : Array) -> void:
 	dependant_stage = data[4]
 	buffer_index = data[5]
 	
-	if seed_values.size() == 1:
-		_create_seed_controls()
-		buttons_container.queue_free()
+	if seed_values.size() > 1:
+		randomise_btn.set_text("Randomise All")
+		edit_btn.queue_free()
+	else:
+		show_all_btn.queue_free()
 
 
 func _on_show_all_btn_pressed() -> void:
 	hide_btn.show()
 	buttons_container.hide()
-	
-	if _single_seeds_created:
-		for i : int in _seed_nodes.size():
-			_seed_nodes[i].show()
-	else:
-		_create_seed_controls()
-		_single_seeds_created = true
+	_show_seed_controls()
 
 
-func _on_hide_button_pressed() -> void:
+func _on_show_hide_button_pressed() -> void:
 	hide_btn.hide()
-	buttons_container.show()
-
-	for i : int in _seed_nodes.size():
-		_seed_nodes[i].hide()
+	
+	if buttons_container.visible:
+		buttons_container.hide()
+		_show_seed_controls()
+	else:
+		buttons_container.show()
+		for i : int in _seed_nodes.size():
+			_seed_nodes[i].hide()
 
 
 func _create_seed_controls() -> void:
@@ -59,9 +66,18 @@ func _create_seed_controls() -> void:
 		_seed_nodes.append(single_seed)
 		add_child(single_seed)
 		move_child(spacer, -1) # move spacer to the bottom
+		
+
+func _show_seed_controls() -> void:
+	if _single_seeds_created:
+		for i : int in _seed_nodes.size():
+			_seed_nodes[i].show()
+	else:
+		_create_seed_controls()
+		_single_seeds_created = true
 
 
-func _on_randomise_all_btn_pressed() -> void:
+func _on_randomise_btn_pressed() -> void:
 	for i : int in seed_values.size():
 		var random_float : float = snappedf(_rng.randf(), 0.000000001)
 		seed_values[i] = random_float
