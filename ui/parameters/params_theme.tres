@@ -25,6 +25,7 @@ thickness = 3
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_10os2"]
 
 [resource]
+Button/font_sizes/font_size = 11
 HSlider/icons/grabber = SubResource("GradientTexture2D_cebng")
 HSlider/icons/grabber_disabled = null
 HSlider/icons/grabber_highlight = null

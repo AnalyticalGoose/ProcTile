@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsldnikana6eg"]
+
+[ext_resource type="Script" path="res://ui/parameters/seed/seeds_multiple.gd" id="1_vpe8b"]
+[ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_single.tscn" id="2_g2imt"]
+[ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="3_fxr5l"]
+
+[node name="Seeds" type="VBoxContainer" node_paths=PackedStringArray("label", "hide_btn", "buttons_container", "spacer")]
+custom_minimum_size = Vector2(200, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/separation = 5
+script = ExtResource("1_vpe8b")
+seed_single_scene = ExtResource("2_g2imt")
+label = NodePath("Heading/Label")
+hide_btn = NodePath("Heading/HideButton")
+buttons_container = NodePath("ButtonsContainer")
+spacer = NodePath("Spacer")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="Label" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HideButton" type="TextureButton" parent="Heading"]
+visible = false
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+action_mode = 0
+texture_normal = ExtResource("3_fxr5l")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RandomiseAllBtn" type="Button" parent="ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Randomise All"
+
+[node name="ShowAllBtn" type="Button" parent="ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Show All"
+
+[node name="Spacer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_bottom = 10
+
+[connection signal="pressed" from="Heading/HideButton" to="." method="_on_hide_button_pressed"]
+[connection signal="pressed" from="ButtonsContainer/RandomiseAllBtn" to="." method="_on_randomise_all_btn_pressed"]
+[connection signal="pressed" from="ButtonsContainer/ShowAllBtn" to="." method="_on_show_all_btn_pressed"]

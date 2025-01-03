@@ -1,17 +1,14 @@
 class_name ParamsManager
 extends PanelContainer
 
-
-
-# TODO: Add '?' tooltip funcionality, If I am unable to add clarity as to what each node does,
-# there may need to be some way to create documentation to support users. Check Substance too..
-
 enum ui_element {
 		SECTION, 
 		SLIDER, 
 		DROPDOWN, 
 		GRADIENT, 
 		COLOUR,
+		SEED_SINGLE,
+		SEED_MULTIPLE,
 }
 
 @export var params_container : ParamSection
@@ -19,6 +16,8 @@ enum ui_element {
 @export var slider_scene : PackedScene
 @export var gradient_scene : PackedScene
 @export var colour_scene : PackedScene
+@export var seed_single_scene : PackedScene
+@export var seed_multiple_scene : PackedScene
 
 var current_container : ParamSection
 var compute_shader : ComputeShader
@@ -61,3 +60,13 @@ func _build_params_ui(index : int, shader : ComputeShader) -> void:
 				colour.compute_shader = compute_shader
 				current_container.add_child(colour)
 				current_container.children.append(colour)
+				
+			ui_element.SEED_SINGLE:
+				pass
+				
+			ui_element.SEED_MULTIPLE:
+				var seed_multiple : ParamSeedMultiple = seed_multiple_scene.instantiate() as ParamSeedMultiple
+				seed_multiple.setup_properties(element_data)
+				seed_multiple.compute_shader = compute_shader
+				current_container.add_child(seed_multiple)
+				current_container.children.append(seed_multiple)

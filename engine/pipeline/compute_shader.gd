@@ -50,14 +50,23 @@ var perlin_seed_2 : float = 0.587890089
 var perlin_seed_3 : float = 0.509320438
 var perlin_seed_4 : float = 0.941759408
 var perlin_seed_5 : float = 0.459213525
+
 var perlin_seed_6 : float = 0.762268782
 var b_noise_seed : float = 0.00
 
-var perlin_seeds : PackedByteArray = PackedFloat32Array(
-		[
-			perlin_seed_1, perlin_seed_2, perlin_seed_3, perlin_seed_4, 
-			perlin_seed_5, perlin_seed_6, b_noise_seed,
-		]).to_byte_array()
+#var perlin_seeds : PackedByteArray = PackedFloat32Array(
+		#[
+			#perlin_seed_1, perlin_seed_2, perlin_seed_3, perlin_seed_4, 
+			#perlin_seed_5, perlin_seed_6, b_noise_seed,
+		#]).to_byte_array()
+
+var seeds_array : Array[float] = [
+		perlin_seed_1, perlin_seed_2, perlin_seed_3, perlin_seed_4, 
+		perlin_seed_5, perlin_seed_6, b_noise_seed,
+]
+
+var seeds : PackedByteArray = PackedFloat32Array(seeds_array).to_byte_array()
+
 		
 var mortar_col : PackedByteArray = PackedVector4Array([Vector4(1.00, 0.93, 0.81, 1.00)]).to_byte_array()
 	
@@ -225,7 +234,7 @@ func _init_compute(_texture_size : Vector2i, shader_path : String) -> void:
 	
 	
 	# test uniform storage buffer - this should really be a uniform buffer, not storage as we know the size.
-	uniform_rds[0] = rd.storage_buffer_create(perlin_seeds.size(), perlin_seeds)
+	uniform_rds[0] = rd.storage_buffer_create(seeds.size(), seeds)
 	var uniform_block : RDUniform = RDUniform.new()
 	uniform_block.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 	uniform_block.binding = 0

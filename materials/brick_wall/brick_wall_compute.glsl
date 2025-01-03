@@ -18,7 +18,7 @@ layout(rgba32f, set = 9, binding = 0) uniform restrict image2D rgba32f_buffer;
 layout(rgba32f, set = 10, binding = 0) uniform restrict image2D noise_buffer;
 layout(rgba32f, set = 11, binding = 0) uniform restrict image2D grunge_buffer;
 
-layout(set = 12, binding = 0, std430) buffer restrict readonly Misc {
+layout(set = 12, binding = 0, std430) buffer restrict readonly Seeds {
 	float perlin_seed_1;
 	float perlin_seed_2;
 	float perlin_seed_3;
@@ -26,7 +26,7 @@ layout(set = 12, binding = 0, std430) buffer restrict readonly Misc {
 	float perlin_seed_5;
 	float perlin_seed_6;
 	float b_noise_seed;
-} misc;
+} seed;
 
 layout(set = 13, binding = 0, std430) buffer restrict readonly GradientOffsets {
     float gradient_offsets[];
@@ -545,20 +545,20 @@ void main() {
 	vec2 scale = vec2(6.0, 6.0);
 
 	if (params.stage == 0.0) { // grunge base texture
-		float fbm_1 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, misc.perlin_seed_1);
-		float fbm_2 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, misc.perlin_seed_2);
-		float fbm_3 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, misc.perlin_seed_3);
+		float fbm_1 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, seed.perlin_seed_1);
+		float fbm_2 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, seed.perlin_seed_2);
+		float fbm_3 = fbm_2d_perlin((uv), scale, grunge_iterations, persistence, offset, seed.perlin_seed_3);
 
 		vec2 warp_1 = (uv) + params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_1 - 0.5), - mingle_warp_y * (fbm_2) - 0.5);
 		vec2 warp_2 = (uv) - params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_2 - 0.5), - mingle_warp_y * (fbm_1) - 0.5);
 
-		float fbm_1_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_1);
-		float fbm_2_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_2);
-		float fbm_3_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_3);
+		float fbm_1_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, seed.perlin_seed_1);
+		float fbm_2_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, seed.perlin_seed_2);
+		float fbm_3_warp_1 = fbm_2d_perlin((warp_1), scale, grunge_iterations, persistence, offset, seed.perlin_seed_3);
 		
-		float fbm_1_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_1);
-		float fbm_2_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_2);
-		float fbm_3_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_3);
+		float fbm_1_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, seed.perlin_seed_1);
+		float fbm_2_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, seed.perlin_seed_2);
+		float fbm_3_warp_2 = fbm_2d_perlin((warp_2), scale, grunge_iterations, persistence, offset, seed.perlin_seed_3);
 
 		// Warp and burn blend operation (darker grunge layer), mixed and controlled by a step.
 		vec2 blend_burn_warp_1 = (warp_2) + params.mingle_warp_strength * vec2(mingle_warp_x * (fbm_1_warp_2 - 0.5), - mingle_warp_y * (fbm_2_warp_2 - 0.5));
@@ -571,10 +571,10 @@ void main() {
 		float mingle_dodge_opacity_adjust = mingle_opacity * smoothstep(mingle_step - params.mingle_smooth, mingle_step + params.mingle_smooth, fbm_3_warp_1);
 
 		// Combine burn and dodge layers, with an additional warp and blend (overlay) operation, controlled by a step
-		float mingle_overlay_burn_input_1 = fbm_2d_perlin((mingle_dodge_warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_4);
-		float mingle_overlay_burn_input_2 = fbm_2d_perlin((mingle_dodge_warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_5);
-		float mingle_overlay_dodge_input_1 = fbm_2d_perlin((blend_burn_warp_1), scale, grunge_iterations, persistence, offset, misc.perlin_seed_5);
-		float mingle_overlay_dodge_input_2 = fbm_2d_perlin((blend_burn_warp_2), scale, grunge_iterations, persistence, offset, misc.perlin_seed_4);
+		float mingle_overlay_burn_input_1 = fbm_2d_perlin((mingle_dodge_warp_1), scale, grunge_iterations, persistence, offset, seed.perlin_seed_4);
+		float mingle_overlay_burn_input_2 = fbm_2d_perlin((mingle_dodge_warp_2), scale, grunge_iterations, persistence, offset, seed.perlin_seed_5);
+		float mingle_overlay_dodge_input_1 = fbm_2d_perlin((blend_burn_warp_1), scale, grunge_iterations, persistence, offset, seed.perlin_seed_5);
+		float mingle_overlay_dodge_input_2 = fbm_2d_perlin((blend_burn_warp_2), scale, grunge_iterations, persistence, offset, seed.perlin_seed_4);
 		vec3 mingle_overlay_burn = blend_burn((warp_1), vec3(mingle_overlay_burn_input_1), vec3(mingle_overlay_burn_input_2), mingle_dodge_opacity_adjust);
 		vec3 mingle_overlay_dodge = blend_dodge((warp_2), vec3(mingle_overlay_dodge_input_1), vec3(mingle_overlay_dodge_input_2), mingle_burn_opacity_adjust);
 		float mingle_overlay_opacity_adjust_1 = mingle_opacity * smoothstep(mingle_step - params.mingle_smooth, mingle_step + params.mingle_smooth, fbm_3);
@@ -624,7 +624,7 @@ void main() {
 		imageStore(albedo_buffer, ivec2(pixel), albedo);
 
 		// Mortar b-noise
-		float hash = hash_ws(vec2(pixel), misc.b_noise_seed);
+		float hash = hash_ws(vec2(pixel), seed.b_noise_seed);
 		vec3 blue_noise = vec3(tone_map(hash));
 		vec3 blue_noise_desat = clamp(blue_noise * params.b_noise_contrast + vec3(b_noise_brightness + 0.5 * (1.0 - params.b_noise_contrast)), vec3(0.0), vec3(1.0));
 		vec3 mortar_noise = blend_normal(uv, vec3(1.0, uv.y, 1.0), blue_noise_desat, mortar_mask);
@@ -652,7 +652,7 @@ void main() {
 		// Brick damage / weathering generated by blending perlin in a slope blur
 		// The normal brick mask is sampled in the dilate_mask function and is stored in a buffer
 		// The perlin noise and dilated mask must be repeatedly sampled in the slope blur function and are stored in buffers
-		float brick_damage_perlin = fbm_2d_perlin(uv, vec2(damage_scale_x, damage_scale_y), int(damage_iterations), damage_persistence, damage_offset, misc.perlin_seed_6);
+		float brick_damage_perlin = fbm_2d_perlin(uv, vec2(damage_scale_x, damage_scale_y), int(damage_iterations), damage_persistence, damage_offset, seed.perlin_seed_6);
 		imageStore(noise_buffer, ivec2(pixel), vec4(vec3(brick_damage_perlin), 1.0));
 	}
 
