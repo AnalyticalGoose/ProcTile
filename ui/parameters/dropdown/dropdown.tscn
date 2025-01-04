@@ -19,7 +19,6 @@ size_flags_horizontal = 3
 
 [node name="OptionButton" type="OptionButton" parent="."]
 layout_mode = 2
-selected = 0
 
 [node name="Spacer" type="MarginContainer" parent="."]
 layout_mode = 2

@@ -110,8 +110,61 @@ const float roughness_out_min = 0.60;
 const float roughness_out_max = 0.90;
 
 // normal map
-const float sobel_strength = 0.13;
+const float sobel_strength = 0.05;
 
+
+vec4 get_brick_bounds(vec2 uv, vec2 grid, float repeat, float row_offset, int pattern) {
+    vec2 adjusted_grid = grid * repeat;
+    float x_offset = row_offset * step(0.5, fract(uv.y * adjusted_grid.y * 0.5));
+    vec2 brick_min, brick_max;
+
+    if (pattern == 0 || pattern == 1 || pattern == 2) { // Running, English, Flemish
+        if (pattern == 1) {
+            adjusted_grid.x *= 1.0 + step(0.5, fract(uv.y * adjusted_grid.y * 0.5));
+        }
+        brick_min = floor(vec2(uv.x * adjusted_grid.x - x_offset, uv.y * adjusted_grid.y));
+        brick_min.x += x_offset;
+        brick_min /= adjusted_grid;
+
+        if (pattern == 2) { // Flemish
+            brick_max = brick_min + vec2(1.0) / adjusted_grid;
+            float split = (brick_max.x - brick_min.x) / 3.0;
+            float is_left = step((uv.x - brick_min.x) / (brick_max.x - brick_min.x), 1.0 / 3.0);
+            brick_max.x = mix(brick_max.x, brick_min.x + split, is_left);
+            brick_min.x = mix(brick_min.x + split, brick_min.x, is_left);
+        } else {
+            brick_max = brick_min + vec2(1.0) / adjusted_grid;
+        }
+        return vec4(brick_min, brick_max);
+    }
+
+    if (pattern == 3) { // Herringbone
+        float pattern_count = adjusted_grid.x + adjusted_grid.y;
+        float cell_count = pattern_count * repeat;
+        vec2 cell_coord = floor(uv * cell_count);
+        float diagonal_offset = mod(cell_coord.x - cell_coord.y, pattern_count);
+
+        vec2 base_corner = cell_coord - vec2(diagonal_offset, 0.0);
+        vec2 alt_corner = cell_coord - vec2(0.0, pattern_count - diagonal_offset - 1.0);
+        float use_alt_corner = step(adjusted_grid.x, diagonal_offset);
+        vec2 corner = mix(base_corner, alt_corner, use_alt_corner);
+        vec2 size = mix(vec2(adjusted_grid.x, 1.0), vec2(1.0, adjusted_grid.y), use_alt_corner);
+
+        return vec4(corner / cell_count, (corner + size) / cell_count);
+    }
+
+    if (pattern == 4) { // Basketweave
+        vec2 cell_count = 2.0 * adjusted_grid;
+        vec2 primary_corner = floor(uv * cell_count);
+        vec2 secondary_corner = grid * floor(uv * 2.0 * repeat);
+
+        float toggle = mod(dot(floor(uv * 2.0 * repeat), vec2(1.0)), 2.0);
+        vec2 corner = mix(vec2(primary_corner.x, secondary_corner.y), vec2(secondary_corner.x, primary_corner.y), toggle);
+        vec2 size = mix(vec2(1.0, adjusted_grid.y), vec2(adjusted_grid.x, 1.0), toggle);
+
+        return vec4(corner / cell_count, (corner + size) / cell_count);
+    }
+}
 
 float get_brick_pattern(vec2 uv, vec2 brick_min, vec2 brick_max, float mortar, float rounding, float bevel, float brick_scale) {
     mortar *= brick_scale;
@@ -124,14 +177,14 @@ float get_brick_pattern(vec2 uv, vec2 brick_min, vec2 brick_max, float mortar, f
     return clamp(-distance / bevel, 0.0, 1.0);
 }
 
-vec4 get_brick_bounds_rb(vec2 uv, vec2 grid, float repeat, float row_offset) {
-    grid *= repeat;
-    float x_offset = row_offset * step(0.5, fract(uv.y * grid.y * 0.5));
-    vec2 brick_min = floor(vec2(uv.x * grid.x - x_offset, uv.y * grid.y));
-    brick_min.x += x_offset;
-    brick_min /= grid;
-    return vec4(brick_min, brick_min + vec2(1.0) / grid);
-}
+// vec4 get_brick_bounds_rb(vec2 uv, vec2 grid, float repeat, float row_offset) {
+//     grid *= repeat;
+//     float x_offset = row_offset * step(0.5, fract(uv.y * grid.y * 0.5));
+//     vec2 brick_min = floor(vec2(uv.x * grid.x - x_offset, uv.y * grid.y));
+//     brick_min.x += x_offset;
+//     brick_min /= grid;
+//     return vec4(brick_min, brick_min + vec2(1.0) / grid);
+// }
 
 float rand(vec2 p) {
 	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -482,14 +535,8 @@ void main() {
 		float _rounding = params.rounding / 100;
 
 		// Generate base brick pattern
-		vec4 brick_bounding_rect;
-		float pattern;
-
-		switch (int(params.pattern)) {
-			case 0: // Running
-				brick_bounding_rect = get_brick_bounds_rb(uv, vec2(params.columns, params.rows), params.repeat, params.row_offset);
-				pattern = get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar, _rounding, _bevel, 1.0 / params.rows);
-		}
+		vec4 brick_bounding_rect = get_brick_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.row_offset, int(params.pattern));
+		float pattern = get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar, _rounding, _bevel, 1.0 / params.rows);
 
 		float dilated_mask = 1.0 - get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar * 1.5, _rounding, _bevel, 1.0 / params.rows).x;
 		imageStore(r16f_buffer_2, ivec2(pixel), vec4(vec3(dilated_mask), 1.0));

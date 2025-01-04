@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://5heo5h26pf75"]
+[gd_scene load_steps=10 format=3 uid="uid://5heo5h26pf75"]
 
 [ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" path="res://materials/brick_wall/brick_wall_shader.gdshader" id="1_iqibk"]
@@ -23,18 +23,9 @@ shader_parameter/occlusion_input = SubResource("Texture2DRD_u8qvg")
 [sub_resource type="PlaneMesh" id="PlaneMesh_eq8u2"]
 orientation = 2
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_x2ad0"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-
-[sub_resource type="Sky" id="Sky_50ofp"]
-sky_material = SubResource("ProceduralSkyMaterial_x2ad0")
-
 [sub_resource type="Environment" id="Environment_cwj01"]
 background_mode = 1
 background_color = Color(0.0338533, 0.0338533, 0.0338533, 1)
-sky = SubResource("Sky_50ofp")
-ambient_light_source = 1
 
 [node name="Renderer" type="Node3D"]
 script = ExtResource("1_11juy")
@@ -51,9 +42,15 @@ environment = SubResource("Environment_cwj01")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(0.866707, -0.431989, 0.249407, 0.343098, 0.879212, 0.330561, -0.362081, -0.200929, 0.910234, 0, 0.189392, 4)
+visible = false
 light_energy = 0.8
 shadow_enabled = true
 sky_mode = 1
 
 [node name="Camera3D" type="Camera3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.535)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2, 3)
+light_energy = 2.633
+omni_range = 12.0
