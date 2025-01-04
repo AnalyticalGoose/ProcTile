@@ -13,6 +13,7 @@ enum ui_element {
 @export var params_container : ParamSection
 @export var section_scene : PackedScene
 @export var slider_scene : PackedScene
+@export var dropdown_scene : PackedScene
 @export var gradient_scene : PackedScene
 @export var colour_scene : PackedScene
 @export var seed_single_scene : PackedScene
@@ -44,7 +45,11 @@ func _build_params_ui(index : int, shader : ComputeShader) -> void:
 				current_container.children.append(slider)
 			
 			ui_element.DROPDOWN:
-				print("dropdown")
+				var dropdown : ParamDropdown = dropdown_scene.instantiate() as ParamDropdown
+				dropdown.compute_shader = compute_shader
+				dropdown.setup_properties(element_data)
+				current_container.add_child(dropdown)
+				current_container.children.append(dropdown)
 				
 			ui_element.GRADIENT:
 				var gradient : ParamGradient = gradient_scene.instantiate() as ParamGradient

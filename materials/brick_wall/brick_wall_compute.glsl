@@ -482,8 +482,14 @@ void main() {
 		float _rounding = params.rounding / 100;
 
 		// Generate base brick pattern
-		vec4 brick_bounding_rect = get_brick_bounds_rb(uv, vec2(params.columns, params.rows), params.repeat, params.row_offset);
-		float pattern = get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar, _rounding, _bevel, 1.0 / params.rows);
+		vec4 brick_bounding_rect;
+		float pattern;
+
+		switch (int(params.pattern)) {
+			case 0: // Running
+				brick_bounding_rect = get_brick_bounds_rb(uv, vec2(params.columns, params.rows), params.repeat, params.row_offset);
+				pattern = get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar, _rounding, _bevel, 1.0 / params.rows);
+		}
 
 		float dilated_mask = 1.0 - get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar * 1.5, _rounding, _bevel, 1.0 / params.rows).x;
 		imageStore(r16f_buffer_2, ivec2(pixel), vec4(vec3(dilated_mask), 1.0));

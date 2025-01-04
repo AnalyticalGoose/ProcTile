@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=26 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
 [ext_resource type="Script" path="res://materials/asset_manager.gd" id="2_iuucp"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
 [ext_resource type="PackedScene" uid="uid://d18ju7bnukh46" path="res://ui/parameters/gradient_colour/gradient.tscn" id="6_yy2h4"]
 [ext_resource type="Script" path="res://ui/parameters/section/section.gd" id="7_08hm7"]
+[ext_resource type="PackedScene" uid="uid://coiefeptq306s" path="res://ui/parameters/dropdown/dropdown.tscn" id="7_ggaj0"]
 [ext_resource type="Script" path="res://ui/parameters/params_manager.gd" id="7_xyjtw"]
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_line.tscn" id="9_b1bll"]
@@ -275,6 +276,7 @@ script = ExtResource("7_xyjtw")
 params_container = NodePath("MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
 section_scene = ExtResource("6_87c7t")
 slider_scene = ExtResource("6_tarje")
+dropdown_scene = ExtResource("7_ggaj0")
 gradient_scene = ExtResource("6_yy2h4")
 colour_scene = ExtResource("8_iq2nk")
 seed_single_scene = ExtResource("9_b1bll")

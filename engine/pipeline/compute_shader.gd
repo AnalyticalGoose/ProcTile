@@ -103,7 +103,7 @@ var mingle_warp_strength : float = 2.0
 var b_noise_contrast : float = 0.50
 
 # temp - will need to be bound to the call....
-var pattern : float = 1.0
+var pattern : float = 0.0
 var repeat : float = 1.0
 var rows : float = 10.0
 var columns : float = 5.0
