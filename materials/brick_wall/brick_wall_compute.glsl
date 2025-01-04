@@ -16,7 +16,7 @@ layout(rgba32f, set = 7, binding = 0) uniform restrict image2D r16f_buffer_1;
 layout(r16f, set = 8, binding = 0) uniform restrict image2D r16f_buffer_2;
 layout(rgba32f, set = 9, binding = 0) uniform restrict image2D rgba32f_buffer;
 layout(rgba32f, set = 10, binding = 0) uniform restrict image2D noise_buffer;
-layout(rgba32f, set = 11, binding = 0) uniform restrict image2D grunge_buffer;
+layout(r16f, set = 11, binding = 0) uniform restrict image2D grunge_buffer;
 
 layout(set = 12, binding = 0, std430) buffer restrict readonly Seeds {
 	float brick_colour_seed;
@@ -42,6 +42,7 @@ layout(set = 15, binding = 0, std430) buffer restrict readonly MortarColour {
 };
 
 layout(push_constant, std430) uniform restrict readonly Params {
+	float pattern;
 	float rows;
 	float columns;
 	float row_offset;
@@ -54,6 +55,10 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float mingle_smooth; // Plateau Scale
 	float tone_width; // Blending
 	float b_noise_contrast; // Intensity
+	float damage_scale_x; //= 10.00; // scale
+	float damage_scale_y; //= 15.00;
+	float damage_iterations; //= 3.00; // adds complexity to the damage
+	float damage_persistence; //= 0.50; // intensity
 	float texture_size;
 	float stage;
 } params;
@@ -92,13 +97,11 @@ const float grunge_scale_y = 1.00;
 const float grunge_blend_opacity = 0.80;
 
 // brick damage perlin variables
-const float damage_scale_x = 10.00;
-const float damage_scale_y = 15.00;
-const float damage_iterations = 3.00;
-const float damage_persistence = 0.50;
+// const float damage_scale_x = 10.00; // scale
+// const float damage_scale_y = 15.00;
+// const float damage_iterations = 3.00; // adds complexity to the damage
+// const float damage_persistence = 0.50; // intensity
 const float damage_offset = 0.00;
-
-const int dilation_size = 10;
 
 // roughness map variables
 const float roughness_in_min = 0.00;
@@ -158,24 +161,24 @@ float overlay_f(float base, float blend) {
 	return base < 0.5 ? (2.0 * base * blend) : (1.0 - 2.0 * (1.0 - base) * (1.0 - blend));
 }
 
-vec3 overlay(vec3 base, vec3 blend, float opacity) {
-	return opacity * vec3(overlay_f(base.x, blend.x), overlay_f(base.y, blend.y), overlay_f(base.z, blend.z)) + (1.0 - opacity) * blend;
+float overlay(float base, float blend, float opacity) {
+	return opacity * overlay_f(base, blend) + (1.0 - opacity) * blend;
 }
 
 float burn_f(float base, float blend) {
 	return (blend == 0.0) ? blend : max((1.0 - ((1.0 - base) / blend)), 0.0);
 }
 
-vec3 burn(vec3 base, vec3 blend, float opacity) {
-	return opacity * vec3(burn_f(base.x, blend.x), burn_f(base.y, blend.y), burn_f(base.z, blend.z)) + (1.0 - opacity) * blend;
+float burn(float base, float blend, float opacity) {
+	return opacity * burn_f(base, blend) + (1.0 - opacity) * blend;
 }
 
 float dodge_f(float base, float blend) {
 	return (blend == 1.0) ? blend : min(base / (1.0 - blend), 1.0);
 }
 
-vec3 dodge(vec3 base, vec3 blend, float opacity) {
-	return opacity * vec3(dodge_f(base.x, blend.x), dodge_f(base.y, blend.y), dodge_f(base.z, blend.z)) + (1.0 - opacity) * blend;
+float dodge(float base, float blend, float opacity) {
+    return opacity * dodge_f(base, blend) + (1.0 - opacity) * blend;
 }
 
 vec3 normal(vec3 base, vec3 blend, float opacity) {
@@ -464,13 +467,13 @@ void main() {
 		float mingle_overlay_burn_input_2 = fbm_2d_perlin((mingle_dodge_warp_2), _size, grunge_iterations, persistence, offset, seed.perlin_seed_5);
 		float mingle_overlay_dodge_input_1 = fbm_2d_perlin((blend_burn_warp_1), _size, grunge_iterations, persistence, offset, seed.perlin_seed_5);
 		float mingle_overlay_dodge_input_2 = fbm_2d_perlin((blend_burn_warp_2), _size, grunge_iterations, persistence, offset, seed.perlin_seed_4);
-		vec3 mingle_overlay_burn = burn(vec3(mingle_overlay_burn_input_1), vec3(mingle_overlay_burn_input_2), mingle_dodge_opacity_adjust);
-		vec3 mingle_overlay_dodge = dodge(vec3(mingle_overlay_dodge_input_1), vec3(mingle_overlay_dodge_input_2), mingle_burn_opacity_adjust);
+		float mingle_overlay_burn = burn(mingle_overlay_burn_input_1, mingle_overlay_burn_input_2, mingle_dodge_opacity_adjust);
+    	float mingle_overlay_dodge = dodge(mingle_overlay_dodge_input_1, mingle_overlay_dodge_input_2, mingle_burn_opacity_adjust);
 		float mingle_overlay_opacity_adjust_1 = mingle_opacity * smoothstep(mingle_step - params.mingle_smooth, mingle_step + params.mingle_smooth, fbm_3);
-		vec3 mingle_overlay_output_1 = overlay(mingle_overlay_burn, mingle_overlay_dodge, mingle_overlay_opacity_adjust_1);
+		float mingle_overlay_output_1 = overlay(mingle_overlay_burn, mingle_overlay_dodge, mingle_overlay_opacity_adjust_1);
 		
-		vec3 grunge_texture = clamp((mingle_overlay_output_1 - vec3(params.tone_value)) / params.tone_width + vec3(0.5), vec3(0.0), vec3(1.0));
-		imageStore(grunge_buffer, ivec2(pixel), vec4(grunge_texture, 1.0));
+		float grunge_texture = clamp((mingle_overlay_output_1 - params.tone_value) / params.tone_width + 0.5, 0.0, 1.0);
+		imageStore(grunge_buffer, ivec2(pixel), vec4(vec3(grunge_texture), 1.0));
 	}
 
 	if (params.stage == 1.0) { // Generate base brick pattern, brick & mortar masks, albedo texture & mortar b-noise texture
@@ -530,14 +533,14 @@ void main() {
 		ivec2 transformed_pixel = ivec2(transformed_uv * _texture_size);
 
 		// Load from the image buffer using transformed coordinates to align with brick pattern, blend to darken some areas and then invert to give final weathered texture for bricks.
-		vec4 grunge_pattern = imageLoad(grunge_buffer, transformed_pixel);
-		vec3 brick_grunge_texture = 1.0 - multiply(vec3(random_col_r), grunge_pattern.rgb, grunge_blend_opacity);
+		float grunge_pattern = imageLoad(grunge_buffer, transformed_pixel).r;
+		vec3 brick_grunge_texture = 1.0 - multiply(vec3(random_col_r), vec3(grunge_pattern), grunge_blend_opacity);
 
 		// Final blend of all the 'physical' characteristics into a base greyscale texture to be used to generate normal, roughness and occlusion maps.
 		vec3 base_surface_texture = normal(mortar_noise, brick_grunge_texture, brick_mask);
 		imageStore(rgba32f_buffer, ivec2(pixel), vec4(base_surface_texture, 1.0));
 
-		float brick_damage_perlin = fbm_2d_perlin(uv, vec2(damage_scale_x, damage_scale_y), int(damage_iterations), damage_persistence, damage_offset, seed.perlin_seed_6);
+		float brick_damage_perlin = fbm_2d_perlin(uv, vec2(params.damage_scale_x, params.damage_scale_y), int(params.damage_iterations), params.damage_persistence, damage_offset, seed.perlin_seed_6);
 		imageStore(noise_buffer, ivec2(pixel), vec4(vec3(brick_damage_perlin), 1.0));
 	}
 

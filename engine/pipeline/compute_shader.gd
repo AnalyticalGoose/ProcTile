@@ -103,6 +103,7 @@ var mingle_warp_strength : float = 2.0
 var b_noise_contrast : float = 0.50
 
 # temp - will need to be bound to the call....
+var pattern : float = 1.0
 var repeat : float = 1.0
 var rows : float = 10.0
 var columns : float = 5.0
@@ -110,6 +111,12 @@ var row_offset : float = 0.5
 var mortar : float = 3.0
 var bevel : float = 5.0
 var rounding : float = 0.0
+
+var damage_scale_x : float = 10.00
+var damage_scale_y : float = 15.00
+var damage_iterations : float = 3.0
+var damage_persistence : float = 0.50;
+
 var stage : float = 0.0
 var max_stage : float = 3.0
 
@@ -118,7 +125,7 @@ var stage_1 : bool = false
 
 @warning_ignore("return_value_discarded")
 func _render_process() -> void:
-	push_constant.set(13, stage)
+	push_constant.set(18, stage)
 	
 	if stage != max_stage:
 			stage += 1
@@ -219,8 +226,8 @@ func _init_compute(_texture_size : Vector2i, shader_path : String) -> void:
 		base_texture_sets[i] = _create_uniform_set(base_textures_rds[i])
 	
 	for i : int in range(buffer_rds.size()):
-		if i == 1:
-			_create_image_buffer()
+		if i == 1 or i == 4:
+			_create_image_buffer(i)
 		else:
 			buffer_rds[i] = rd.texture_create(tf, RDTextureView.new(), [])
 			var err : Error = rd.texture_clear(buffer_rds[i], Color(0.0, 0.0, 0.0, 0.0), 0, 1, 0, 1)
@@ -267,6 +274,7 @@ func _init_compute(_texture_size : Vector2i, shader_path : String) -> void:
 func _create_push_constant() -> PackedFloat32Array:
 	var pc : PackedFloat32Array = PackedFloat32Array()
 
+	pc.push_back(pattern)
 	pc.push_back(rows)
 	pc.push_back(columns)
 	pc.push_back(row_offset)
@@ -287,17 +295,15 @@ func _create_push_constant() -> PackedFloat32Array:
 	#pc.push_back(b_noise_brightness)
 	pc.push_back(b_noise_contrast)
 	
+	pc.push_back(damage_scale_x)
+	pc.push_back(damage_scale_y)
+	pc.push_back(damage_iterations)
+	pc.push_back(damage_persistence)
+
 	pc.push_back(texture_size.x)
-	
-	pc.push_back(0.0)
-	pc.push_back(0.0)
-	#pc.push_back(0.0)
-	#pc.push_back(0.0)
-	#pc.push_back(0.0)
-	#pc.push_back(0.0)
-	
 	pc.push_back(stage)
 	
+	pc.push_back(0.0)
 	return pc
 
 
@@ -311,14 +317,14 @@ func _create_uniform_set(texture_rd : RID) -> RID:
 	return rd.uniform_set_create([uniform], shader, 0)
 	
 
-func _create_image_buffer() -> void:
+func _create_image_buffer(i : int) -> void:
 	var tf : RDTextureFormat = TextureFormat.get_r16f(texture_size)
 	
-	buffer_rds[1] = rd.texture_create(tf, RDTextureView.new(), [])
-	var err : Error = rd.texture_clear(buffer_rds[1], Color(0.0, 0.0, 0.0, 0.0), 0, 1, 0, 1)
+	buffer_rds[i] = rd.texture_create(tf, RDTextureView.new(), [])
+	var err : Error = rd.texture_clear(buffer_rds[i], Color(0.0, 0.0, 0.0, 0.0), 0, 1, 0, 1)
 	if err:
 		Logger.puts_error("Failed to clear RDTexture", err)
-	buffer_sets[1] = _create_uniform_set(buffer_rds[1])
+	buffer_sets[i] = _create_uniform_set(buffer_rds[i])
 
 
 func _set_texture_rids() -> void:
