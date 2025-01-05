@@ -3,22 +3,20 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba32f, set = 0, binding = 0) uniform restrict readonly image2D current_buffer;
-layout(rgba32f, set = 1, binding = 0) uniform restrict readonly image2D previous_buffer;
-layout(rgba32f, set = 2, binding = 0) uniform restrict writeonly image2D output_buffer;
+layout(rgba32f, set = 0, binding = 0) uniform image2D albedo_buffer;
+layout(rgba32f, set = 0, binding = 1) uniform image2D occlusion_buffer;
+layout(rgba32f, set = 0, binding = 2) uniform image2D roughness_buffer;
+layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
+layout(rgba32f, set = 0, binding = 4) uniform image2D normal_buffer;
 
-layout(rgba32f, set = 3, binding = 0) uniform restrict image2D albedo_buffer;
-layout(rgba32f, set = 4, binding = 0) uniform restrict image2D roughness_buffer;
-layout(rgba32f, set = 5, binding = 0) uniform restrict image2D normal_buffer;
-layout(rgba32f, set = 6, binding = 0) uniform restrict image2D occlusion_buffer;
 
-layout(rgba32f, set = 7, binding = 0) uniform restrict image2D r16f_buffer_1;
-layout(r16f, set = 8, binding = 0) uniform restrict image2D r16f_buffer_2;
-layout(rgba32f, set = 9, binding = 0) uniform restrict image2D rgba32f_buffer;
-layout(rgba32f, set = 10, binding = 0) uniform restrict image2D noise_buffer;
-layout(r16f, set = 11, binding = 0) uniform restrict image2D grunge_buffer;
+layout(rgba32f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_2;
+layout(rgba32f, set = 1, binding = 2) uniform image2D rgba32f_buffer;
+layout(rgba32f, set = 1, binding = 3) uniform image2D noise_buffer;
+layout(r16f, set = 1, binding = 4) uniform image2D grunge_buffer;
 
-layout(set = 12, binding = 0, std430) buffer restrict readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer readonly Seeds {
 	float brick_colour_seed;
 	float perlin_seed_1;
 	float perlin_seed_2;
@@ -29,15 +27,15 @@ layout(set = 12, binding = 0, std430) buffer restrict readonly Seeds {
 	float b_noise_seed;
 } seed;
 
-layout(set = 13, binding = 0, std430) buffer restrict readonly GradientOffsets {
+layout(set = 3, binding = 0, std430) buffer readonly GradientOffsets {
     float gradient_offsets[];
 };
 
-layout(set = 14, binding = 0, std430) buffer restrict readonly GradientColours {
+layout(set = 4, binding = 0, std430) buffer readonly GradientColours {
     vec4 gradient_col[];
 };
 
-layout(set = 15, binding = 0, std430) buffer restrict readonly MortarColour {
+layout(set = 5, binding = 0, std430) buffer readonly MortarColour {
 	vec4 mortar_col;
 };
 

@@ -9,7 +9,7 @@ var compute_shader : ComputeShader
 
 
 # TODO: refactor these out to database etc
-var texture_size : Vector2i = Vector2i(1024 * 4, 1024 * 4)
+var texture_size : int = 1024 * 4
 var shader_path : String = "res://materials/brick_wall/brick_wall_compute.glsl"
 
 
@@ -26,9 +26,10 @@ func _process(_delta: float) -> void:
 	RenderingServer.call_on_render_thread(compute_shader._render_process)
 
 
-func create_compute_shader() -> ComputeShader:
+func create_compute_shader(shader_data : Array) -> ComputeShader:
 	compute_shader = ComputeShader.new()
 	compute_shader.renderer = self
+	compute_shader.init_data = shader_data
 	return compute_shader
 
 
@@ -39,9 +40,11 @@ func set_shader_material() -> void:
 	#compute_shader.texture = material.get_shader_parameter("albedo_input")
 	
 	compute_shader.albedo = material.get_shader_parameter("albedo_input")
-	compute_shader.roughness = material.get_shader_parameter("roughness_input")
-	compute_shader.normal = material.get_shader_parameter("normal_input")
 	compute_shader.occlusion = material.get_shader_parameter("occlusion_input")
+	compute_shader.roughness = material.get_shader_parameter("roughness_input")
+	compute_shader.metallic = material.get_shader_parameter("metallic_input")
+	compute_shader.normal = material.get_shader_parameter("normal_input")
+
 	RenderingServer.call_on_render_thread(compute_shader._set_texture_rids)
 	
 	set_process(true)

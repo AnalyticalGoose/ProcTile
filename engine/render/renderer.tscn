@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://5heo5h26pf75"]
+[gd_scene load_steps=11 format=3 uid="uid://5heo5h26pf75"]
 
 [ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" path="res://materials/brick_wall/brick_wall_shader.gdshader" id="1_iqibk"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_h5fst"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_ak5p6"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_blo77"]
 
@@ -16,9 +18,10 @@ resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_iqibk")
 shader_parameter/albedo_input = SubResource("Texture2DRD_h5fst")
-shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
-shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
 shader_parameter/occlusion_input = SubResource("Texture2DRD_u8qvg")
+shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
+shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
+shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_eq8u2"]
 orientation = 2
