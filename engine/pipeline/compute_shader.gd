@@ -7,6 +7,7 @@ enum tf_size {
 }
 
 enum storage_types {
+	SEEDS,
 	FLOAT32,
 	VEC4,
 }
@@ -31,14 +32,14 @@ var base_textures_rds : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
 var base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
 
 
-var base_texture_uniform_set 
-var image_buffer_uniform_set
-var storage_buffer_uniform_set
+var base_texture_uniform_set : RID
+var image_buffer_uniform_set : RID
+#var storage_buffer_uniform_set
 ## where is this set? And how will it be sent / retrieved on init?
 ## user settings perhaps?
-var texture : Texture2DRD
+#var texture : Texture2DRD
 
-var next_texture : int = 0
+#var next_texture : int = 0
 
 var rd : RenderingDevice
 var shader : RID
@@ -58,61 +59,64 @@ var buffer_sets : Array[RID]
 var uniform_rds : Array[RID] 
 var uniform_sets : Array[RID] 
 
-## temp - grunge params
-var tone_value : float = 0.80
-var tone_width : float = 0.48
+### temp - grunge params
+#var tone_value : float = 0.80
+#var tone_width : float = 0.48
+#
+#var brick_colour_seed : float = 0.064537466
+#
+#var perlin_seed_1 : float = 0.612547636
+#var perlin_seed_2 : float = 0.587890089
+#var perlin_seed_3 : float = 0.509320438
+#var perlin_seed_4 : float = 0.941759408
+#var perlin_seed_5 : float = 0.459213525
+#
+#var perlin_seed_6 : float = 0.762268782
+#var b_noise_seed : float = 0.00
+##
+#var seeds_array : Array[float] = [
+		#brick_colour_seed, perlin_seed_1, perlin_seed_2, perlin_seed_3, 
+		#perlin_seed_4, perlin_seed_5, perlin_seed_6, b_noise_seed,
+#]
 
-var brick_colour_seed : float = 0.064537466
+var seeds_array : Array
 
-var perlin_seed_1 : float = 0.612547636
-var perlin_seed_2 : float = 0.587890089
-var perlin_seed_3 : float = 0.509320438
-var perlin_seed_4 : float = 0.941759408
-var perlin_seed_5 : float = 0.459213525
-
-var perlin_seed_6 : float = 0.762268782
-var b_noise_seed : float = 0.00
-
-var seeds_array : Array[float] = [
-		brick_colour_seed, perlin_seed_1, perlin_seed_2, perlin_seed_3, 
-		perlin_seed_4, perlin_seed_5, perlin_seed_6, b_noise_seed,
-]
-
-var seeds : PackedByteArray = PackedFloat32Array(seeds_array).to_byte_array()
-
-		
-var mortar_col : PackedByteArray = PackedVector4Array([Vector4(1.00, 0.93, 0.81, 1.00)]).to_byte_array()
-	
-var gradient_offset_array : Array[float] = [0.00, 0.15, 0.34, 0.48, 0.61, 0.82, 1.00]
-var gradient_offsets : PackedByteArray = PackedFloat32Array(gradient_offset_array).to_byte_array()
-
-var gradient_colour_array : Array[Vector4] = [
-		Vector4(0.78, 0.36, 0.18, 1.0),
-		Vector4(0.76, 0.34, 0.17, 1.0),
-		Vector4(0.82, 0.40, 0.24, 1.0),
-		Vector4(0.76, 0.36, 0.21, 1.0),
-		Vector4(0.80, 0.40, 0.24, 1.0),
-		Vector4(0.82, 0.41, 0.19, 1.0),
-		Vector4(0.89, 0.49, 0.24, 1.0),
-	]
-var gradient_colours : PackedByteArray = PackedVector4Array(gradient_colour_array).to_byte_array()
-
-
-var mingle_smooth : float = 0.5
-var mingle_warp_strength : float = 2.0
-var b_noise_contrast : float = 0.50
-var pattern : float = 0.0
-var repeat : float = 1.0
-var rows : float = 10.0
-var columns : float = 5.0
-var row_offset : float = 0.5
-var mortar : float = 3.0
-var bevel : float = 5.0
-var rounding : float = 0.0
-var damage_scale_x : float = 10.00
-var damage_scale_y : float = 15.00
-var damage_iterations : float = 3.0
-var damage_persistence : float = 0.50;
+#
+#var seeds : PackedByteArray = PackedFloat32Array(seeds_array).to_byte_array()
+#
+		#
+#var mortar_col : PackedByteArray = PackedVector4Array([Vector4(1.00, 0.93, 0.81, 1.00)]).to_byte_array()
+	#
+#var gradient_offset_array : Array[float] = [0.00, 0.15, 0.34, 0.48, 0.61, 0.82, 1.00]
+#var gradient_offsets : PackedByteArray = PackedFloat32Array(gradient_offset_array).to_byte_array()
+#
+#var gradient_colour_array : Array[Vector4] = [
+		#Vector4(0.78, 0.36, 0.18, 1.0),
+		#Vector4(0.76, 0.34, 0.17, 1.0),
+		#Vector4(0.82, 0.40, 0.24, 1.0),
+		#Vector4(0.76, 0.36, 0.21, 1.0),
+		#Vector4(0.80, 0.40, 0.24, 1.0),
+		#Vector4(0.82, 0.41, 0.19, 1.0),
+		#Vector4(0.89, 0.49, 0.24, 1.0),
+	#]
+#var gradient_colours : PackedByteArray = PackedVector4Array(gradient_colour_array).to_byte_array()
+#
+#
+#var mingle_smooth : float = 0.5
+#var mingle_warp_strength : float = 2.0
+#var b_noise_contrast : float = 0.50
+#var pattern : float = 0.0
+#var repeat : float = 1.0
+#var rows : float = 10.0
+#var columns : float = 5.0
+#var row_offset : float = 0.5
+#var mortar : float = 3.0
+#var bevel : float = 5.0
+#var rounding : float = 0.0
+#var damage_scale_x : float = 10.00
+#var damage_scale_y : float = 15.00
+#var damage_iterations : float = 3.0
+#var damage_persistence : float = 0.50;
 var stage : float = 0.0
 var max_stage : float = 4.0
 
@@ -215,8 +219,8 @@ func _init_compute(size : int, shader_path : String) -> void:
 	base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
 	base_textures_rds[4] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
 
-	var base_texture_uniforms = []
-	for i in range(base_texture_sets.size()):
+	var base_texture_uniforms : Array[RDUniform] = []
+	for i : int in range(5):
 		var uniform : RDUniform = RDUniform.new()
 		uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		uniform.binding = i
@@ -246,8 +250,8 @@ func _init_compute(size : int, shader_path : String) -> void:
 				buffer_tf = rgba32f_tf
 		buffer_rds[i] = rd.texture_create(buffer_tf, RDTextureView.new(), [])
 
-	var image_buffer_uniforms = []
-	for i in num_image_buffers:
+	var image_buffer_uniforms : Array[RDUniform] = []
+	for i : int in num_image_buffers:
 		var uniform : RDUniform = RDUniform.new()
 		uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		uniform.binding = i
@@ -273,6 +277,9 @@ func _init_compute(size : int, shader_path : String) -> void:
 		var buffer_data : Array = storage_buffer_data[i]
 		var packed_data : PackedByteArray
 		match storage_buffer_types[i]:
+			storage_types.SEEDS:
+				seeds_array = buffer_data
+				packed_data = PackedFloat32Array(buffer_data).to_byte_array()
 			storage_types.FLOAT32:
 				packed_data = PackedFloat32Array(buffer_data).to_byte_array()
 			storage_types.VEC4:
