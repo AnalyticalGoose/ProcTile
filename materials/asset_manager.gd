@@ -14,6 +14,6 @@ func _on_asset_selector_item_activated(index: int) -> void:
 		
 	var asset_data : Dictionary = DataManager.material_data[index]
 	
-	compute_shader = renderer.create_compute_shader(asset_data.shader_data)
-	renderer.set_shader_material()
+	compute_shader = renderer.create_compute_shader()
+	renderer.set_shader_material(asset_data.shader_data)
 	params_manager._build_params_ui(asset_data.ui_elements, compute_shader)
