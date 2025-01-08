@@ -2,6 +2,7 @@ extends Node
 
 var material_data : Array[Dictionary]
 
+
 func _ready() -> void:
 	var material_database : Database = Database.new()
 	_init_schema(material_database)

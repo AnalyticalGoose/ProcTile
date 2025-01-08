@@ -1,0 +1,243 @@
+[gd_scene load_steps=3 format=3 uid="uid://ci4s2srdlp13f"]
+
+[ext_resource type="Script" path="res://ui/menus/export/export.gd" id="1_2taha"]
+[ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
+
+[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "button_container", "progress_bar")]
+title = "Export"
+initial_position = 1
+size = Vector2i(544, 400)
+theme = ExtResource("1_slfu6")
+script = ExtResource("1_2taha")
+file_dialog = NodePath("FileDialog")
+directory_btn = NodePath("MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn")
+template_options = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateButton")
+button_container = NodePath("MarginContainer/ButtonContainer")
+progress_bar = NodePath("MarginContainer/ProgressBar")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a Directory"
+initial_position = 1
+size = Vector2i(600, 400)
+ok_button_text = "Select Current Folder"
+dialog_hide_on_ok = true
+file_mode = 2
+access = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+offset_right = 544.0
+offset_bottom = 400.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="OutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="DirectoryLabel" type="Label" parent="MarginContainer/VBoxContainer/OutputContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Output directory"
+
+[node name="DirectoryBtn" type="Button" parent="MarginContainer/VBoxContainer/OutputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "C:/Users/Harry/Desktop/Painter/Brick_Wall"
+
+[node name="TemplateContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="TemplateLabel" type="Label" parent="MarginContainer/VBoxContainer/TemplateContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Output template"
+
+[node name="TemplateButton" type="OptionButton" parent="MarginContainer/VBoxContainer/TemplateContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 1
+item_count = 2
+popup/item_0/text = "glTF PBR (Packed ORM)"
+popup/item_1/text = "glTF PBR (Split ORM)"
+popup/item_1/id = 1
+
+[node name="ResolutionContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="ShaderResLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Shader Resolution"
+
+[node name="ShaderResBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 3
+item_count = 4
+popup/item_0/text = "512"
+popup/item_1/text = "1024"
+popup/item_1/id = 1
+popup/item_2/text = "2048"
+popup/item_2/id = 2
+popup/item_3/text = "4096"
+popup/item_3/id = 3
+
+[node name="TextureResLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Output Resolution"
+
+[node name="TextureResBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 1
+item_count = 4
+popup/item_0/text = "512"
+popup/item_1/text = "1024"
+popup/item_1/id = 1
+popup/item_2/text = "2048"
+popup/item_2/id = 2
+popup/item_3/text = "4096"
+popup/item_3/id = 3
+
+[node name="FormatInterpContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="FormatLabel" type="Label" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Texture Format"
+
+[node name="FormatBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "png"
+popup/item_1/text = "jpg"
+popup/item_1/id = 1
+
+[node name="InterpolationLabel" type="Label" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Interpolation"
+
+[node name="InterpolationBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 4
+item_count = 5
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Bilinear"
+popup/item_1/id = 1
+popup/item_2/text = "Cubic"
+popup/item_2/id = 2
+popup/item_3/text = "Trilinear"
+popup/item_3/id = 3
+popup/item_4/text = "Lanzcos"
+popup/item_4/id = 4
+
+[node name="NameContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/NameContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Filename Prefix"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/NameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "brick_wall"
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "brick_wall_baseColor.png"
+horizontal_alignment = 2
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "brick_wall_occlusion.png
+"
+horizontal_alignment = 2
+
+[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "brick_wall_roughness.png"
+horizontal_alignment = 2
+
+[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "brick_wall_metallic.png"
+horizontal_alignment = 2
+
+[node name="Label5" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "brick_wall_normal.png"
+horizontal_alignment = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+alignment = 2
+
+[node name="CancelBtn" type="Button" parent="MarginContainer/ButtonContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="SaveBtn" type="Button" parent="MarginContainer/ButtonContainer"]
+layout_mode = 2
+text = "Save Settings"
+
+[node name="ExportBtn" type="Button" parent="MarginContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = " Export "
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 8
+step = 1.0
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="close_requested" from="FileDialog" to="." method="_on_file_dialog_close_requested"]
+[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn" to="." method="_on_directory_btn_pressed"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateButton" to="." method="_on_template_button_item_selected"]
+[connection signal="pressed" from="MarginContainer/ButtonContainer/ExportBtn" to="." method="_on_export_button_pressed"]

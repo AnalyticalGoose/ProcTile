@@ -1,8 +1,11 @@
-[gd_scene load_steps=26 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=30 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
 [ext_resource type="Script" path="res://materials/asset_manager.gd" id="2_iuucp"]
 [ext_resource type="Script" path="res://scripts/data_bar.gd" id="2_pqncx"]
+[ext_resource type="Script" path="res://ui/menus/menu_manager.gd" id="2_pyqb2"]
+[ext_resource type="Script" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
+[ext_resource type="PackedScene" uid="uid://ci4s2srdlp13f" path="res://ui/menus/export/export.tscn" id="3_34tcw"]
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
@@ -13,6 +16,17 @@
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_line.tscn" id="9_b1bll"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.133196, 0.133196, 0.133196, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
+border_blend = true
+corner_detail = 1
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ya5vo"]
 size = Vector2(20, 20)
@@ -55,54 +69,93 @@ anchor_right = 1.0
 offset_bottom = 30.0
 grow_horizontal = 2
 theme = ExtResource("1_x425p")
+theme_override_styles/panel = SubResource("StyleBoxFlat_deoo3")
 
-[node name="NavigationBar" type="HBoxContainer" parent="NavigationBar"]
+[node name="NavigationMenu" type="HBoxContainer" parent="NavigationBar" node_paths=PackedStringArray("file_menu")]
 layout_mode = 2
-theme_override_constants/separation = 15
+theme = ExtResource("1_x425p")
+script = ExtResource("2_pyqb2")
+file_menu = NodePath("FileMenuButton")
 
-[node name="FileMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
+[node name="FileMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 layout_mode = 2
 theme = ExtResource("1_x425p")
 text = "File"
-item_count = 3
-popup/item_0/text = "TEST1"
-popup/item_0/separator = true
-popup/item_1/text = "TEST2"
+flat = false
+switch_on_hover = true
+item_count = 13
+popup/item_0/text = "     New..."
+popup/item_0/disabled = true
+popup/item_1/text = "     Open..."
 popup/item_1/id = 1
-popup/item_1/separator = true
-popup/item_2/text = "TEST3"
+popup/item_1/disabled = true
+popup/item_2/text = "     Recent"
 popup/item_2/id = 2
-popup/item_2/separator = true
+popup/item_2/disabled = true
+popup/item_3/id = 3
+popup/item_3/disabled = true
+popup/item_3/separator = true
+popup/item_4/text = "     Save"
+popup/item_4/id = 3
+popup/item_4/disabled = true
+popup/item_5/text = "     Save as..."
+popup/item_5/id = 4
+popup/item_5/disabled = true
+popup/item_6/id = 6
+popup/item_6/disabled = true
+popup/item_6/separator = true
+popup/item_7/text = "     Import material..."
+popup/item_7/id = 5
+popup/item_7/disabled = true
+popup/item_8/text = "     Import mesh..."
+popup/item_8/id = 6
+popup/item_8/disabled = true
+popup/item_9/id = 9
+popup/item_9/disabled = true
+popup/item_9/separator = true
+popup/item_10/text = "     Export..."
+popup/item_10/id = 7
+popup/item_10/disabled = true
+popup/item_11/id = 11
+popup/item_11/disabled = true
+popup/item_11/separator = true
+popup/item_12/text = "     Quit"
+popup/item_12/id = 8
+script = ExtResource("2_y3rwe")
+export_menu_scene = ExtResource("3_34tcw")
 
-[node name="EditMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
+[node name="EditMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 layout_mode = 2
 theme = ExtResource("1_x425p")
-text = "Edit
-"
-item_count = 3
-popup/item_0/text = "TEST1"
-popup/item_0/separator = true
-popup/item_1/text = "TEST2"
+text = "Edit"
+flat = false
+switch_on_hover = true
+item_count = 13
+popup/item_0/text = "New..."
+popup/item_1/text = "Open..."
 popup/item_1/id = 1
-popup/item_1/separator = true
-popup/item_2/text = "TEST3"
+popup/item_2/text = "Recent"
 popup/item_2/id = 2
-popup/item_2/separator = true
-
-[node name="HelpMenu" type="MenuButton" parent="NavigationBar/NavigationBar"]
-layout_mode = 2
-theme = ExtResource("1_x425p")
-text = "Help
-"
-item_count = 3
-popup/item_0/text = "TEST1"
-popup/item_0/separator = true
-popup/item_1/text = "TEST2"
-popup/item_1/id = 1
-popup/item_1/separator = true
-popup/item_2/text = "TEST3"
-popup/item_2/id = 2
-popup/item_2/separator = true
+popup/item_3/id = 3
+popup/item_3/separator = true
+popup/item_4/text = "Save"
+popup/item_4/id = 4
+popup/item_5/text = "Save as..."
+popup/item_5/id = 5
+popup/item_6/id = 6
+popup/item_6/separator = true
+popup/item_7/text = "Import material..."
+popup/item_7/id = 7
+popup/item_8/text = "Import mesh..."
+popup/item_8/id = 8
+popup/item_9/id = 9
+popup/item_9/separator = true
+popup/item_10/text = "Export..."
+popup/item_10/id = 10
+popup/item_11/id = 11
+popup/item_11/separator = true
+popup/item_12/text = "Quit"
+popup/item_12/id = 12
 
 [node name="LeftOptions" type="PanelContainer" parent="."]
 z_index = -1
@@ -124,11 +177,6 @@ offset_right = -330.0
 offset_bottom = 65.0
 grow_horizontal = 2
 theme = ExtResource("1_x425p")
-
-[node name="Test" type="HBoxContainer" parent="TestTopBar"]
-layout_mode = 2
-theme_override_constants/separation = 15
-alignment = 2
 
 [node name="RightOptions" type="PanelContainer" parent="."]
 z_index = -1
@@ -188,7 +236,7 @@ theme_override_font_sizes/font_size = 12
 text = "Version: 0.1.0"
 horizontal_alignment = 2
 
-[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_manager")]
+[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_manager", "menu_manager")]
 z_index = -2
 layout_mode = 2
 offset_left = 30.0
@@ -199,6 +247,7 @@ theme = ExtResource("1_x425p")
 theme_type_variation = &"LPanelContainer"
 script = ExtResource("2_iuucp")
 params_manager = NodePath("../ParamsWindow")
+menu_manager = NodePath("../NavigationBar/NavigationMenu")
 
 [node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
 layout_mode = 2

@@ -9,6 +9,7 @@ extends RefCounted
 enum tf_size {
 	R16F,
 	RGBA32F,
+	RGB32F,
 }
 
 enum storage_types {
@@ -59,13 +60,14 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	
 	# Create texture formats
 	var r16f_tf : RDTextureFormat = TextureFormat.get_r16f(texture_size)
+	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
 	_base_textures_rds[0] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
 	_base_textures_rds[1] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
 	_base_textures_rds[2] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
 	_base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
-	_base_textures_rds[4] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
+	_base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 
 	var base_texture_uniforms : Array[RDUniform] = []
 	for i : int in range(5):
@@ -191,11 +193,9 @@ func _render_process() -> void:
 	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
 	rd.compute_list_bind_uniform_set(compute_list, _base_texture_uniform_set, 0)
 	rd.compute_list_bind_uniform_set(compute_list, _image_buffer_uniform_set, 1)
-
-	rd.compute_list_bind_uniform_set(compute_list, _uniform_sets[0], 2)
-	rd.compute_list_bind_uniform_set(compute_list, _uniform_sets[1], 3)
-	rd.compute_list_bind_uniform_set(compute_list, _uniform_sets[2], 4)
-	rd.compute_list_bind_uniform_set(compute_list, _uniform_sets[3], 5)
+	
+	for i : int in _uniform_sets.size():
+		rd.compute_list_bind_uniform_set(compute_list, _uniform_sets[i], i + 2)
 	
 	rd.compute_list_set_push_constant(compute_list, packed_byte_array, packed_byte_array.size())
 

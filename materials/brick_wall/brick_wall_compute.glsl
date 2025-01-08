@@ -7,7 +7,7 @@ layout(rgba32f, set = 0, binding = 0) uniform image2D albedo_buffer;
 layout(rgba32f, set = 0, binding = 1) uniform image2D occlusion_buffer;
 layout(rgba32f, set = 0, binding = 2) uniform image2D roughness_buffer;
 layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba32f, set = 0, binding = 4) uniform image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 
 
 layout(rgba32f, set = 1, binding = 0) uniform image2D r16f_buffer_1;

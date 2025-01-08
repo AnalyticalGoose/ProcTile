@@ -1,6 +1,7 @@
 extends PanelContainer
 
 @export var params_manager : ParamsManager
+@export var menu_manager : HBoxContainer
 
 var compute_shader : ComputeShader
 var renderer : Renderer
@@ -17,3 +18,6 @@ func _on_asset_selector_item_activated(index: int) -> void:
 	compute_shader = renderer.create_compute_shader()
 	renderer.set_shader_material(asset_data.shader_data)
 	params_manager._build_params_ui(asset_data.ui_elements, compute_shader)
+
+	@warning_ignore("unsafe_method_access")
+	menu_manager.enable_export()
