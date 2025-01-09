@@ -4,22 +4,22 @@ class_name Renderer
 var compute_shader : ComputeShader
 
 
-# TODO: programme is almost entirely memory bandwidth limited, seek ways to lower throughput requirements:
-## - Explore using smaller textures where possible r16 instead of rgba32 for example?
-
 
 # TODO: refactor these out to database etc
-var texture_size : int = 1024 * 4
+var texture_size : int
 var shader_path : String = "res://materials/brick_wall/brick_wall_compute.glsl"
 
 
 # TODO: functions for cleaning up compute resources:
-# _free_compute_resources()
-# Review bindings to render thread calls, static are not likely to be needed
+func free_compute_resources() -> void:
+	set_process(false)
+	compute_shader = null
+
 
 
 func _ready() -> void:
 	set_process(false)
+	texture_size = DataManager.settings_data[0].shader_resolution
 
 
 func _process(_delta: float) -> void:

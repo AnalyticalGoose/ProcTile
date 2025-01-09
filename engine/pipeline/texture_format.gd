@@ -1,5 +1,5 @@
-extends RefCounted
 class_name TextureFormat
+extends RefCounted
 
 
 static func get_r16f(texture_size : int) -> RDTextureFormat:

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://ui/menus/export/export.gd" id="1_2taha"]
 [ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
 
-[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "button_container", "progress_bar")]
+[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "resolution_btn", "interp_label", "interp_btn", "filename_labels_container", "button_container", "progress_bar")]
 title = "Export"
 initial_position = 1
 size = Vector2i(544, 400)
@@ -12,6 +12,10 @@ script = ExtResource("1_2taha")
 file_dialog = NodePath("FileDialog")
 directory_btn = NodePath("MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn")
 template_options = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateButton")
+resolution_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn")
+interp_label = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationLabel")
+interp_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn")
+filename_labels_container = NodePath("MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer")
 button_container = NodePath("MarginContainer/ButtonContainer")
 progress_bar = NodePath("MarginContainer/ProgressBar")
 
@@ -67,52 +71,30 @@ popup/item_1/id = 1
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 
-[node name="ShaderResLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Shader Resolution"
-
-[node name="ShaderResBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-selected = 3
-item_count = 4
-popup/item_0/text = "512"
-popup/item_1/text = "1024"
-popup/item_1/id = 1
-popup/item_2/text = "2048"
-popup/item_2/id = 2
-popup/item_3/text = "4096"
-popup/item_3/id = 3
-
-[node name="TextureResLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+[node name="ResolutionLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Output Resolution"
 
-[node name="TextureResBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+[node name="ResolutionBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-selected = 1
 item_count = 4
 popup/item_0/text = "512"
+popup/item_0/id = 1
 popup/item_1/text = "1024"
-popup/item_1/id = 1
+popup/item_1/id = 2
 popup/item_2/text = "2048"
-popup/item_2/id = 2
+popup/item_2/id = 4
 popup/item_3/text = "4096"
-popup/item_3/id = 3
+popup/item_3/id = 8
 
-[node name="FormatInterpContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(500, 0)
-layout_mode = 2
-
-[node name="FormatLabel" type="Label" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+[node name="FormatLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Texture Format"
 
-[node name="FormatBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+[node name="FormatBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 selected = 0
@@ -121,12 +103,16 @@ popup/item_0/text = "png"
 popup/item_1/text = "jpg"
 popup/item_1/id = 1
 
-[node name="InterpolationLabel" type="Label" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+[node name="InterpolationContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="InterpolationLabel" type="Label" parent="MarginContainer/VBoxContainer/InterpolationContainer"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Interpolation"
 
-[node name="InterpolationBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/FormatInterpContainer"]
+[node name="InterpolationBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/InterpolationContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 selected = 4
@@ -164,11 +150,11 @@ theme_override_constants/margin_bottom = 0
 layout_mode = 2
 alignment = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="FilenameLabelsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -176,7 +162,7 @@ theme_override_font_sizes/font_size = 12
 text = "brick_wall_baseColor.png"
 horizontal_alignment = 2
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -185,7 +171,7 @@ text = "brick_wall_occlusion.png
 "
 horizontal_alignment = 2
 
-[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -193,7 +179,7 @@ theme_override_font_sizes/font_size = 12
 text = "brick_wall_roughness.png"
 horizontal_alignment = 2
 
-[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -201,7 +187,7 @@ theme_override_font_sizes/font_size = 12
 text = "brick_wall_metallic.png"
 horizontal_alignment = 2
 
-[node name="Label5" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label5" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -240,4 +226,8 @@ step = 1.0
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn" to="." method="_on_directory_btn_pressed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateButton" to="." method="_on_template_button_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn" to="." method="_on_resolution_btn_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn" to="." method="_on_format_btn_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn" to="." method="_on_interpolation_btn_item_selected"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/NameContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/ButtonContainer/ExportBtn" to="." method="_on_export_button_pressed"]
