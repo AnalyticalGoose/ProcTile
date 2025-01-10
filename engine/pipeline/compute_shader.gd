@@ -64,9 +64,9 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
-	base_textures_rds[0] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
-	base_textures_rds[1] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
-	base_textures_rds[2] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
+	base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	base_textures_rds[2] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 	base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
 	base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 	base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])

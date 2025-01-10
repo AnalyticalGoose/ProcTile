@@ -1,11 +1,18 @@
 #[compute]
 #version 450
 
+// Mem - 1.91gb
+// S0 - 11fps
+// S1 - 73fps
+// S2 - 58fps
+// S3 - 172fps
+// S4 - 340fps
+
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba32f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba32f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba32f, set = 0, binding = 2) uniform image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
 layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
@@ -606,11 +613,10 @@ void main() {
 
 		// roughness input
 		vec4 inverted_base_surface_texture = 1.0 - base_surface_texture;
-		vec4 roughness_input = vec4(
-			vec3(roughness_out_min) + (inverted_base_surface_texture.rgb - vec3(roughness_in_min)) * 
-			vec3((roughness_out_max - (roughness_out_min)) / (roughness_in_max - (roughness_in_min))), 1.0
-			);
-		imageStore(roughness_buffer, ivec2(pixel), roughness_input);
+
+		float roughness_input = (roughness_out_min) + (inverted_base_surface_texture.r - roughness_in_min) *
+								(roughness_out_max - roughness_out_min) / (roughness_in_max - roughness_in_min);
+		imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness_input), 1.0));
 
 		// normal map input
 		float normal_input = dot(multiply(base_surface_texture.rgb, masked_brick_damage, 0.5), vec3(1.0) / 3.0);
