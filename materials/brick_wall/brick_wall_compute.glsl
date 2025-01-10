@@ -8,7 +8,7 @@ layout(rgba32f, set = 0, binding = 1) uniform image2D occlusion_buffer;
 layout(rgba32f, set = 0, binding = 2) uniform image2D roughness_buffer;
 layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-
+layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
 layout(rgba32f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
 layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_2;
@@ -622,6 +622,9 @@ void main() {
 		vec3 occlusion_input = multiply(blend_bottom, blend_top, 0.80);
 		float occlusion = occlusion_tone_map(occlusion_input.r);
 		imageStore(occlusion_buffer, ivec2(pixel), vec4(vec3(occlusion), 1.0));
+
+		// ORM input
+		imageStore(orm_buffer, ivec2(pixel), vec4(occlusion, roughness_input.r, 0.0, 1.0));
 	}
 
 	if (params.stage == 3.0) {

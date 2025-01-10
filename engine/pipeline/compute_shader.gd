@@ -29,8 +29,9 @@ var metallic : Texture2DRD
 var normal : Texture2DRD
 var seeds_array : Array
 var stage : float = 0.0
+# Albedo, occlusion, roughness, metallic, normal and packed orm
+var base_textures_rds : Array[RID] = [RID(), RID(), RID(), RID(), RID(), RID()] 
 
-var _base_textures_rds : Array[RID] = [RID(), RID(), RID(), RID(), RID()] # Albedo, occlusion, roughness, metallic and normal
 var _uniform_rds : Array[RID] 
 var _uniform_sets : Array[RID] 
 var _buffer_rds : Array[RID]
@@ -63,18 +64,19 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
-	_base_textures_rds[0] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
-	_base_textures_rds[1] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
-	_base_textures_rds[2] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
-	_base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
-	_base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	base_textures_rds[0] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
+	base_textures_rds[1] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
+	base_textures_rds[2] = rd.texture_create(rgba32f_tf, RDTextureView.new(), [])
+	base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
+	base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 
 	var base_texture_uniforms : Array[RDUniform] = []
-	for i : int in range(5):
+	for i : int in range(6):
 		var uniform : RDUniform = RDUniform.new()
 		uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		uniform.binding = i
-		uniform.add_id(_base_textures_rds[i])
+		uniform.add_id(base_textures_rds[i])
 		base_texture_uniforms.append(uniform)
 	_base_texture_uniform_set = rd.uniform_set_create(base_texture_uniforms, shader, 0)
 	
@@ -139,11 +141,11 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 
 
 func set_texture_rids() -> void:
-	albedo.texture_rd_rid = _base_textures_rds[0]
-	occlusion.texture_rd_rid = _base_textures_rds[1]
-	roughness.texture_rd_rid = _base_textures_rds[2]
-	metallic.texture_rd_rid = _base_textures_rds[3]
-	normal.texture_rd_rid = _base_textures_rds[4]
+	albedo.texture_rd_rid = base_textures_rds[0]
+	occlusion.texture_rd_rid = base_textures_rds[1]
+	roughness.texture_rd_rid = base_textures_rds[2]
+	metallic.texture_rd_rid = base_textures_rds[3]
+	normal.texture_rd_rid = base_textures_rds[4]
 
 
 # Update storage buffer where data has been updated, but the buffer size has not been changed.

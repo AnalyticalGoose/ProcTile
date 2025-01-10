@@ -21,3 +21,5 @@ func _on_asset_selector_item_activated(index: int) -> void:
 
 	@warning_ignore("unsafe_method_access")
 	menu_manager.enable_export()
+	
+	renderer.asset_name = asset_data.name

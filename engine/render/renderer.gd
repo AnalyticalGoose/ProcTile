@@ -8,7 +8,7 @@ var compute_shader : ComputeShader
 # TODO: refactor these out to database etc
 var texture_size : int
 var shader_path : String = "res://materials/brick_wall/brick_wall_compute.glsl"
-
+var asset_name : String
 
 # TODO: functions for cleaning up compute resources:
 func free_compute_resources() -> void:
