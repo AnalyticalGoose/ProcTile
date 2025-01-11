@@ -1,12 +1,12 @@
 #[compute]
 #version 450
 
-// Mem - 1.91gb
-// S0 - 11fps
-// S1 - 73fps
-// S2 - 58fps
-// S3 - 172fps
-// S4 - 340fps
+// Heavily inspired by the Material Maker default bricks material
+// https://github.com/RodZill4/material-maker
+
+// Grunge texture ported from leonard7e's layered FBM Perlin noise implementation
+// https://www.materialmaker.org/material?id=76
+
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
@@ -60,10 +60,10 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float mingle_smooth; // Plateau Scale
 	float tone_width; // Blending
 	float b_noise_contrast; // Intensity
-	float damage_scale_x; //= 10.00; // scale
-	float damage_scale_y; //= 15.00;
-	float damage_iterations; //= 3.00; // adds complexity to the damage
-	float damage_persistence; //= 0.50; // intensity
+	float damage_scale_x; // Scale
+	float damage_scale_y;
+	float damage_iterations; // Complexity
+	float damage_persistence; // Intensity
 	float texture_size;
 	float stage;
 } params;
@@ -78,43 +78,45 @@ const float mingle_warp_x = 0.5;
 const float mingle_warp_y = 0.5;
 
 // S1 - Mortar Noise
-const float b_noise_brightness = 0.22; // shifts output curve vertically (brightness)
-const float b_noise_rs = 6.0; // highlights / darklspots strength perhaps? testing needed in engine
-const float b_noise_control_x = 0.29;
-const float b_noise_control_y = 0.71;
+const float b_noise_brightness = 0.22; // Shifts output curve vertically (brightness)
+const float b_noise_rs = 6.0; // Relative slope
+const float b_noise_control_x = 0.29; // Control point x-coordinate for the first segment
+const float b_noise_control_y = 0.71; // Control point y-coordinate for the first segment
 
 // S2 - Brick Albedo Parameters
 const float seed_variation = 0.0;
-const float mortar_col_mask_blend_opacity = 1.0; // blend between mortar colour and mask // not needed??
-const float mortar_opacity = 1.0; // blend between mortar and brick colorise
-const float step_value = 0.62; // tones step, creates brick / mortar mask
+const float mortar_col_mask_blend_opacity = 1.0; // Blend between mortar colour and mask
+const float mortar_opacity = 1.0; // Blend between mortar and brick colorise
+const float step_value = 0.62; // Tones step, creates brick / mortar mask
 const float step_width = 0.10;
 
-const vec3 random_edge_col = vec3(0.0, 0.0, 0.0); // "Color used for outlines" - fairly sure this isn't needed and never will be, likely remove and code into shader.
-
-// transform params
+// Transform grunge texture into brick pattern
 const float grunge_translate_x = 0.50;
 const float grunge_translate_y = 0.25;
 const float grunge_rotate = 0.00;
 const float grunge_scale_x = 1.00;
 const float grunge_scale_y = 1.00;
-
 const float grunge_blend_opacity = 0.80;
 
-// brick damage perlin variables
-// const float damage_scale_x = 10.00; // scale
-// const float damage_scale_y = 15.00;
-// const float damage_iterations = 3.00; // adds complexity to the damage
-// const float damage_persistence = 0.50; // intensity
+// Brick damage perlin
 const float damage_offset = 0.00;
 
-// roughness map variables
+// Roughness map variables
 const float roughness_in_min = 0.00;
 const float roughness_in_max = 0.15;
 const float roughness_out_min = 0.60;
 const float roughness_out_max = 0.90;
 
-// normal map
+// Occlusion tone map
+const float o_control_x = 0.02; // Control point x-coordinate for the first segment
+const float o_control_y = 0.68; // Control point y-coordinate for the first segment
+const float o_curve_1_rs = -5.11; // Relative slope for control point 1 of the first segment
+const float o_curve_1_ls = -0.54; // Local slope for control point 2 of the first segment
+const float o_curve_1_ep_y = 0.69; // End point y-coordinate for the first segment
+const float o_curve_1_cp2_rs = 1.23; // Relative slope for control point 1 of the second segment
+const float o_curve_2_ls = 0.67; // Local slope for control point 2 of the second segment
+
+// Normal map
 const float sobel_strength = 0.05;
 
 
@@ -182,39 +184,8 @@ float get_brick_pattern(vec2 uv, vec2 brick_min, vec2 brick_max, float mortar, f
     return clamp(-distance / bevel, 0.0, 1.0);
 }
 
-// vec4 get_brick_bounds_rb(vec2 uv, vec2 grid, float repeat, float row_offset) {
-//     grid *= repeat;
-//     float x_offset = row_offset * step(0.5, fract(uv.y * grid.y * 0.5));
-//     vec2 brick_min = floor(vec2(uv.x * grid.x - x_offset, uv.y * grid.y));
-//     brick_min.x += x_offset;
-//     brick_min /= grid;
-//     return vec4(brick_min, brick_min + vec2(1.0) / grid);
-// }
 
-float rand(vec2 p) {
-	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
-
-vec2 rand2(vec2 x) {
-    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
-}
-
-vec3 rand3(vec2 x) {
-    return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
-							  dot(x, vec2(3.4562, 17.398)),
-                              dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
-}
-
-// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
-float hash_ws(vec2 x, float seed) {
-    vec3 x3 = fract(vec3(x.xyx) * (0.1031 + seed));
-    x3 += dot(x3, x3.yzx + 33.33);
-    return fract((x3.x + x3.y) * x3.z);
-}
-
-// Blending
+// Blending functions
 float overlay_f(float base, float blend) {
 	return base < 0.5 ? (2.0 * base * blend) : (1.0 - 2.0 * (1.0 - base) * (1.0 - blend));
 }
@@ -247,6 +218,30 @@ vec3 multiply(vec3 base, vec3 blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
 }
 
+
+// Random / noise functions
+float rand(vec2 p) {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+
+vec2 rand2(vec2 x) {
+    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
+						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
+}
+
+vec3 rand3(vec2 x) {
+    return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
+							  dot(x, vec2(3.4562, 17.398)),
+                              dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
+}
+
+// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
+float hash_ws(vec2 x, float seed) {
+    vec3 x3 = fract(vec3(x.xyx) * (0.1031 + seed));
+    x3 += dot(x3, x3.yzx + 33.33);
+    return fract((x3.x + x3.y) * x3.z);
+}
 
 float perlin_noise_2d(vec2 coord, vec2 size, float offset, float seed) {
     vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
@@ -327,11 +322,11 @@ float tone_map(float x) {
         float prog2 = prog * prog;
         float prog3 = prog2 * prog;
         len /= 3.0; // Third of segment length for control points
-        float cp1y  = len * b_noise_rs; // Control point 1 y offset
-        float cp2y = b_noise_control_y - len; // Control point 2 y offset
-        float epy = b_noise_control_y; // End point y value
+        float cp1_y  = len * b_noise_rs; // Control point 1 y offset
+        float cp2_y = b_noise_control_y - len; // Control point 2 y offset
+        float ep_y = b_noise_control_y; // End point y value
         
-        return (((cp1y * omp2) * prog) * 3.0) + (((cp2y * omp) * prog2) * 3.0) + (epy * prog3);
+        return (((cp1_y * omp2) * prog) * 3.0) + (((cp2_y * omp) * prog2) * 3.0) + (ep_y * prog3);
     }
     else {
     	float pos = x - b_noise_control_x; // Distance from first segment's end (relative position)
@@ -343,59 +338,50 @@ float tone_map(float x) {
         float prog2 = prog * prog;
         float prog3 = prog2 * prog; 
         len /= 3.0;  
-        float cpy = b_noise_control_y + len; // Control point y offset
-        float spy = b_noise_control_y; // Start point y value
+        float cp_y = b_noise_control_y + len; // Control point y offset
+        float sp_y = b_noise_control_y; // Start point y value
         
-        return (spy * omp3) + (((cpy * omp2) * prog) * 3.0) + ((omp * prog2) * 3.0) + prog3;
+        return (sp_y * omp3) + (((cp_y * omp2) * prog) * 3.0) + ((omp * prog2) * 3.0) + prog3;
     }
 }
 
-
-const float occlusion_control_x = 0.020689655;
-const float occulsion_control_y = 0.683391571;
-const float occlusion_rs = -5.106000781;
-const float p_o276789955930592_curve_1_ls = -0.538809011;
-const float p_o276789955930592_curve_1_y = 0.687344193;
-const float p_o276789955930592_curve_1_rs = 1.230451057;
-const float p_o276789955930592_curve_2_ls = 0.665561667;
-
 float occlusion_tone_map(float x) {
-	if (x <= occlusion_control_x) {
-		float pos = x;
-		float len = occlusion_control_x;
-		float prog = pos / len;
-		float omt = (1.0 - prog);
-		float omt2 = omt * omt;
-		float omt3 = omt2 * omt;
-		float prog2 = prog * prog;
-		float prog3 = prog2 * prog;
-		len /= 3.0;
-		float y1 = 0.0;
-		float yac = len * occlusion_rs;
-		float ybc = occulsion_control_y - len * p_o276789955930592_curve_1_ls;
-		float y2 = p_o276789955930592_curve_1_y;
-		
-		return y1 * omt3 + yac * omt2 * prog * 3.0 + ybc * omt * prog2 * 3.0 + y2 * prog3;
-	}
-	else {
-		float pos = x - occlusion_control_x;
-		float len = 1.0 - occlusion_control_x;
-		float prog = pos/ len;
-		float omt = (1.0 - prog);
-		float omt2 = omt * omt;
-		float omt3 = omt2 * omt;
-		float prog2 = prog * prog;
-		float prog3 = prog2 * prog;
-		len /= 3.0;
-		float y1 = p_o276789955930592_curve_1_y;
-		float yac = p_o276789955930592_curve_1_y + len * p_o276789955930592_curve_1_rs;
-		float ybc = 1.0 - len * p_o276789955930592_curve_2_ls;
-		float y2 = 1.0;
-		
-		return y1 * omt3 + yac * omt2 * prog * 3.0 + ybc * omt * prog2 * 3.0 + y2 * prog3;
-	}
-}
+    if (x <= o_control_x) {
+        float pos = x; // Distance from start of curve (relative position)
+        float len = o_control_x; // Segment length (first segment)
+        float prog = pos / len; // Normalized progress as a fraction
+        float omp = (1.0 - prog); // Remaining fraction (one minus progress)
+        float omp2 = omp * omp;
+        float omp3 = omp2 * omp;
+        float prog2 = prog * prog;
+        float prog3 = prog2 * prog;
+        len /= 3.0; // Third of segment length for control points
 
+        float cp1_y = len * o_curve_1_rs; // Control point 1 y offset
+        float cp2_y = o_control_y - len * o_curve_1_ls; // Control point 2 y offset
+        float ep_y = o_curve_1_ep_y; // End point y value
+        
+        return (((cp1_y * omp2) * prog) * 3.0) + (((cp2_y * omp) * prog2) * 3.0) + (ep_y * prog3);
+    } 
+    else {
+        float pos = x - o_control_x; // Distance from first segment's end (relative position)
+        float len = 1.0 - o_control_x; // Segment length (second segment)
+        float prog = pos / len; // Normalized progress as a fraction
+        float omp = (1.0 - prog); // Remaining fraction (one minus progress)
+        float omp2 = omp * omp;
+        float omp3 = omp2 * omp;
+        float prog2 = prog * prog;
+        float prog3 = prog2 * prog;
+        len /= 3.0; // Third of segment length for control points
+        
+        float sp_y = o_curve_1_ep_y; // Start point y value
+        float cp1_y = sp_y + len * o_curve_1_cp2_rs; // Control point 1 y offset
+        float cp2_y = 1.0 - len * o_curve_2_ls; // Control point 2 y offset
+        float ep_y = 1.0; // End point y value
+        
+        return (sp_y * omp3) + (((cp1_y * omp2) * prog) * 3.0) + (((cp2_y * omp) * prog2) * 3.0) + (ep_y * prog3);
+    }
+}
 
 vec2 transform(vec2 uv, vec2 translate, float rotate, vec2 scale) {
  	vec2 rv;
@@ -407,8 +393,6 @@ vec2 transform(vec2 uv, vec2 translate, float rotate, vec2 scale) {
 	rv += vec2(0.5);
 	return rv;	
 }
-
-
 
 // Need solution using shared memory and / or less recursion.
 vec4 slope_blur(vec2 uv) { 
@@ -453,31 +437,20 @@ vec4 slope_blur(vec2 uv) {
     return rv / sum;
 }
 
-
-
-// Input sampling from an image buffer using pixel coordinates
-float o419916945495_input_in(ivec2 pixel_coords) {
-    // Clamp to avoid out-of-bounds issues
-    // pixel_coords = clamp(pixel_coords, ivec2(0), ivec2(params.texture_size - 1));
-
-    // Access red channel from buffer
-    return imageLoad(rgba32f_buffer, pixel_coords).r;
-}
-
-// Generate normals using a simplified filter
+// Generate normals
 vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
     vec2 rv = vec2(0.0);
 
     // Apply Sobel-like filter to compute gradient
-	rv += vec2(1.0, -1.0) * o419916945495_input_in(pixel_coords + ivec2(e.x, e.y));
-	rv += vec2(-1.0, 1.0) * o419916945495_input_in(pixel_coords - ivec2(e.x, e.y));
-	rv += vec2(1.0, 1.0) * o419916945495_input_in(pixel_coords + ivec2(e.x, -e.y));
-	rv += vec2(-1.0, -1.0) * o419916945495_input_in(pixel_coords - ivec2(e.x, -e.y));
-	rv += vec2(2.0, 0.0) * o419916945495_input_in(pixel_coords + ivec2(2, 0));
-	rv += vec2(-2.0, 0.0) * o419916945495_input_in(pixel_coords - ivec2(2, 0));
-	rv += vec2(0.0, 2.0) * o419916945495_input_in(pixel_coords + ivec2(0, 2));
-	rv += vec2(0.0, -2.0) * o419916945495_input_in(pixel_coords - ivec2(0, 2));
+    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, e.y)).r;
+    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, e.y)).r;
+    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, -e.y)).r;
+    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, -e.y)).r;
+    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(2, 0)).r;
+    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(2, 0)).r;
+    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(0, 2)).r;
+    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(0, 2)).r;
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -553,7 +526,7 @@ void main() {
 
 		// brick fill output - sampled and each brick given a random colour
 		vec4 brick_fill = round(vec4(fract(brick_bounding_rect.xy), brick_bounding_rect.zw - brick_bounding_rect.xy) * params.texture_size) / params.texture_size;
-		vec3 random_brick_colour = mix(random_edge_col, rand3(vec2(float((seed.brick_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
+		vec3 random_brick_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((seed.brick_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
 
 		// decomposed random colour by channel
 		float random_col_r = random_brick_colour.r;
