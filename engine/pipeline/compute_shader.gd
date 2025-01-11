@@ -168,6 +168,7 @@ func rebuild_storage_buffer(index : int, u_set : int, data : Array) -> void:
 @warning_ignore("return_value_discarded")
 func _create_push_constant(push_constant_data : Array, texture_size : int) -> PackedFloat32Array:
 	var _push_constant : PackedFloat32Array = PackedFloat32Array(push_constant_data)
+	_push_constant.push_back(0.0) # normals type, always needs to start as OpenGL for Godot, only changes on export
 	_push_constant.push_back(texture_size)
 	_push_constant.push_back(stage)
 	

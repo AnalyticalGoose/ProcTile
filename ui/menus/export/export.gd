@@ -40,7 +40,7 @@ var output_directory : String:
 		output_directory = directory
 		directory_btn.text = directory
 var interpolation_type : int
-var normals_type : int
+var normals_type : int = 0
 var filetype_string : String
 var material_name : String
 
@@ -59,7 +59,8 @@ func _ready() -> void:
 	_set_radio_buttons()
 
 
-# called from exporter instance to update progress bar and cleaup at 100%
+# called from Exporter instance to update progress bar 
+# hands off control back here at 100% and nodes are cleaned up
 func progress_update(progress : int) -> void:
 	progress_bar.set_value_no_signal(progress)
 	if progress >= 100:
