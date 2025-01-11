@@ -17,10 +17,10 @@ layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
 layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_2;
 layout(rgba32f, set = 1, binding = 2) uniform image2D rgba32f_buffer;
-layout(rgba32f, set = 1, binding = 3) uniform image2D noise_buffer;
+layout(r16f, set = 1, binding = 3) uniform image2D noise_buffer;
 layout(r16f, set = 1, binding = 4) uniform image2D grunge_buffer;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
