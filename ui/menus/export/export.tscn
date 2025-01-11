@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://ui/menus/export/export.gd" id="1_2taha"]
 [ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
 
-[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "resolution_btn", "format_btn", "interp_label", "interp_btn", "filename_line_edit", "filename_labels_container", "button_container", "progress_bar")]
+[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "resolution_btn", "format_btn", "interp_label", "interp_btn", "normals_btn", "filename_line_edit", "filename_labels_container", "button_container", "progress_bar")]
 title = "Export"
 initial_position = 1
 size = Vector2i(544, 400)
@@ -16,6 +16,7 @@ resolution_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/Res
 format_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn")
 interp_label = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationLabel")
 interp_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn")
+normals_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton")
 filename_line_edit = NodePath("MarginContainer/VBoxContainer/NameContainer/LineEdit")
 filename_labels_container = NodePath("MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer")
 button_container = NodePath("MarginContainer/ButtonContainer")
@@ -126,6 +127,19 @@ popup/item_3/id = 3
 popup/item_4/text = "Lanzcos"
 popup/item_4/id = 4
 
+[node name="NormalsLabel" type="Label" parent="MarginContainer/VBoxContainer/InterpolationContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Normals Format"
+
+[node name="NormalsButton" type="OptionButton" parent="MarginContainer/VBoxContainer/InterpolationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+popup/item_0/text = "OpenGL"
+popup/item_1/text = "DirectX"
+popup/item_1/id = 1
+
 [node name="NameContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
@@ -227,6 +241,7 @@ step = 1.0
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn" to="." method="_on_resolution_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn" to="." method="_on_format_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn" to="." method="_on_interpolation_btn_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton" to="." method="_on_normals_button_item_selected"]
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/NameContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/ButtonContainer/CancelBtn" to="." method="_on_close_requested"]
 [connection signal="pressed" from="MarginContainer/ButtonContainer/SaveBtn" to="." method="_on_save_btn_pressed"]

@@ -64,6 +64,7 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float damage_scale_y;
 	float damage_iterations; // Complexity
 	float damage_persistence; // Intensity
+    float normals_format;
 	float texture_size;
 	float stage;
 } params;
@@ -302,15 +303,6 @@ vec4 gradient_fct(float x) {
     return gradient_col[count - 1];
 }
 
-vec4 toLinear(vec4 sRGB)
-{
-	bvec3 cutoff = lessThan(sRGB.rgb, vec3(0.04045));
-	vec3 higher = pow((sRGB.rgb + vec3(0.055))/vec3(1.055), vec3(2.4));
-	vec3 lower = sRGB.rgb/vec3(12.92);
-
-	return vec4(mix(higher, lower, cutoff), sRGB.a);
-}
-
 // Bezier curve tone mapping
 float tone_map(float x) {
     if (x <= b_noise_control_x) {
@@ -538,10 +530,7 @@ void main() {
 
 		// Brick and mortar colours are blended together using a mask to create albedo texture
 		float brick_mortar_blend_mask = mortar_opacity * brick_mask;
-		gradient_brick_colour = vec4(normal(mortar_col.rgb, gradient_brick_colour.rgb, brick_mortar_blend_mask * 1.0), min(1.0, gradient_brick_colour.a + brick_mortar_blend_mask * 1.0));
-		
-		// Albedo texture is converted from sRGB to Linear
-		vec4 albedo = toLinear(gradient_brick_colour);
+		vec4 albedo = vec4(normal(mortar_col.rgb, gradient_brick_colour.rgb, brick_mortar_blend_mask * 1.0), min(1.0, gradient_brick_colour.a + brick_mortar_blend_mask * 1.0));
 		imageStore(albedo_buffer, ivec2(pixel), albedo);
 
 		// Mortar b-noise
@@ -608,7 +597,15 @@ void main() {
 
 	if (params.stage == 3.0) {
 		vec3 normals = sobel_filter(ivec2(pixel), sobel_strength, params.texture_size);
-		vec3 converted_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
-		imageStore(normal_buffer, ivec2(pixel), vec4(converted_normals, 1.0));
+        
+        if (params.normals_format == 0.0) {
+            vec3 opengl_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(opengl_normals, 1.0));
+        }
+        
+        if (params.normals_format == 1.0) {
+            vec3 directx_normals = normals * vec3(-1.0, -1.0, -1.0) + vec3(1.0, 1.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
+        }
 	}
 }

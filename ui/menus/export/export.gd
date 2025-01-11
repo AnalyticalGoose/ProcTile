@@ -6,6 +6,8 @@ extends Window
 ## default export formats from user settings, user gui inputs and the creation
 ## of the Exporter class.
 
+signal normals_recalculated
+
 @export var file_dialog : FileDialog
 @export var directory_btn : Button
 @export var template_options : OptionButton
@@ -13,6 +15,7 @@ extends Window
 @export var format_btn : OptionButton
 @export var interp_label : Label
 @export var interp_btn : OptionButton
+@export var normals_btn : OptionButton
 @export var filename_line_edit : LineEdit
 @export var filename_labels_container : VBoxContainer
 @export var button_container : HBoxContainer
@@ -36,8 +39,8 @@ var output_directory : String:
 	set(directory):
 		output_directory = directory
 		directory_btn.text = directory
-
 var interpolation_type : int
+var normals_type : int
 var filetype_string : String
 var material_name : String
 
@@ -66,6 +69,12 @@ func progress_update(progress : int) -> void:
 		progress_bar.hide()
 		progress_bar.set_value_no_signal(0.0)
 		exporter = null
+		
+		# if exporting Directx normals, change back to OpenGL so the shader renders correctly.
+		if normals_type != 0.0: 
+			compute_shader.push_constant.set(compute_shader.push_constant.size() - 3, 0.0)
+			compute_shader.stage = 0
+		
 		renderer.set_process(true)
 
 
@@ -88,6 +97,7 @@ func _load_export_settings() -> void:
 	output_filetype = settings_data.export_format
 	filetype_string = FILE_TYPES_STRINGS[output_filetype]
 	interpolation_type = settings_data.export_interpolation
+	normals_type = settings_data.export_normals
 
 
 func _setup_export_ui() -> void:
@@ -107,6 +117,7 @@ func _setup_export_ui() -> void:
 	resolution_btn.select(resolution_btn.get_item_index(output_resolution / 512.0 as int))
 	format_btn.select(output_filetype)
 	interp_btn.select(interpolation_type)
+	normals_btn.select(normals_type)
 	filename_line_edit.text = renderer.asset_name
 	_on_line_edit_text_changed(renderer.asset_name)
 
@@ -153,6 +164,10 @@ func _on_interpolation_btn_item_selected(index: int) -> void:
 	interpolation_type = index
 
 
+func _on_normals_button_item_selected(index: int) -> void:
+	normals_type = index
+
+
 func _on_format_btn_item_selected(index: int) -> void:
 	output_filetype = index
 	filetype_string = FILE_TYPES_STRINGS[index]
@@ -172,13 +187,32 @@ func _on_close_requested() -> void:
 
 func _on_save_btn_pressed() -> void:
 	DataManager.save_export_settings(
-		output_directory, output_template, output_resolution, output_filetype, interpolation_type)
+		output_directory, output_template, output_resolution, output_filetype, interpolation_type, normals_type)
 
 
 func _on_export_button_pressed() -> void:
-	renderer.set_process(false)
 	button_container.hide()
 	progress_bar.show()
+	
+	if normals_type != 0.0: # Block execution until normals are recalculated
+		if !normals_recalculated.connect(_init_export, ConnectFlags.CONNECT_ONE_SHOT):
+			_recalculate_normals()
+	else:
+		_init_export()
+
+
+func _recalculate_normals() -> void:
+	compute_shader.push_constant.set(compute_shader.push_constant.size() - 3, normals_type)
+	compute_shader.stage = 0
+	
+	while compute_shader.stage != compute_shader._max_stage:
+		await get_tree().process_frame
+	
+	normals_recalculated.emit()
+
+
+func _init_export() -> void:
+	renderer.set_process(false)
 	
 	exporter = Exporter.new()
 	exporter.setup_properties(

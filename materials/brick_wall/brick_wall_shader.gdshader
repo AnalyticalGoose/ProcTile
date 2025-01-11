@@ -6,6 +6,15 @@ uniform sampler2D roughness_input;
 uniform sampler2D metallic_input;
 uniform sampler2D normal_input;
 
+// The source-color compiler hint isn't working for the albedo-input for some reason
+// so converting manually. I'm unsure if it's a bug or related to using a Texture2DRD
+vec4 toLinear(vec4 sRGB) {
+	bvec3 cutoff = lessThan(sRGB.rgb, vec3(0.04045));
+	vec3 higher = pow((sRGB.rgb + vec3(0.055)) / vec3(1.055), vec3(2.4));
+	vec3 lower = sRGB.rgb / vec3(12.92);
+	
+	return vec4(mix(higher, lower, cutoff), sRGB.a);
+}
 
 void fragment() {
 	vec4 albedo_tex = texture(albedo_input, UV);
@@ -13,7 +22,7 @@ void fragment() {
 	vec4 normal_tex = texture(normal_input, UV);
 	vec4 occlusion_tex = texture(occlusion_input, UV);
 
-	ALBEDO = albedo_tex.rgb;
+	ALBEDO = toLinear(albedo_tex).rgb;
 	ROUGHNESS = roughness_tex.r;
 	NORMAL_MAP = normal_tex.rgb;
 	AO = occlusion_tex.r;

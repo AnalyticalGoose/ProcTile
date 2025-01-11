@@ -21,7 +21,7 @@ func _ready() -> void:
 	material_data = material_database.get_array()
 
 
-func save_export_settings(dir : String, template : int, res : int, format : int, interp : int) -> void:
+func save_export_settings(dir : String, template : int, res : int, format : int, interp : int, normals : int) -> void:
 	var cfg_file : ConfigFile = ConfigFile.new()
 	
 	if cfg_file.load(settings_path):
@@ -32,6 +32,7 @@ func save_export_settings(dir : String, template : int, res : int, format : int,
 	cfg_file.set_value("export_settings", "export_resolution", res)
 	cfg_file.set_value("export_settings", "export_format", format)
 	cfg_file.set_value("export_settings", "export_interpolation", interp)
+	cfg_file.set_value("export_settings", "export_normals", normals)
 	
 	if cfg_file.save(settings_path):
 		Logger.puts_error("Cannot save user settings to " + settings_path)
@@ -48,6 +49,7 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 			database.add_valid_property("export_resolution")
 			database.add_valid_property("export_format")
 			database.add_valid_property("export_interpolation")
+			database.add_valid_property("export_normals")
 		
 		DatabaseType.MATERIAL:
 			database.add_mandatory_property("ui_elements", TYPE_ARRAY)
