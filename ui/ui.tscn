@@ -1,5 +1,6 @@
-[gd_scene load_steps=30 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=31 format=3 uid="uid://sjoei1q5m1ma"]
 
+[ext_resource type="Script" path="res://scripts/renderer_view.gd" id="1_av4mg"]
 [ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
 [ext_resource type="Script" path="res://materials/asset_manager.gd" id="2_iuucp"]
 [ext_resource type="Script" path="res://scripts/data_bar.gd" id="2_pqncx"]
@@ -60,6 +61,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="RendererWindow" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -630.0
+offset_top = -475.0
+offset_right = 630.0
+offset_bottom = 510.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_av4mg")
 
 [node name="NavigationBar" type="PanelContainer" parent="."]
 top_level = true
@@ -355,4 +371,6 @@ theme = ExtResource("5_hrfci")
 theme_override_constants/separation = 10
 script = ExtResource("7_08hm7")
 
+[connection signal="mouse_entered" from="RendererWindow" to="RendererWindow" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="RendererWindow" to="RendererWindow" method="_on_mouse_exited"]
 [connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" to="AssetsWindow" method="_on_asset_selector_item_activated"]

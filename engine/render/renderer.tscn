@@ -23,20 +23,26 @@ shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
 shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
 shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_eq8u2"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_1b2sg"]
 orientation = 2
 
 [sub_resource type="Environment" id="Environment_cwj01"]
-background_mode = 1
 background_color = Color(0.0338533, 0.0338533, 0.0338533, 1)
 
 [node name="Renderer" type="Node3D"]
 script = ExtResource("1_11juy")
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
+[node name="MeshPivot" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="MeshPivot"]
 material_override = SubResource("ShaderMaterial_cnb6x")
-mesh = SubResource("PlaneMesh_eq8u2")
+mesh = SubResource("PlaneMesh_1b2sg")
 skeleton = NodePath("")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -49,9 +55,6 @@ visible = false
 light_energy = 0.8
 shadow_enabled = true
 sky_mode = 1
-
-[node name="Camera3D" type="Camera3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.535)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2, 3)

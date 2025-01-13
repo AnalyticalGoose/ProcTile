@@ -36,7 +36,7 @@ func set_shader_material(shader_data : Array) -> void:
 	RenderingServer.call_on_render_thread(compute_shader.init_compute.bind(shader_data, texture_size, shader_path))
 
 	# Linking compute and material shader
-	var material : ShaderMaterial = ($Mesh as MeshInstance3D).material_override as ShaderMaterial
+	var material : ShaderMaterial = ($MeshPivot/Mesh as MeshInstance3D).material_override as ShaderMaterial
 	compute_shader.albedo = material.get_shader_parameter("albedo_input")
 	compute_shader.occlusion = material.get_shader_parameter("occlusion_input")
 	compute_shader.roughness = material.get_shader_parameter("roughness_input")
