@@ -1,6 +1,66 @@
-[gd_resource type="Theme" load_steps=11 format=3 uid="uid://dfgva2nypdu6x"]
+[gd_resource type="Theme" load_steps=16 format=3 uid="uid://dfgva2nypdu6x"]
 
 [ext_resource type="FontFile" uid="uid://cl43lyktll62p" path="res://ui/fonts/poppins/Poppins-Regular.ttf" id="1_q2vdh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_61p7h"]
+content_margin_left = 7.0
+content_margin_top = 0.0
+content_margin_right = 7.0
+content_margin_bottom = 0.0
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+border_blend = true
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bq67d"]
+content_margin_left = 7.0
+content_margin_top = 0.0
+content_margin_right = 7.0
+content_margin_bottom = 0.0
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+border_blend = true
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2dlwt"]
+content_margin_left = 7.0
+content_margin_top = 0.0
+content_margin_right = 7.0
+content_margin_bottom = 0.0
+bg_color = Color(0.329158, 0.329158, 0.329158, 1)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+border_blend = true
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5i5bx"]
+content_margin_left = 7.0
+content_margin_top = 0.0
+content_margin_right = 7.0
+content_margin_bottom = 0.0
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+border_blend = true
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x8o2p"]
+content_margin_left = 7.0
+content_margin_top = 0.0
+content_margin_right = 7.0
+content_margin_bottom = 0.0
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+border_blend = true
+corner_detail = 1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_68ca2"]
 
@@ -57,6 +117,11 @@ corner_detail = 1
 [resource]
 default_font = ExtResource("1_q2vdh")
 default_font_size = 14
+Button/styles/disabled = SubResource("StyleBoxFlat_61p7h")
+Button/styles/focus = SubResource("StyleBoxFlat_bq67d")
+Button/styles/hover = SubResource("StyleBoxFlat_2dlwt")
+Button/styles/normal = SubResource("StyleBoxFlat_5i5bx")
+Button/styles/pressed = SubResource("StyleBoxFlat_x8o2p")
 FilterItemList/base_type = &"ItemList"
 FilterItemList/styles/focus = SubResource("StyleBoxEmpty_68ca2")
 FilterItemList/styles/panel = SubResource("StyleBoxEmpty_qo4v4")

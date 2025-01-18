@@ -1,6 +1,22 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://wrjfe6mxcq45"]
+[gd_resource type="Theme" load_steps=10 format=3 uid="uid://wrjfe6mxcq45"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kcnoo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d0qga"]
+content_margin_left = 5.0
+content_margin_top = 4.0
+content_margin_right = 5.0
+content_margin_bottom = 4.0
+bg_color = Color(0.147672, 0.147672, 0.147672, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l7q0j"]
+content_margin_left = 5.0
+content_margin_top = 4.0
+content_margin_right = 5.0
+content_margin_bottom = 4.0
+bg_color = Color(0.147672, 0.147672, 0.147672, 1)
+corner_detail = 1
 
 [sub_resource type="Gradient" id="Gradient_apnni"]
 offsets = PackedFloat32Array(0.574074, 0.728395)
@@ -29,6 +45,8 @@ thickness = 3
 [resource]
 Button/font_sizes/font_size = 11
 Button/styles/focus = SubResource("StyleBoxEmpty_kcnoo")
+Button/styles/normal = SubResource("StyleBoxFlat_d0qga")
+Button/styles/pressed = SubResource("StyleBoxFlat_l7q0j")
 HSlider/icons/grabber = SubResource("GradientTexture2D_cebng")
 HSlider/icons/grabber_disabled = null
 HSlider/icons/grabber_highlight = null

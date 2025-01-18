@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" path="res://materials/brick_wall/brick_wall_shader.gdshader" id="1_iqibk"]
+[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_14j6m"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_h5fst"]
 
@@ -23,9 +24,6 @@ shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
 shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
 shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_1b2sg"]
-orientation = 2
-
 [sub_resource type="Environment" id="Environment_cwj01"]
 background_color = Color(0.0338533, 0.0338533, 0.0338533, 1)
 
@@ -36,7 +34,7 @@ script = ExtResource("1_11juy")
 
 [node name="Mesh" type="MeshInstance3D" parent="MeshPivot"]
 material_override = SubResource("ShaderMaterial_cnb6x")
-mesh = SubResource("PlaneMesh_1b2sg")
+mesh = ExtResource("3_14j6m")
 skeleton = NodePath("")
 
 [node name="CameraPivot" type="Node3D" parent="."]

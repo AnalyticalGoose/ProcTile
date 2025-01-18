@@ -1,0 +1,99 @@
+[gd_scene load_steps=7 format=3 uid="uid://kukxq0246lch"]
+
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh/mesh_menu_theme.tres" id="1_0mu7x"]
+[ext_resource type="Script" path="res://ui/menus/mesh/mesh_settings.gd" id="2_8udx8"]
+[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_0csbf"]
+[ext_resource type="ArrayMesh" uid="uid://c41mp0hqr2wd7" path="res://meshes/tile/tile_back_bottom_cull.obj" id="4_om0wj"]
+[ext_resource type="ArrayMesh" uid="uid://cjstuqnwwcakd" path="res://meshes/tile/tile_back_cull.obj" id="5_lpa08"]
+[ext_resource type="ArrayMesh" uid="uid://c62xi1dgnpy63" path="res://meshes/tile/tile_bottom_cull.obj" id="6_g0klt"]
+
+[node name="MeshSettings" type="PanelContainer" node_paths=PackedStringArray("mesh_options", "texel_options")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -182.0
+offset_right = 10.0
+offset_bottom = 218.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("1_0mu7x")
+script = ExtResource("2_8udx8")
+mesh_options = NodePath("MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton")
+texel_options = NodePath("MarginContainer/VBoxContainer/TexelContainer/TexelOptionButton")
+tile_meshes = Array[Mesh]([ExtResource("4_om0wj"), ExtResource("5_lpa08"), ExtResource("6_g0klt"), ExtResource("3_0csbf")])
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HeadingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mesh Settings"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MeshContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="MeshLabel" type="Label" parent="MarginContainer/VBoxContainer/MeshContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Mesh"
+
+[node name="MeshOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/MeshContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Plane"
+popup/item_1/text = "Tile"
+popup/item_1/id = 1
+popup/item_2/text = "Cube"
+popup/item_2/id = 2
+
+[node name="TexelContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="TexelLabel" type="Label" parent="MarginContainer/VBoxContainer/TexelContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Texel Density"
+
+[node name="TexelOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/TexelContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Front"
+popup/item_1/text = "Front and Sides"
+popup/item_1/id = 1
+popup/item_2/text = "None"
+popup/item_2/id = 2
+
+[node name="FacesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="FacesLabel" type="Label" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Remove Faces"
+
+[node name="BackFaceCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+text = "Back"
+flat = true
+
+[node name="BottomFaceCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+text = "Bottom"
+flat = true
+
+[connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox" to="." method="_on_back_face_check_box_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox" to="." method="_on_bottom_face_check_box_toggled"]

@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cjstuqnwwcakd"
+path="res://.godot/imported/tile_back_cull.obj-0b50e73b57b69803f2fcd1d43b12f525.mesh"
+
+[deps]
+
+files=["res://.godot/imported/tile_back_cull.obj-0b50e73b57b69803f2fcd1d43b12f525.mesh"]
+
+source_file="res://meshes/tile/tile_back_cull.obj"
+dest_files=["res://.godot/imported/tile_back_cull.obj-0b50e73b57b69803f2fcd1d43b12f525.mesh", "res://.godot/imported/tile_back_cull.obj-0b50e73b57b69803f2fcd1d43b12f525.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

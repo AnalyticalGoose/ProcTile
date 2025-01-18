@@ -1,0 +1,23 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://b21n7wcdmuo1a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jvs5"]
+content_margin_left = 5.0
+content_margin_top = 2.0
+content_margin_bottom = 1.0
+bg_color = Color(0.223103, 0.223103, 0.223103, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kthmy"]
+bg_color = Color(0.303233, 0.303233, 0.303233, 1)
+corner_detail = 1
+
+[resource]
+CheckBox/font_sizes/font_size = 12
+Label/font_sizes/font_size = 14
+MarginContainer/constants/margin_left = 10
+MarginContainer/constants/margin_right = 10
+MarginContainer/constants/margin_top = 10
+OptionButton/font_sizes/font_size = 12
+OptionButton/styles/normal = SubResource("StyleBoxFlat_3jvs5")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_kthmy")
+VBoxContainer/constants/separation = 6
