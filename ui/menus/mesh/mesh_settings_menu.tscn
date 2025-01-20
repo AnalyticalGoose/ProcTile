@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://kukxq0246lch"]
+[gd_scene load_steps=10 format=3 uid="uid://kukxq0246lch"]
 
 [ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh/mesh_menu_theme.tres" id="1_0mu7x"]
 [ext_resource type="Script" path="res://ui/menus/mesh/mesh_settings.gd" id="2_8udx8"]
@@ -7,7 +7,31 @@
 [ext_resource type="ArrayMesh" uid="uid://cjstuqnwwcakd" path="res://meshes/tile/tile_back_cull.obj" id="5_lpa08"]
 [ext_resource type="ArrayMesh" uid="uid://c62xi1dgnpy63" path="res://meshes/tile/tile_bottom_cull.obj" id="6_g0klt"]
 
-[node name="MeshSettings" type="PanelContainer" node_paths=PackedStringArray("mesh_options", "texel_options")]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uav13"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ktrdi"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.332881, 0.332881, 0.33288, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vq8t6"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.197937, 0.197937, 0.197937, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="MeshSettings" type="PanelContainer" node_paths=PackedStringArray("mesh_options", "back_face_checkbox", "bottom_face_checkbox", "back_uvs_checkbox", "sides_uvs_checkbox")]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -15,14 +39,17 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -182.0
 offset_right = 10.0
-offset_bottom = 218.0
+offset_bottom = 280.0
 grow_horizontal = 0
 grow_vertical = 0
 theme = ExtResource("1_0mu7x")
 script = ExtResource("2_8udx8")
 mesh_options = NodePath("MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton")
-texel_options = NodePath("MarginContainer/VBoxContainer/TexelContainer/TexelOptionButton")
-tile_meshes = Array[Mesh]([ExtResource("4_om0wj"), ExtResource("5_lpa08"), ExtResource("6_g0klt"), ExtResource("3_0csbf")])
+tile_meshes = Array[Mesh]([ExtResource("3_0csbf"), ExtResource("6_g0klt"), ExtResource("5_lpa08"), ExtResource("4_om0wj")])
+back_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox")
+bottom_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox")
+back_uvs_checkbox = NodePath("MarginContainer/VBoxContainer/UVsContainer/BackUVsCheckBox")
+sides_uvs_checkbox = NodePath("MarginContainer/VBoxContainer/UVsContainer/SidesUVsCheckBox")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -35,7 +62,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Mesh Settings"
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="Heading Seperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="MeshContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -57,25 +84,6 @@ popup/item_1/id = 1
 popup/item_2/text = "Cube"
 popup/item_2/id = 2
 
-[node name="TexelContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 1
-
-[node name="TexelLabel" type="Label" parent="MarginContainer/VBoxContainer/TexelContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Texel Density"
-
-[node name="TexelOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/TexelContainer"]
-layout_mode = 2
-selected = 0
-item_count = 3
-popup/item_0/text = "Front"
-popup/item_1/text = "Front and Sides"
-popup/item_1/id = 1
-popup/item_2/text = "None"
-popup/item_2/id = 2
-
 [node name="FacesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 1
@@ -95,5 +103,54 @@ layout_mode = 2
 text = "Bottom"
 flat = true
 
+[node name="UVsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="UvsLabel" type="Label" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Shrink UVs"
+
+[node name="BackUVsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+text = "Back"
+flat = true
+
+[node name="SidesUVsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+text = "Sides"
+flat = true
+
+[node name="ButtonsSeperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 13
+alignment = 1
+
+[node name="SaveSettingsBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Save Settings"
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Close"
+
 [connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox" to="." method="_on_back_face_check_box_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox" to="." method="_on_bottom_face_check_box_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/UVsContainer/BackUVsCheckBox" to="." method="_on_back_uvs_check_box_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/UVsContainer/SidesUVsCheckBox" to="." method="_on_sides_uvs_check_box_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/SaveSettingsBtn" to="." method="_on_save_settings_btn_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/CloseBtn" to="." method="_on_close_btn_pressed"]

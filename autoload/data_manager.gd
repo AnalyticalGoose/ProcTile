@@ -3,6 +3,7 @@ extends Node
 enum DatabaseType {
 	SETTINGS,
 	MATERIAL,
+	MESH,
 }
 
 var material_data : Array[Dictionary]
@@ -40,6 +41,24 @@ func save_export_settings(dir : String, template : int, res : int, format : int,
 	_load_settings() # refresh settings data
 
 
+func save_mesh_settings(mesh : int, remove_back : bool, remove_bottom : bool, shrink_back : bool, shrink_sides : bool) -> void:
+	var cfg_file : ConfigFile = ConfigFile.new()
+	
+	if cfg_file.load(settings_path):
+		Logger.puts_error("Cannot find user settings at" + settings_path)
+
+	cfg_file.set_value("mesh_settings", "mesh_type", mesh)
+	cfg_file.set_value("mesh_settings", "remove_back_face", remove_back)
+	cfg_file.set_value("mesh_settings", "remove_bottom_face", remove_bottom)
+	cfg_file.set_value("mesh_settings", "shrink_back_UVs", shrink_back)
+	cfg_file.set_value("mesh_settings", "shrink_sides_UVs", shrink_sides)
+	
+	if cfg_file.save(settings_path):
+		Logger.puts_error("Cannot save mesh settings to " + settings_path)
+	
+	_load_settings() # refresh settings data
+
+
 func _init_schema(database_type: DatabaseType, database : Database) -> void:
 	match database_type:
 		DatabaseType.SETTINGS:
@@ -54,6 +73,13 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 		DatabaseType.MATERIAL:
 			database.add_mandatory_property("ui_elements", TYPE_ARRAY)
 			database.add_mandatory_property("shader_data", TYPE_ARRAY)
+			
+		DatabaseType.MESH:
+			database.add_valid_property("mesh_type")
+			database.add_valid_property("remove_back_face")
+			database.add_valid_property("remove_bottom_face")
+			database.add_valid_property("shrink_back_UVs")
+			database.add_valid_property("shrink_sides_UVs")
 
 
 func _load_settings() -> void:
@@ -71,5 +97,6 @@ func _load_settings() -> void:
 	
 	var settings_database : Database = Database.new()
 	_init_schema(DatabaseType.SETTINGS, settings_database)
+	_init_schema(DatabaseType.MESH, settings_database)
 	settings_database.load_from_path(settings_path)
 	settings_data = settings_database.get_array()

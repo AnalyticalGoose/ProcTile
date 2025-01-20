@@ -4,12 +4,9 @@ extends Node
 @export var pause_icon : CompressedTexture2D
 @export var play_icon : CompressedTexture2D
 @export var mesh_btn : Button
-@export var mesh_settings_scene : PackedScene
+@export var mesh_settings : MeshSettings
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer
-
-
-var mesh_settings : MeshSettings
 
 
 func _on_pause_renderer_button_toggled(toggled_on: bool) -> void:
@@ -23,13 +20,8 @@ func _on_pause_renderer_button_toggled(toggled_on: bool) -> void:
 		pause_btn.icon = pause_icon
 
 
-func _on_mesh_settings_button_pressed() -> void:
-	if mesh_settings:
-		if mesh_settings.visible:
-			mesh_settings.hide()
-		else:
-			mesh_settings.show()
+func _on_mesh_settings_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		mesh_settings.show()
 	else:
-		mesh_settings = mesh_settings_scene.instantiate()
-		mesh_btn.add_child(mesh_settings)
-	
+		mesh_settings.hide()

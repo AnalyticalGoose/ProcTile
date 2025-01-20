@@ -188,7 +188,7 @@ offset_bottom = 1080.0
 grow_vertical = 2
 theme = ExtResource("1_x425p")
 
-[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("pause_btn", "mesh_btn")]
+[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("pause_btn", "mesh_btn", "mesh_settings")]
 top_level = true
 layout_mode = 1
 anchors_preset = 10
@@ -200,11 +200,11 @@ offset_bottom = 65.0
 grow_horizontal = 2
 theme = ExtResource("1_x425p")
 script = ExtResource("6_s0trs")
+pause_btn = NodePath("HBoxContainer/PauseRendererButton")
 pause_icon = ExtResource("6_wvlpy")
 play_icon = ExtResource("8_fa1dh")
-mesh_settings_scene = ExtResource("10_d81an")
-pause_btn = NodePath("HBoxContainer/PauseRendererButton")
 mesh_btn = NodePath("HBoxContainer/MeshSettingsButton")
+mesh_settings = NodePath("HBoxContainer/MeshSettingsButton/MeshSettings")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="RendererToolbar"]
 modulate = Color(0.8, 0.8, 0.8, 1)
@@ -223,9 +223,21 @@ expand_icon = true
 [node name="MeshSettingsButton" type="Button" parent="RendererToolbar/HBoxContainer"]
 custom_minimum_size = Vector2(35, 0)
 layout_mode = 2
+toggle_mode = true
 icon = ExtResource("6_1sqbh")
 icon_alignment = 1
 expand_icon = true
+
+[node name="MeshSettings" parent="RendererToolbar/HBoxContainer/MeshSettingsButton" instance=ExtResource("10_d81an")]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.28571
+anchor_right = 1.28571
+offset_left = -192.0
+offset_right = 0.0
+grow_vertical = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="RightOptions" type="PanelContainer" parent="."]
 z_index = -1
@@ -408,5 +420,5 @@ script = ExtResource("7_08hm7")
 [connection signal="mouse_entered" from="RendererWindow" to="RendererWindow" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="RendererWindow" to="RendererWindow" method="_on_mouse_exited"]
 [connection signal="toggled" from="RendererToolbar/HBoxContainer/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
-[connection signal="pressed" from="RendererToolbar/HBoxContainer/MeshSettingsButton" to="RendererToolbar" method="_on_mesh_settings_button_pressed"]
+[connection signal="toggled" from="RendererToolbar/HBoxContainer/MeshSettingsButton" to="RendererToolbar" method="_on_mesh_settings_button_toggled"]
 [connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" to="AssetsWindow" method="_on_asset_selector_item_activated"]

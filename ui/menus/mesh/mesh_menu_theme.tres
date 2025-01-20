@@ -12,10 +12,11 @@ bg_color = Color(0.303233, 0.303233, 0.303233, 1)
 corner_detail = 1
 
 [resource]
+Button/font_sizes/font_size = 12
 CheckBox/font_sizes/font_size = 12
 Label/font_sizes/font_size = 14
-MarginContainer/constants/margin_left = 10
-MarginContainer/constants/margin_right = 10
+MarginContainer/constants/margin_left = 15
+MarginContainer/constants/margin_right = 15
 MarginContainer/constants/margin_top = 10
 OptionButton/font_sizes/font_size = 12
 OptionButton/styles/normal = SubResource("StyleBoxFlat_3jvs5")
