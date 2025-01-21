@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://chi1i16cm6nhp"
+path="res://.godot/imported/cube_back_bottom_cull.obj-86078172f577e49b730d7a48fd43ddbd.mesh"
+
+[deps]
+
+files=["res://.godot/imported/cube_back_bottom_cull.obj-86078172f577e49b730d7a48fd43ddbd.mesh"]
+
+source_file="res://meshes/cube/cube_back_bottom_cull.obj"
+dest_files=["res://.godot/imported/cube_back_bottom_cull.obj-86078172f577e49b730d7a48fd43ddbd.mesh", "res://.godot/imported/cube_back_bottom_cull.obj-86078172f577e49b730d7a48fd43ddbd.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

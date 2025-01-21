@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://kukxq0246lch"]
+[gd_scene load_steps=15 format=3 uid="uid://kukxq0246lch"]
 
 [ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh/mesh_menu_theme.tres" id="1_0mu7x"]
 [ext_resource type="Script" path="res://ui/menus/mesh/mesh_settings.gd" id="2_8udx8"]
@@ -6,6 +6,11 @@
 [ext_resource type="ArrayMesh" uid="uid://c41mp0hqr2wd7" path="res://meshes/tile/tile_back_bottom_cull.obj" id="4_om0wj"]
 [ext_resource type="ArrayMesh" uid="uid://cjstuqnwwcakd" path="res://meshes/tile/tile_back_cull.obj" id="5_lpa08"]
 [ext_resource type="ArrayMesh" uid="uid://c62xi1dgnpy63" path="res://meshes/tile/tile_bottom_cull.obj" id="6_g0klt"]
+[ext_resource type="ArrayMesh" uid="uid://dvlccqssfgtla" path="res://meshes/cube/cube.obj" id="7_f23y1"]
+[ext_resource type="ArrayMesh" uid="uid://cajhs8akx4so1" path="res://meshes/cube/cube_bottom_cull.obj" id="8_gjaki"]
+[ext_resource type="ArrayMesh" uid="uid://b07kby7uucp66" path="res://meshes/cube/cube_back_cull.obj" id="9_58lah"]
+[ext_resource type="ArrayMesh" uid="uid://chi1i16cm6nhp" path="res://meshes/cube/cube_back_bottom_cull.obj" id="10_rm2gn"]
+[ext_resource type="ArrayMesh" uid="uid://cwiiygkn64bk1" path="res://meshes/plane/plane.obj" id="11_r2x65"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uav13"]
 
@@ -44,8 +49,10 @@ grow_horizontal = 0
 grow_vertical = 0
 theme = ExtResource("1_0mu7x")
 script = ExtResource("2_8udx8")
-mesh_options = NodePath("MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton")
 tile_meshes = Array[Mesh]([ExtResource("3_0csbf"), ExtResource("6_g0klt"), ExtResource("5_lpa08"), ExtResource("4_om0wj")])
+cube_meshes = Array[Mesh]([ExtResource("7_f23y1"), ExtResource("8_gjaki"), ExtResource("9_58lah"), ExtResource("10_rm2gn")])
+plane_meshes = Array[Mesh]([ExtResource("11_r2x65")])
+mesh_options = NodePath("MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton")
 back_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox")
 bottom_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox")
 back_uvs_checkbox = NodePath("MarginContainer/VBoxContainer/UVsContainer/BackUVsCheckBox")
@@ -78,10 +85,10 @@ text = "Mesh"
 layout_mode = 2
 selected = 0
 item_count = 3
-popup/item_0/text = "Plane"
-popup/item_1/text = "Tile"
+popup/item_0/text = "Tile"
+popup/item_1/text = "Cube"
 popup/item_1/id = 1
-popup/item_2/text = "Cube"
+popup/item_2/text = "Plane"
 popup/item_2/id = 2
 
 [node name="FacesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -148,6 +155,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
 action_mode = 0
 text = "Close"
 
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton" to="." method="_on_mesh_option_button_item_selected"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox" to="." method="_on_back_face_check_box_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox" to="." method="_on_bottom_face_check_box_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/UVsContainer/BackUVsCheckBox" to="." method="_on_back_uvs_check_box_toggled"]

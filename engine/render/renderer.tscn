@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" path="res://materials/brick_wall/brick_wall_shader.gdshader" id="1_iqibk"]
-[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_14j6m"]
+[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_e3wv5"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_h5fst"]
 
@@ -34,7 +34,7 @@ script = ExtResource("1_11juy")
 
 [node name="Mesh" type="MeshInstance3D" parent="MeshPivot"]
 material_override = SubResource("ShaderMaterial_cnb6x")
-mesh = ExtResource("3_14j6m")
+mesh = ExtResource("3_e3wv5")
 skeleton = NodePath("")
 
 [node name="CameraPivot" type="Node3D" parent="."]
