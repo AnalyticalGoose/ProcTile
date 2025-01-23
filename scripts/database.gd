@@ -76,9 +76,9 @@ func is_property_valid(entry: Dictionary, property: String, value = null) -> boo
 
 func load_from_path(path: String) -> void:
 	var dir: DirAccess = DirAccess.open(path)
+	
 	if dir:
 		var file_list : Array[String]
-		
 		var error: Error = dir.list_dir_begin()
 		if error:
 			push_error("failed to init directory stream: %d" % error)
@@ -93,7 +93,7 @@ func load_from_path(path: String) -> void:
 		file_list.sort()
 		for file_path: String in file_list:
 			load_from_path(file_path)
-		
+			
 		return
 		
 	if not __did_setup:

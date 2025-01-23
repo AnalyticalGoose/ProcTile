@@ -3,10 +3,11 @@
 [ext_resource type="Script" path="res://ui/menus/export/export.gd" id="1_2taha"]
 [ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
 
-[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "resolution_btn", "format_btn", "interp_label", "interp_btn", "normals_btn", "filename_line_edit", "filename_labels_container", "button_container", "progress_bar")]
+[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options", "resolution_btn", "format_btn", "interp_label", "interp_btn", "normals_btn", "export_mesh_btn", "mesh_format_btn", "filename_line_edit", "filename_labels_container", "mesh_label", "button_container", "progress_bar")]
 title = "Export"
 initial_position = 1
-size = Vector2i(544, 400)
+size = Vector2i(544, 425)
+unresizable = true
 theme = ExtResource("1_slfu6")
 script = ExtResource("1_2taha")
 file_dialog = NodePath("FileDialog")
@@ -17,8 +18,11 @@ format_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/FormatB
 interp_label = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationLabel")
 interp_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn")
 normals_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton")
+export_mesh_btn = NodePath("MarginContainer/VBoxContainer/MeshExportContainer/ExportMeshBtn")
+mesh_format_btn = NodePath("MarginContainer/VBoxContainer/MeshExportContainer/MeshFormatBtn")
 filename_line_edit = NodePath("MarginContainer/VBoxContainer/NameContainer/LineEdit")
-filename_labels_container = NodePath("MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer")
+filename_labels_container = NodePath("MarginContainer/VBoxContainer/FilenameLabelsContainer")
+mesh_label = NodePath("MarginContainer/VBoxContainer/FilenameLabelsContainer/MeshLabel")
 button_container = NodePath("MarginContainer/ButtonContainer")
 progress_bar = NodePath("MarginContainer/ProgressBar")
 
@@ -33,7 +37,7 @@ access = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 offset_right = 544.0
-offset_bottom = 400.0
+offset_bottom = 430.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
@@ -140,6 +144,33 @@ popup/item_0/text = "OpenGL"
 popup/item_1/text = "DirectX"
 popup/item_1/id = 1
 
+[node name="MeshExportContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ExportMeshLabel" type="Label" parent="MarginContainer/VBoxContainer/MeshExportContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Export Mesh"
+
+[node name="ExportMeshBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/MeshExportContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+popup/item_0/text = "Disabled"
+popup/item_1/text = "Enabled"
+popup/item_1/id = 1
+
+[node name="MeshFormatLabel" type="Label" parent="MarginContainer/VBoxContainer/MeshExportContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Mesh Format"
+
+[node name="MeshFormatBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/MeshExportContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 1
+popup/item_0/text = "obj"
+
 [node name="NameContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
@@ -158,15 +189,11 @@ layout_mode = 2
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_bottom = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-alignment = 2
-
-[node name="FilenameLabelsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="FilenameLabelsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
+[node name="MapLabel" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -174,7 +201,7 @@ theme_override_font_sizes/font_size = 12
 text = "*_baseColor.png"
 horizontal_alignment = 2
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
+[node name="MapLabel2" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -183,7 +210,7 @@ text = "*_occlusion.png
 "
 horizontal_alignment = 2
 
-[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
+[node name="MapLabel3" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -191,7 +218,7 @@ theme_override_font_sizes/font_size = 12
 text = "*_roughness.png"
 horizontal_alignment = 2
 
-[node name="Label4" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
+[node name="MapLabel4" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
@@ -199,12 +226,20 @@ theme_override_font_sizes/font_size = 12
 text = "*_metallic.png"
 horizontal_alignment = 2
 
-[node name="Label5" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/FilenameLabelsContainer"]
+[node name="MapLabel5" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 12
 text = "*_normal.png"
+horizontal_alignment = 2
+
+[node name="MeshLabel" type="Label" parent="MarginContainer/VBoxContainer/FilenameLabelsContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "*_mesh.obj"
 horizontal_alignment = 2
 
 [node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer"]
@@ -242,6 +277,8 @@ step = 1.0
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn" to="." method="_on_format_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn" to="." method="_on_interpolation_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton" to="." method="_on_normals_button_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/MeshExportContainer/ExportMeshBtn" to="." method="_on_export_mesh_btn_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/MeshExportContainer/MeshFormatBtn" to="." method="_on_mesh_format_btn_item_selected"]
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/NameContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/ButtonContainer/CancelBtn" to="." method="_on_close_requested"]
 [connection signal="pressed" from="MarginContainer/ButtonContainer/SaveBtn" to="." method="_on_save_btn_pressed"]

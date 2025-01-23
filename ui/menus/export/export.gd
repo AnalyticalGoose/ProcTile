@@ -16,8 +16,11 @@ signal normals_recalculated
 @export var interp_label : Label
 @export var interp_btn : OptionButton
 @export var normals_btn : OptionButton
+@export var export_mesh_btn : OptionButton
+@export var mesh_format_btn : OptionButton
 @export var filename_line_edit : LineEdit
 @export var filename_labels_container : VBoxContainer
+@export var mesh_label : Label
 @export var button_container : HBoxContainer
 @export var progress_bar : ProgressBar
 
@@ -39,17 +42,24 @@ var output_directory : String:
 	set(directory):
 		output_directory = directory
 		directory_btn.text = directory
+
 var interpolation_type : int
-var normals_type : int = 0
+var normals_type : int
+var export_mesh : int
+var mesh_format : int
 var filetype_string : String
+var mesh_format_string : String
 var material_name : String
 
 var export_template_data : Array[Array] = []
 var filename_maps : Array[String] = []
 var filename_labels : Array[Node] = []
 
+@onready var mesh_settings_instance : MeshSettings = $/root/ProcTile/UI/RendererToolbar/HBoxContainer/MeshSettingsButton/MeshSettings
+
 const RESOLUTIONS : Array[int] = [512, 1024, 2048, 4096]
 const FILE_TYPES_STRINGS : Array[String] = [".png", ".jpg"]
+const MESH_FORMATS_STRINGS : Array[String] = [".obj"]
 
 
 func _ready() -> void:
@@ -99,6 +109,9 @@ func _load_export_settings() -> void:
 	filetype_string = FILE_TYPES_STRINGS[output_filetype]
 	interpolation_type = settings_data.export_interpolation
 	normals_type = settings_data.export_normals
+	export_mesh = settings_data.export_mesh
+	mesh_format = settings_data.mesh_format
+	mesh_format_string = MESH_FORMATS_STRINGS[mesh_format]
 
 
 func _setup_export_ui() -> void:
@@ -109,9 +122,12 @@ func _setup_export_ui() -> void:
 
 	# set filename labels
 	filename_labels = filename_labels_container.get_children()
+	filename_labels.pop_back() # pop mesh label
 	for i : int in filename_labels.size():
 		if i >= filename_maps.size():
 			(filename_labels[i] as Label).hide()
+	if export_mesh == 0:
+		mesh_label.hide()
 
 	# update ui from settings
 	template_options.select(output_template)
@@ -119,6 +135,8 @@ func _setup_export_ui() -> void:
 	format_btn.select(output_filetype)
 	interp_btn.select(interpolation_type)
 	normals_btn.select(normals_type)
+	export_mesh_btn.select(export_mesh)
+	mesh_format_btn.select(mesh_format)
 	filename_line_edit.text = renderer.asset_name
 	_on_line_edit_text_changed(renderer.asset_name)
 
@@ -127,6 +145,10 @@ func _set_filename_labels_text() -> void:
 	for i : int in filename_labels.size():
 		if i < filename_maps.size():
 			(filename_labels[i] as Label).set_text(material_name + filename_maps[i] + filetype_string)
+
+
+func _set_meshname_label_text() -> void:
+	mesh_label.set_text(material_name + "_mesh" + mesh_format_string)
 
 
 func _on_directory_btn_pressed() -> void:
@@ -175,9 +197,28 @@ func _on_format_btn_item_selected(index: int) -> void:
 	_set_filename_labels_text()
 
 
+func _on_export_mesh_btn_item_selected(index: int) -> void:
+	export_mesh = index
+
+	if not export_mesh:
+		mesh_label.hide()
+		mesh_format_btn.disabled = true
+		return
+	
+	mesh_label.show()
+	mesh_format_btn.disabled = false
+
+
+func _on_mesh_format_btn_item_selected(index: int) -> void:
+	mesh_format = index
+	mesh_format_string = MESH_FORMATS_STRINGS[index]
+	_set_meshname_label_text()
+
+
 func _on_line_edit_text_changed(new_text: String) -> void:
 	material_name = new_text
 	_set_filename_labels_text()
+	_set_meshname_label_text()
 
 
 func _on_close_requested() -> void:
@@ -188,7 +229,15 @@ func _on_close_requested() -> void:
 
 func _on_save_btn_pressed() -> void:
 	DataManager.save_export_settings(
-		output_directory, output_template, output_resolution, output_filetype, interpolation_type, normals_type)
+			output_directory, 
+			output_template, 
+			output_resolution, 
+			output_filetype, 
+			interpolation_type, 
+			normals_type, 
+			export_mesh, 
+			mesh_format,
+	)
 
 
 func _on_export_button_pressed() -> void:
@@ -217,8 +266,15 @@ func _init_export() -> void:
 	
 	exporter = Exporter.new()
 	exporter.setup_properties(
-			compute_shader, self, material_name, output_resolution, 
-			renderer.texture_size, interpolation_type
+			compute_shader, 
+			self, 
+			material_name, 
+			output_resolution, 
+			renderer.texture_size, 
+			interpolation_type, 
+			export_mesh,
+			mesh_format,
+			mesh_settings_instance,
 	)
 	
 	exporter.export(export_template_data, output_filetype, output_directory)
