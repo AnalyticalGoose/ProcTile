@@ -6,7 +6,7 @@ static func get_export_template_data(output_template : int) -> Array[Array]:
 	match output_template:
 		0:
 			return [
-				[0, Image.FORMAT_RGBAF, "_baseColor"],
+				[0, Image.FORMAT_RGBAH, "_baseColor"],
 				[5, Image.FORMAT_RGBAH, "_occlusionRoughnessMetallic"],
 				[4, Image.FORMAT_RGBAH, "_normal"],
 			]
