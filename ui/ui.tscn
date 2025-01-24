@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_line.tscn" id="9_b1bll"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
+[ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -50,8 +51,6 @@ size = Vector2(20, 20)
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xlou5"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_suw5e"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_apq77"]
 
@@ -358,11 +357,11 @@ layout_mode = 2
 item_count = 4
 max_columns = 4
 same_column_width = true
-fixed_column_width = 56
+fixed_column_width = 58
 icon_mode = 0
-fixed_icon_size = Vector2i(50, 50)
+fixed_icon_size = Vector2i(54, 54)
 item_0/text = "Brick Wall"
-item_0/icon = SubResource("PlaceholderTexture2D_suw5e")
+item_0/icon = ExtResource("13_2aspn")
 item_1/text = "Test Tiles"
 item_1/icon = SubResource("PlaceholderTexture2D_apq77")
 item_2/text = "Test Metal"

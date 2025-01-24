@@ -118,7 +118,7 @@ const float o_curve_1_cp2_rs = 1.23; // Relative slope for control point 1 of th
 const float o_curve_2_ls = 0.67; // Local slope for control point 2 of the second segment
 
 // Normal map
-const float sobel_strength = 0.05;
+const float sobel_strength = 0.12;
 
 
 vec4 get_brick_bounds(vec2 uv, vec2 grid, float repeat, float row_offset, int pattern) {
