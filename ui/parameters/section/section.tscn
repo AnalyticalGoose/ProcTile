@@ -11,13 +11,14 @@ content_margin_bottom = 10.0
 color = Color(0.683077, 0.683077, 0.683077, 1)
 thickness = 2
 
-[node name="Section" type="VBoxContainer" node_paths=PackedStringArray("section_label")]
+[node name="Section" type="VBoxContainer" node_paths=PackedStringArray("section_label", "show_hide_btn")]
 offset_right = 240.0
 offset_bottom = 48.0
 size_flags_horizontal = 3
 theme_override_constants/separation = -5
 script = ExtResource("1_0kr8r")
 section_label = NodePath("Heading/SectionName")
+show_hide_btn = NodePath("Heading/ShowHideButton")
 
 [node name="Heading" type="HBoxContainer" parent="."]
 layout_mode = 2

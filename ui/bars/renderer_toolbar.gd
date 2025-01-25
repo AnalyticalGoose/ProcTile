@@ -1,5 +1,7 @@
 extends Node
 
+@export var undo_btn : Button
+@export var redo_btn : Button
 @export var pause_btn : Button
 @export var pause_icon : CompressedTexture2D
 @export var play_icon : CompressedTexture2D
@@ -7,6 +9,11 @@ extends Node
 @export var mesh_settings : MeshSettings
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer
+
+
+func _ready() -> void:
+	ActionsManager.undo_btn = undo_btn
+	ActionsManager.redo_btn = redo_btn
 
 
 func _on_pause_renderer_button_toggled(toggled_on: bool) -> void:
@@ -25,3 +32,11 @@ func _on_mesh_settings_button_toggled(toggled_on: bool) -> void:
 		mesh_settings.show()
 	else:
 		mesh_settings.hide()
+
+
+func _on_undo_btn_pressed() -> void:
+	ActionsManager.undo_action()
+
+
+func _on_redo_btn_pressed() -> void:
+	ActionsManager.redo_action()

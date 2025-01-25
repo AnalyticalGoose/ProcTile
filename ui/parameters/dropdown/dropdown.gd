@@ -7,7 +7,7 @@ extends VBoxContainer
 var compute_shader : ComputeShader
 var push_constant_index : float
 var dependant_stage : float
-
+var option_index : int = 0
 
 @warning_ignore("unsafe_call_argument")
 func setup_properties(data : Array) -> void:
@@ -22,7 +22,13 @@ func setup_properties(data : Array) -> void:
 		popup_menu.set_item_as_radio_checkable(i, false)
 
 
-func _on_option_button_item_selected(index : int) -> void:
+func set_dropdown_option(index : int) -> void:
 	@warning_ignore("narrowing_conversion")
 	compute_shader.push_constant.set(push_constant_index, float(index))
 	compute_shader.stage = dependant_stage
+	option_index = index
+
+
+func _on_option_button_item_selected(index : int) -> void:
+	ActionsManager.new_undo_action = [2, self, option_index]
+	set_dropdown_option(index)

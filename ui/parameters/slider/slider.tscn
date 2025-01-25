@@ -28,5 +28,6 @@ layout_mode = 2
 alignment = 1
 context_menu_enabled = false
 
+[connection signal="drag_ended" from="Container/Slider" to="." method="_on_slider_drag_ended"]
 [connection signal="value_changed" from="Container/Slider" to="." method="_on_slider_value_changed"]
 [connection signal="text_submitted" from="Container/SliderValue" to="." method="_on_slider_value_text_submitted"]
