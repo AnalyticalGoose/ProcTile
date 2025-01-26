@@ -50,16 +50,27 @@ static func undo_action() -> void:
 			dropdown_instance.set_dropdown_option(option_index)
 			dropdown_instance.option_button.select(option_index)
 		
-		#ActionType.GRADIENT_COL:
-			#pass
-		#
-		#ActionType.GRADIENT_CONTROL:
-			#pass
-		#
-		#ActionType.UNIFORM_COL:
-			#pass
-			
-
+		ActionType.GRADIENT_COL:
+			pass
+		
+		ActionType.GRADIENT_CONTROL:
+			pass
+		
+		ActionType.UNIFORM_COL:
+			var uniform_col_instance : ParamColour = action[1]
+			var colour_changed : bool = action[2]
+			if colour_changed:
+				var col : Color = action[3]
+				_add_redo_action(
+					[ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, 
+					uniform_col_instance.colour_preview.color]
+				)
+				uniform_col_instance.change_colour(col)
+				uniform_col_instance.colour_picker.set_colour(col)
+			else:
+				var visibility : bool = action[3]
+				uniform_col_instance.colour_picker.visible = visibility
+				_add_redo_action([ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, !visibility])
 
 	if _undo_actions.is_empty():
 		undo_btn.disabled = true
@@ -89,6 +100,28 @@ static func redo_action() -> void:
 			var option_index : int = action[2]
 			dropdown_instance.set_dropdown_option(option_index)
 			dropdown_instance.option_button.select(option_index)
+			
+		ActionType.GRADIENT_COL:
+			pass
+		
+		ActionType.GRADIENT_CONTROL:
+			pass
+		
+		ActionType.UNIFORM_COL:
+			var uniform_col_instance : ParamColour = action[1]
+			var colour_changed : bool = action[2]
+			if colour_changed:
+				var col : Color = action[3]
+				_add_undo_action(
+						[ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, 
+						uniform_col_instance.colour_preview.color]
+				)
+				uniform_col_instance.change_colour(col)
+				uniform_col_instance.colour_picker.set_colour(col)
+			else:
+				var visibility : bool = action[3]
+				uniform_col_instance.colour_picker.visible = visibility
+				_add_undo_action([ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, !visibility])
 
 	if _redo_actions.is_empty():
 		redo_btn.disabled = true

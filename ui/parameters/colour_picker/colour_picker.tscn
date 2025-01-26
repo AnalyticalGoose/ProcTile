@@ -19,6 +19,7 @@ theme_override_constants/sv_height = 213
 theme_override_constants/h_width = 25
 alignment = 1
 edit_alpha = false
+can_add_swatches = false
 sampler_visible = false
 color_modes_visible = false
 sliders_visible = false
