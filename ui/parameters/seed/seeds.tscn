@@ -13,7 +13,7 @@ theme_override_constants/separation = 5
 script = ExtResource("1_dpp8o")
 seed_single_scene = ExtResource("2_b56yj")
 label = NodePath("Heading/Label")
-hide_btn = NodePath("Heading/ShowHideButton")
+hide_btn = NodePath("Heading/HideButton")
 randomise_btn = NodePath("ButtonsContainer/RandomiseBtn")
 show_all_btn = NodePath("ButtonsContainer/ShowAllBtn")
 edit_btn = NodePath("ButtonsContainer/EditBtn")
@@ -29,7 +29,7 @@ alignment = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ShowHideButton" type="TextureButton" parent="Heading"]
+[node name="HideButton" type="TextureButton" parent="Heading"]
 visible = false
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
@@ -65,7 +65,7 @@ stretch_mode = 4
 layout_mode = 2
 theme_override_constants/margin_bottom = 10
 
-[connection signal="pressed" from="Heading/ShowHideButton" to="." method="_on_show_hide_button_pressed"]
+[connection signal="pressed" from="Heading/HideButton" to="." method="_on_hide_button_pressed"]
 [connection signal="pressed" from="ButtonsContainer/RandomiseBtn" to="." method="_on_randomise_btn_pressed"]
 [connection signal="pressed" from="ButtonsContainer/ShowAllBtn" to="." method="_on_show_all_btn_pressed"]
 [connection signal="pressed" from="ButtonsContainer/EditBtn" to="." method="_on_show_all_btn_pressed"]

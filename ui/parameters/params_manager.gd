@@ -16,8 +16,7 @@ enum ui_element {
 @export var dropdown_scene : PackedScene
 @export var gradient_scene : PackedScene
 @export var colour_scene : PackedScene
-@export var seed_single_scene : PackedScene
-@export var seed_multiple_scene : PackedScene
+@export var seed_scene : PackedScene
 
 var current_container : ParamSection
 var compute_shader : ComputeShader
@@ -66,8 +65,8 @@ func _build_params_ui(ui_data : Array, shader : ComputeShader) -> void:
 				current_container.children.append(colour)
 				
 			ui_element.SEED:
-				var seed_multiple : ParamSeeds = seed_multiple_scene.instantiate() as ParamSeeds
-				seed_multiple.compute_shader = compute_shader
-				seed_multiple.setup_properties(element_data)
-				current_container.add_child(seed_multiple)
-				current_container.children.append(seed_multiple)
+				var seeds : ParamSeeds = seed_scene.instantiate() as ParamSeeds
+				seeds.compute_shader = compute_shader
+				seeds.setup_properties(element_data)
+				current_container.add_child(seeds)
+				current_container.children.append(seeds)

@@ -39,13 +39,7 @@ func setup_properties(data : Array) -> void:
 		show_all_btn.queue_free()
 
 
-func _on_show_all_btn_pressed() -> void:
-	hide_btn.show()
-	buttons_container.hide()
-	_show_seed_controls()
-
-
-func _on_show_hide_button_pressed() -> void:
+func hide_individual_seeds() -> void:
 	hide_btn.hide()
 	
 	if buttons_container.visible:
@@ -55,6 +49,43 @@ func _on_show_hide_button_pressed() -> void:
 		buttons_container.show()
 		for i : int in _seed_nodes.size():
 			_seed_nodes[i].hide()
+
+
+func show_individual_seeds() -> void:
+	hide_btn.show()
+	buttons_container.hide()
+	_show_seed_controls()
+
+
+# Singular seed
+func set_seed_value(value : float, index : int, shader_index : int) -> void:
+	seed_values[index] = value
+	compute_shader.seeds_array[shader_index] = value
+	_seed_nodes[index].seed_value.set_text(str(value))
+	_update_storage_buffer()
+
+
+# All seeds
+func set_seeds_values(values : Array) -> void:
+	for i : int in values.size():
+		var seed_val : float = values[i]
+		seed_values[i] = seed_val
+		compute_shader.seeds_array[seed_indexes[i]] = seed_val
+
+		if _single_seeds_created:
+			_seed_nodes[i].seed_value.set_text(str(seed_val))
+	
+	_update_storage_buffer()
+
+
+func _on_show_all_btn_pressed() -> void:
+	show_individual_seeds()
+	ActionsManager.new_undo_action = [6, self, 0]
+
+
+func _on_hide_button_pressed() -> void:
+	hide_individual_seeds()
+	ActionsManager.new_undo_action = [6, self, 1]
 
 
 func _create_seed_controls() -> void:
@@ -78,6 +109,8 @@ func _show_seed_controls() -> void:
 
 
 func _on_randomise_btn_pressed() -> void:
+	ActionsManager.new_undo_action = [6, self, 2, seed_values.duplicate()]
+	
 	for i : int in seed_values.size():
 		var random_float : float = snappedf(_rng.randf(), 0.000000001)
 		seed_values[i] = random_float
@@ -90,6 +123,8 @@ func _on_randomise_btn_pressed() -> void:
 
 
 func _on_seed_randomised(i : int, seed_array_index : int) -> void:
+	ActionsManager.new_undo_action = [6, self, 3, seed_values[i], i, seed_array_index]
+	
 	var random_float : float = snappedf(_rng.randf(), 0.000000001)
 	seed_values[i] = random_float
 	compute_shader.seeds_array[seed_array_index] = random_float

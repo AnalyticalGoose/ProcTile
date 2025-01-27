@@ -8,8 +8,7 @@ enum ActionType {
 	GRADIENT_COL,
 	GRADIENT_CONTROL,
 	UNIFORM_COL,
-	SEED_SINGLE,
-	SEEDS_MULTIPLE,
+	SEED,
 }
 
 const MAX_ACTIONS : int = 20
@@ -67,10 +66,34 @@ static func undo_action() -> void:
 				)
 				uniform_col_instance.change_colour(col)
 				uniform_col_instance.colour_picker.set_colour(col)
-			else:
+			else: # if colour hasn't been changed the action must be a visibility change
 				var visibility : bool = action[3]
 				uniform_col_instance.colour_picker.visible = visibility
 				_add_redo_action([ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, !visibility])
+				
+		ActionType.SEED:
+			var seeds_instance : ParamSeeds = action[1]
+			match action[2]:
+				0: # Show all or edit button pressed (both use same signal)
+					seeds_instance.hide_individual_seeds()
+					_add_redo_action([ActionType.SEED, seeds_instance, 0])
+				1: # Hide all button pressed
+					seeds_instance.show_individual_seeds()
+					_add_redo_action([ActionType.SEED, seeds_instance, 1])
+				2: # Randomise or Randomise all button pressed
+					_add_redo_action([ActionType.SEED, seeds_instance, 2, seeds_instance.seed_values.duplicate()])
+					var seeds_values : Array = action[3]
+					seeds_instance.set_seeds_values(seeds_values)
+				3:
+					var seed_value : float = action[3]
+					var index : int = action[4]
+					var shader_index : int = action[5]
+					_add_redo_action(
+							[ActionType.SEED, seeds_instance, 3, seeds_instance.seed_values[index],
+							index, shader_index]
+					)
+					seeds_instance.set_seed_value(seed_value, index, shader_index)
+
 
 	if _undo_actions.is_empty():
 		undo_btn.disabled = true
@@ -122,6 +145,29 @@ static func redo_action() -> void:
 				var visibility : bool = action[3]
 				uniform_col_instance.colour_picker.visible = visibility
 				_add_undo_action([ActionType.UNIFORM_COL, uniform_col_instance, colour_changed, !visibility])
+		
+		ActionType.SEED:
+			var seeds_instance : ParamSeeds = action[1]
+			match action[2]:
+				0:
+					seeds_instance.show_individual_seeds()
+					_add_undo_action([ActionType.SEED, seeds_instance, 0])
+				1:
+					seeds_instance.hide_individual_seeds()
+					_add_undo_action([ActionType.SEED, seeds_instance, 1])
+				2:
+					_add_undo_action([ActionType.SEED, seeds_instance, 2, seeds_instance.seed_values.duplicate()])
+					var seeds_values : Array = action[3]
+					seeds_instance.set_seeds_values(seeds_values)
+				3:
+					var seed_value : float = action[3]
+					var index : int = action[4]
+					var shader_index : int = action[5]
+					_add_undo_action(
+							[ActionType.SEED, seeds_instance, 3, seeds_instance.seed_values[index],
+							index, shader_index]
+					)
+					seeds_instance.set_seed_value(seed_value, index, shader_index)
 
 	if _redo_actions.is_empty():
 		redo_btn.disabled = true

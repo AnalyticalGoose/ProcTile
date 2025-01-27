@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=37 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -20,7 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://dsw2dmlnyq433" path="res://ui/icons/icon_play.png" id="8_fa1dh"]
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="Texture2D" uid="uid://n33sjanx45ou" path="res://ui/icons/icon_undo.png" id="9_7vcxs"]
-[ext_resource type="PackedScene" uid="uid://mapw8rs5g7b8" path="res://ui/parameters/seed/seed_line.tscn" id="9_b1bll"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
@@ -415,8 +414,7 @@ slider_scene = ExtResource("6_tarje")
 dropdown_scene = ExtResource("7_ggaj0")
 gradient_scene = ExtResource("6_yy2h4")
 colour_scene = ExtResource("8_iq2nk")
-seed_single_scene = ExtResource("9_b1bll")
-seed_multiple_scene = ExtResource("9_sniln")
+seed_scene = ExtResource("9_sniln")
 
 [node name="MarginContainer" type="MarginContainer" parent="ParamsWindow"]
 layout_mode = 2
