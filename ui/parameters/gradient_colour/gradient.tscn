@@ -66,6 +66,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/margin_bottom = 10
 
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="Heading/HideButton" to="." method="_on_hide_button_pressed"]
 [connection signal="gui_input" from="Texture/ControlsContainer" to="." method="_on_controls_container_gui_input"]
 [connection signal="gui_input" from="ColourPreview" to="." method="_on_colour_preview_gui_input"]

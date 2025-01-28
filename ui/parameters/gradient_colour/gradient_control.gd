@@ -46,10 +46,13 @@ func _process(_delta: float) -> void:
 		bounds_changed.emit(index) 
 
 
-func set_selected() -> void:
+func set_selected(emit_selected_signal : bool = true) -> void:
 	border.color = Color.LIGHT_GRAY
 	position_indicator.color = Color.LIGHT_GRAY
-	selected.emit(index)
+	
+	if emit_selected_signal: # Signal not wanted for undo / redo operations
+		selected.emit(index)
+	
 	is_selected = true
 
 

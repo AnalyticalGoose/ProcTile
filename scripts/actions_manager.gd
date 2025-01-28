@@ -1,6 +1,8 @@
 class_name ActionsManager
 extends RefCounted
 
+## TODO - check if manually typing in values (seed, slider etc) triggers undo redo
+
 enum ActionType {
 	SECTION,
 	SLIDER,
@@ -17,7 +19,6 @@ static var undo_btn : Button
 static var redo_btn : Button
 static var _undo_actions : Array[Array] = []
 static var _redo_actions : Array[Array] = []
-
 static var new_undo_action : Array:
 	set(action):
 		_add_undo_action(action)
@@ -50,7 +51,49 @@ static func undo_action() -> void:
 			dropdown_instance.option_button.select(option_index)
 		
 		ActionType.GRADIENT_COL:
-			pass
+			var gradient_col_instance : ParamGradient = action[1]
+			match action[2]:
+				0: # Show gradient
+					gradient_col_instance.hide_gradient_texture()
+					_add_redo_action([3, gradient_col_instance, 0])
+				
+				1: # Hide gradient
+					gradient_col_instance.show_gradient_texture()
+					_add_redo_action([3, gradient_col_instance, 1])
+				
+				2: # Control selected
+					var previous_control : ParamGradientControl = action[3]
+					var previous_index : int = action[4]
+					var selected_control : ParamGradientControl = action[5]
+					var selected_index : int = action[6]
+					
+					_add_redo_action(
+							[3, gradient_col_instance, 2, previous_control, previous_index, 
+							selected_control, selected_index]
+					)
+					
+					selected_control.set_deselected()
+					if previous_control:
+						previous_control.set_selected(false)
+					else:
+						gradient_col_instance.colour_preview.hide()
+					gradient_col_instance.selected_control = previous_control
+					gradient_col_instance.selected_index = previous_index
+					gradient_col_instance.preview_colour = gradient_col_instance.colour_data[previous_index]
+				
+				3: # Colour preview clicked
+					var visibility : bool = action[3]
+					gradient_col_instance.colour_picker.visible = !visibility
+					_add_redo_action([ActionType.GRADIENT_COL, gradient_col_instance, 3, visibility])
+					
+				4: # Colour changed
+					var col : Color = action[3]
+					_add_redo_action(
+						[ActionType.GRADIENT_COL, gradient_col_instance, 4, 
+						gradient_col_instance.colour_preview.color]
+					)
+					gradient_col_instance.change_colour(col)
+					gradient_col_instance.colour_picker.set_colour(col)
 		
 		ActionType.GRADIENT_CONTROL:
 			pass
@@ -58,6 +101,7 @@ static func undo_action() -> void:
 		ActionType.UNIFORM_COL:
 			var uniform_col_instance : ParamColour = action[1]
 			var colour_changed : bool = action[2]
+			
 			if colour_changed:
 				var col : Color = action[3]
 				_add_redo_action(
@@ -66,6 +110,8 @@ static func undo_action() -> void:
 				)
 				uniform_col_instance.change_colour(col)
 				uniform_col_instance.colour_picker.set_colour(col)
+				uniform_col_instance.undo_redo_colour = col
+			
 			else: # if colour hasn't been changed the action must be a visibility change
 				var visibility : bool = action[3]
 				uniform_col_instance.colour_picker.visible = visibility
@@ -77,14 +123,17 @@ static func undo_action() -> void:
 				0: # Show all or edit button pressed (both use same signal)
 					seeds_instance.hide_individual_seeds()
 					_add_redo_action([ActionType.SEED, seeds_instance, 0])
+				
 				1: # Hide all button pressed
 					seeds_instance.show_individual_seeds()
 					_add_redo_action([ActionType.SEED, seeds_instance, 1])
+				
 				2: # Randomise or Randomise all button pressed
 					_add_redo_action([ActionType.SEED, seeds_instance, 2, seeds_instance.seed_values.duplicate()])
 					var seeds_values : Array = action[3]
 					seeds_instance.set_seeds_values(seeds_values)
-				3:
+				
+				3: # Randomise single seed value
 					var seed_value : float = action[3]
 					var index : int = action[4]
 					var shader_index : int = action[5]
@@ -125,7 +174,50 @@ static func redo_action() -> void:
 			dropdown_instance.option_button.select(option_index)
 			
 		ActionType.GRADIENT_COL:
-			pass
+			var gradient_col_instance : ParamGradient = action[1]
+			match action[2]:
+				0:
+					gradient_col_instance.show_gradient_texture()
+					_add_undo_action([3, gradient_col_instance, 0])
+				
+				1:
+					gradient_col_instance.hide_gradient_texture()
+					_add_undo_action([3, gradient_col_instance, 1])
+				
+				2:
+					var previous_control : ParamGradientControl = action[3]
+					var previous_index : int = action[4]
+					var selected_control : ParamGradientControl = action[5]
+					var selected_index : int = action[6]
+					
+					_add_undo_action(
+							[3, gradient_col_instance, 2, previous_control, previous_index, 
+							selected_control, selected_index]
+					)
+					
+					selected_control.set_selected(false)
+					if previous_control:
+						previous_control.set_deselected()
+					else: # if no control is selected, the preview will also be hidden
+						gradient_col_instance.colour_preview.show()
+					
+					gradient_col_instance.selected_control = selected_control
+					gradient_col_instance.selected_index = selected_index
+					gradient_col_instance.preview_colour = gradient_col_instance.colour_data[selected_index]
+					
+				3: 
+					var visibility : bool = action[3]
+					gradient_col_instance.colour_picker.visible = visibility
+					_add_undo_action([ActionType.GRADIENT_COL, gradient_col_instance, 3, visibility])
+					
+				4:
+					var col : Color = action[3]
+					_add_undo_action(
+						[ActionType.GRADIENT_COL, gradient_col_instance, 4, 
+						gradient_col_instance.colour_preview.color]
+					)
+					gradient_col_instance.change_colour(col)
+					gradient_col_instance.colour_picker.set_colour(col)
 		
 		ActionType.GRADIENT_CONTROL:
 			pass
@@ -152,13 +244,16 @@ static func redo_action() -> void:
 				0:
 					seeds_instance.show_individual_seeds()
 					_add_undo_action([ActionType.SEED, seeds_instance, 0])
+				
 				1:
 					seeds_instance.hide_individual_seeds()
 					_add_undo_action([ActionType.SEED, seeds_instance, 1])
+				
 				2:
 					_add_undo_action([ActionType.SEED, seeds_instance, 2, seeds_instance.seed_values.duplicate()])
 					var seeds_values : Array = action[3]
 					seeds_instance.set_seeds_values(seeds_values)
+				
 				3:
 					var seed_value : float = action[3]
 					var index : int = action[4]

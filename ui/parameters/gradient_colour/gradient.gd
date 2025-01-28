@@ -32,9 +32,10 @@ var preview_colour : Color:
 		colour_preview.color = col
 		if colour_picker:
 			colour_picker.set_colour(col)
+var colour_data : Array[Color] = []
+var undo_redo_colour : Color
 
 var _control_nodes : Array[ParamGradientControl]
-var _colour_data : Array[Color] = []
 var _position_data : PackedFloat32Array
 var _gradient : Gradient = Gradient.new()
 var _gradient_texture : GradientTexture2D
@@ -53,40 +54,29 @@ func setup_properties(data : Array) -> void:
 
 	# Colour data is not stored in a usable format in the CFG and must be converted
 	var raw_colour_data : Array = data[3]
-	_colour_data = _convert_to_colours(raw_colour_data)
+	colour_data = _convert_to_colours(raw_colour_data)
 	
+	#undo_redo_colour = preview_colour
 	_gradient.set_offsets(_position_data)
-	_gradient.set_colors(_colour_data)
+	_gradient.set_colors(colour_data)
 	_gradient_texture = gradient_texture_rect.texture
 	_gradient_texture.gradient = _gradient
 
 
-#region UI input handling
-func _on_controls_container_gui_input(event: InputEvent) -> void:
-	if event is not InputEventMouseButton:
-		return
-	elif (event as InputEventMouseButton).button_index == 1 and event.is_pressed():
-		if gradient_expanded:
-			var mouse_pos_x : float = (get_global_mouse_position() - gradient_controls_container.global_position).x
-			_create_control(mouse_pos_x)
-		else:
-			_expand_gradient_texture()
+func show_gradient_texture() -> void:
+	_gradient_texture.height = 40
+	hide_btn.show()
+	
+	if controls_created:
+		for control : ParamGradientControl in _control_nodes:
+			control.show()
+	else:
+		_create_controls()
+		
+	gradient_expanded = true
 
 
-func _on_colour_preview_gui_input(event: InputEvent) -> void:
-	if event is not InputEventMouseButton: # Early return for non-click
-		return
-	elif (event as InputEventMouseButton).button_index == 1 and event.is_pressed():
-		if colour_picker:
-			if colour_picker.visible:
-				colour_picker.hide()
-			else:
-				colour_picker.show()
-		else:
-			_create_colour_picker()
-
-
-func _on_hide_button_pressed() -> void:
+func hide_gradient_texture() -> void:
 	_gradient_texture.height = 20
 	hide_btn.hide()
 	colour_preview.hide()
@@ -102,6 +92,60 @@ func _on_hide_button_pressed() -> void:
 			colour_picker.hide()
 	
 	gradient_expanded = false
+
+
+func change_colour(col : Color) -> void:
+	colour_preview.color = col
+	selected_control.set_colour_indicator(col)
+	colour_data[selected_index] = col
+	
+	_gradient.set_colors(colour_data)
+	
+	# Update shader storage buffer for colours
+	compute_shader.update_storage_buffer(buffer_indexes[1], PackedColorArray(colour_data).to_byte_array())
+	compute_shader.stage = dependant_stage
+
+
+#region UI input handling
+func _on_controls_container_gui_input(event: InputEvent) -> void:
+	if event is not InputEventMouseButton:
+		return
+	elif (event as InputEventMouseButton).button_index == 1 and event.is_pressed():
+		if gradient_expanded:
+			var mouse_pos_x : float = (get_global_mouse_position() - gradient_controls_container.global_position).x
+			_create_control(mouse_pos_x)
+		else:
+			show_gradient_texture()
+			ActionsManager.new_undo_action = [3, self, 0]
+
+
+func _on_colour_preview_gui_input(event: InputEvent) -> void:
+	if event is not InputEventMouseButton: # Early return for non-click
+		return
+	elif (event as InputEventMouseButton).button_index == 1 and event.is_pressed():
+		if colour_picker:
+			if colour_picker.visible:
+				colour_picker.hide()
+			else:
+				colour_picker.show()
+		else:
+			_create_colour_picker()
+			
+		ActionsManager.new_undo_action = [3, self, 3, colour_picker.visible]
+
+
+func _on_gui_input(_event: InputEvent) -> void:
+	if not colour_picker or not colour_picker.visible or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		return
+	else:
+		if undo_redo_colour != colour_data[selected_index]:
+			ActionsManager.new_undo_action = [3, self, 4, undo_redo_colour]
+			undo_redo_colour = colour_preview.color
+
+
+func _on_hide_button_pressed() -> void:
+	hide_gradient_texture()
+	ActionsManager.new_undo_action = [3, self, 1]
 #endregion
 
 
@@ -115,7 +159,7 @@ func _create_controls() -> void:
 	for i : int in _position_data.size():
 		var gradient_control : ParamGradientControl = _gradient_control_scene.instantiate() as ParamGradientControl
 		
-		gradient_control.set_colour_indicator(_colour_data[i])
+		gradient_control.set_colour_indicator(colour_data[i])
 		gradient_control.position += Vector2(px_positions[i], 0)
 		gradient_control.index = i
 		gradient_control.gradient_controls_container = gradient_controls_container
@@ -151,7 +195,7 @@ func _create_control(px_position : float) -> void:
 	_gradient.add_point(normalised_position, sampled_col)
 	
 	# Insert the new data into the storage arrays
-	_colour_data.insert(index, sampled_col)
+	colour_data.insert(index, sampled_col)
 	_position_data.insert(index, normalised_position)
 	_control_nodes.insert(index, new_control)
 	
@@ -175,7 +219,7 @@ func _create_control(px_position : float) -> void:
 	
 	# rebuild buffers
 	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
-	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(_colour_data).to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
 	compute_shader.stage = dependant_stage
 
 
@@ -195,7 +239,7 @@ func _on_control_deleted(index : int, node_to_delete : ParamGradientControl) -> 
 		
 	# Delete node from GradientControl array, and data from colour and pos
 	_control_nodes.remove_at(index)
-	_colour_data.remove_at(index)
+	colour_data.remove_at(index)
 	_position_data.remove_at(index)
 
 	if node_to_delete == selected_control:
@@ -209,15 +253,17 @@ func _on_control_deleted(index : int, node_to_delete : ParamGradientControl) -> 
 	
 	# recalculate gradient texture
 	_gradient.set_offsets(_position_data)
-	_gradient.set_colors(_colour_data)
+	_gradient.set_colors(colour_data)
 	
 	# rebuild buffers
 	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
-	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(_colour_data).to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
 	compute_shader.stage = dependant_stage
 
 
 func _on_control_selected(index : int, new_selected_node : ParamGradientControl) -> void:
+	ActionsManager.new_undo_action = [3, self, 2, selected_control, selected_index, new_selected_node, index]
+	
 	if selected_control:
 		selected_control.set_deselected()
 	else: # if no control is selected, the preview will also be hidden
@@ -225,21 +271,14 @@ func _on_control_selected(index : int, new_selected_node : ParamGradientControl)
 	
 	selected_control = new_selected_node
 	selected_index = index
-	preview_colour = _colour_data[index]
+	preview_colour = colour_data[index]
+	undo_redo_colour = preview_colour
 #endregion
 
 
 #region Functions to handle parameter changes and signal callbacks
 func _on_colour_picked(col : Color) -> void:
-	colour_preview.color = col
-	selected_control.set_colour_indicator(col)
-	_colour_data[selected_index] = col
-	
-	_gradient.set_colors(_colour_data)
-	
-	# Update shader storage buffer for colours
-	compute_shader.update_storage_buffer(buffer_indexes[1], PackedColorArray(_colour_data).to_byte_array())
-	compute_shader.stage = dependant_stage
+	change_colour(col)
 
 
 func _on_bounds_changed(index : int) -> void:
@@ -261,19 +300,6 @@ func _on_offset_changed(index : int, pos : float) -> void:
 	# Update shader storage buffer for offsets
 	compute_shader.update_storage_buffer(buffer_indexes[0], _position_data.to_byte_array())
 	compute_shader.stage = dependant_stage
-
-
-func _expand_gradient_texture() -> void:
-	_gradient_texture.height = 40
-	hide_btn.show()
-	
-	if controls_created:
-		for control : ParamGradientControl in _control_nodes:
-			control.show()
-	else:
-		_create_controls()
-		
-	gradient_expanded = true
 #endregion
 
 
@@ -284,6 +310,14 @@ func _create_colour_picker() -> void:
 	@warning_ignore("return_value_discarded")
 	colour_picker.col_picked.connect(_on_colour_picked)
 	colour_preview.add_sibling(colour_picker) # add node between preview & spacer
+	_unblock_hue_slider_filter()
+
+# By default, the native ColorPicker node's inbuilt hue slider has its mouse filter set to block
+func _unblock_hue_slider_filter() -> void:
+	var node : Control = colour_picker
+	for i : int in range(4):
+		node = node.get_child(0, true)
+	(node.get_child(2, true) as Control).mouse_filter = MOUSE_FILTER_PASS
 
 
 @warning_ignore("return_value_discarded")
@@ -306,6 +340,6 @@ func _convert_to_colours(raw_colour_data : Array) -> Array:
 	for rgb : Array in raw_colour_data:
 		@warning_ignore("unsafe_call_argument", "return_value_discarded")
 		var colour : Color = Color(rgb[0], rgb[1], rgb[2])
-		_colour_data.append(colour)
-	return _colour_data
+		colour_data.append(colour)
+	return colour_data
 #endregion

@@ -43,13 +43,6 @@ func _on_colour_picked(colour : Color) -> void:
 	change_colour(colour)
 
 
-func _create_undo_action(colour_changed : bool) -> void:
-	if colour_changed:
-		ActionsManager.new_undo_action = [5, self, true, undo_redo_colour]
-	else:
-		ActionsManager.new_undo_action = [5, self, false, !colour_picker.visible]
-
-
 func _on_colour_preview_gui_input(event: InputEvent) -> void:
 	if event is not InputEventMouseButton: # Early return for non-click
 		return
@@ -62,7 +55,7 @@ func _on_colour_preview_gui_input(event: InputEvent) -> void:
 		else:
 			_create_colour_picker()
 		
-		_create_undo_action(false)
+		ActionsManager.new_undo_action = [5, self, false, !colour_picker.visible]
 
 
 func _on_gui_input(_event: InputEvent) -> void:
@@ -70,7 +63,7 @@ func _on_gui_input(_event: InputEvent) -> void:
 		return
 	else:
 		if undo_redo_colour != colour_preview.color:
-			_create_undo_action(true)
+			ActionsManager.new_undo_action = [5, self, true, undo_redo_colour]
 			undo_redo_colour = colour_preview.color
 
 
