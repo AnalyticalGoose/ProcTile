@@ -20,10 +20,12 @@ var is_selected : bool = false
 var is_dragging : bool = false
 var bounds : Array[float]
 var last_pos : float
+var undo_redo_pos : float
 
 
 func _ready() -> void:
 	set_process(false)
+	undo_redo_pos = position.x
 
 
 # Kinda cracked, but gives much nicer sliding behaviour than my implemenation with 
@@ -43,7 +45,17 @@ func _process(_delta: float) -> void:
 		is_dragging = false
 		set_process(false)
 		# bounds only need to be recalculated at the last position after the node has been dragged.
-		bounds_changed.emit(index) 
+		bounds_changed.emit(index)
+		
+		ActionsManager.new_undo_action = [4, self, undo_redo_pos, position.x]
+		undo_redo_pos = last_pos
+
+
+func set_pos(pos : float) -> void:
+	position.x = pos
+	last_pos = position.x
+	offset_changed.emit(index, position.x)
+	bounds_changed.emit(index)
 
 
 func set_selected(emit_selected_signal : bool = true) -> void:

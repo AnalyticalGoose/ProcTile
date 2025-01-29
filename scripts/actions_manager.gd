@@ -62,14 +62,16 @@ static func undo_action() -> void:
 					_add_redo_action([3, gradient_col_instance, 1])
 				
 				2: # Control selected
-					var previous_control : ParamGradientControl = action[3]
-					var previous_index : int = action[4]
-					var selected_control : ParamGradientControl = action[5]
-					var selected_index : int = action[6]
+					var previous_index : int = action[3]
+					var selected_index : int = action[4]
+					var selected_control : ParamGradientControl = gradient_col_instance.control_nodes[selected_index]
+					
+					var previous_control : ParamGradientControl = action[5]
+					if previous_control:
+						previous_control = gradient_col_instance.control_nodes[previous_index]
 					
 					_add_redo_action(
-							[3, gradient_col_instance, 2, previous_control, previous_index, 
-							selected_control, selected_index]
+							[3, gradient_col_instance, 2, previous_index, selected_index, previous_control]
 					)
 					
 					selected_control.set_deselected()
@@ -94,9 +96,35 @@ static func undo_action() -> void:
 					)
 					gradient_col_instance.change_colour(col)
 					gradient_col_instance.colour_picker.set_colour(col)
-		
+				
+				5: # Control deleted
+					var index : int = action[3]
+					var new_control_pos : float = action[4]
+					var col : Color = action[5]
+					var selected : bool = action[6]
+					
+					gradient_col_instance.create_control(new_control_pos, true, col)
+					
+					if selected:
+						gradient_col_instance.control_nodes[index].set_selected(false)
+						gradient_col_instance.select_control(index, gradient_col_instance.control_nodes[index])
+				
+					_add_redo_action(
+							[3, gradient_col_instance, 5, index, new_control_pos, col, selected]
+					)
+				
+				6: # Control created
+					var control : ParamGradientControl = action[3]
+					gradient_col_instance.delete_control(control.index, control)
+					
+					_add_redo_action([3, gradient_col_instance, 6, control, action[4]])
+					
 		ActionType.GRADIENT_CONTROL:
-			pass
+			var gradient_control : ParamGradientControl = action[1]
+			var last_pos : float = action[2]
+			var new_pos : float = action[3]
+			gradient_control.set_pos(last_pos)
+			_add_redo_action([ActionType.GRADIENT_CONTROL, gradient_control, last_pos, new_pos])
 		
 		ActionType.UNIFORM_COL:
 			var uniform_col_instance : ParamColour = action[1]
@@ -185,14 +213,16 @@ static func redo_action() -> void:
 					_add_undo_action([3, gradient_col_instance, 1])
 				
 				2:
-					var previous_control : ParamGradientControl = action[3]
-					var previous_index : int = action[4]
-					var selected_control : ParamGradientControl = action[5]
-					var selected_index : int = action[6]
+					var previous_index : int = action[3]
+					var selected_index : int = action[4]
+					var selected_control : ParamGradientControl = gradient_col_instance.control_nodes[selected_index]
+					
+					var previous_control : ParamGradientControl = action[5]
+					if previous_control:
+						previous_control = gradient_col_instance.control_nodes[previous_index]
 					
 					_add_undo_action(
-							[3, gradient_col_instance, 2, previous_control, previous_index, 
-							selected_control, selected_index]
+							[3, gradient_col_instance, 2, previous_index, selected_index, previous_control]
 					)
 					
 					selected_control.set_selected(false)
@@ -218,9 +248,27 @@ static func redo_action() -> void:
 					)
 					gradient_col_instance.change_colour(col)
 					gradient_col_instance.colour_picker.set_colour(col)
+				
+				5:
+					var index : int = action[3]
+					var node : ParamGradientControl = gradient_col_instance.control_nodes[index]
+					gradient_col_instance.delete_control(index, node)
+					_add_undo_action(
+							[3, gradient_col_instance, 5, index, action[4], action[5], action[6]]
+					)
+				
+				6:
+					var pos : float = action[4]
+					gradient_col_instance.create_control(pos)
+					var control : ParamGradientControl = gradient_col_instance.gradient_controls_container.get_child(-1)
+					_add_undo_action([3, gradient_col_instance, 6, control, pos])
 		
 		ActionType.GRADIENT_CONTROL:
-			pass
+			var gradient_control : ParamGradientControl = action[1]
+			var last_pos : float = action[2]
+			var new_pos : float = action[3]
+			gradient_control.set_pos(new_pos)
+			_add_undo_action([ActionType.GRADIENT_CONTROL, gradient_control, last_pos, new_pos])
 		
 		ActionType.UNIFORM_COL:
 			var uniform_col_instance : ParamColour = action[1]

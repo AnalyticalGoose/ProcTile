@@ -34,8 +34,8 @@ var preview_colour : Color:
 			colour_picker.set_colour(col)
 var colour_data : Array[Color] = []
 var undo_redo_colour : Color
+var control_nodes : Array[ParamGradientControl]
 
-var _control_nodes : Array[ParamGradientControl]
 var _position_data : PackedFloat32Array
 var _gradient : Gradient = Gradient.new()
 var _gradient_texture : GradientTexture2D
@@ -68,7 +68,7 @@ func show_gradient_texture() -> void:
 	hide_btn.show()
 	
 	if controls_created:
-		for control : ParamGradientControl in _control_nodes:
+		for control : ParamGradientControl in control_nodes:
 			control.show()
 	else:
 		_create_controls()
@@ -81,7 +81,7 @@ func hide_gradient_texture() -> void:
 	hide_btn.hide()
 	colour_preview.hide()
 	
-	for control : ParamGradientControl in _control_nodes:
+	for control : ParamGradientControl in control_nodes:
 		control.hide()
 	
 	if selected_control:
@@ -106,6 +106,103 @@ func change_colour(col : Color) -> void:
 	compute_shader.stage = dependant_stage
 
 
+@warning_ignore("return_value_discarded")
+func create_control(px_position : float, create_with_col : bool = false, col : Color = Color(0.0, 0.0, 0.0)) -> void:
+	var new_control : ParamGradientControl = _gradient_control_scene.instantiate() as ParamGradientControl
+	var normalised_position : float = px_position / container_width
+
+	# Check the clicked position against current control indexes to find where it should be indexed
+	var index : int
+	for i : int in _position_data.size():
+		if normalised_position < _position_data[i]:
+			index = i
+			break
+	
+	var sampled_col : Color
+	if create_with_col:
+		sampled_col = col
+	else:
+		# Sample the gradient at the click location to get the interpolated colour for the new node.
+		sampled_col = _gradient.sample(normalised_position)
+	
+	# Insert the new data into the storage arrays
+	_gradient.add_point(normalised_position, sampled_col)
+	colour_data.insert(index, sampled_col)
+	_position_data.insert(index, normalised_position)
+	control_nodes.insert(index, new_control)
+	
+	_recalculate_control_indexes()
+	
+	# Create bounds for the new node, and update the existing bounds for the nodes before and after.
+	new_control.bounds = [
+		(_position_data[index - 1] * container_width) + PADDING, 
+		(_position_data[index + 1] * container_width) - PADDING
+		]
+	control_nodes[index - 1].bounds[1] = px_position + PADDING
+	control_nodes[index + 1].bounds[0] = px_position - PADDING
+	
+	# Set the control node variables
+	new_control.set_colour_indicator(sampled_col)
+	new_control.position += Vector2(px_position, 0)
+	new_control.gradient_controls_container = gradient_controls_container
+	_connect_control_signals(new_control)
+	
+	gradient_controls_container.add_child(new_control)
+	
+	# rebuild buffers
+	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
+	compute_shader.stage = dependant_stage
+
+
+func delete_control(index : int, node_to_delete : ParamGradientControl) -> void:
+	# recalculate bounds +1 and -1
+	if index == 0:
+		control_nodes[1].bounds[0] = 0.0
+	elif index == control_nodes.size() - 1:
+		control_nodes[index - 1].bounds[1] = container_width
+	else:
+		var bound_1 : float = (_position_data[index - 1] * container_width) + PADDING
+		var bound_2 : float = (_position_data[index + 1] * container_width) - PADDING
+		control_nodes[index + 1].bounds[0] = bound_1
+		control_nodes[index - 1].bounds[1] = bound_2
+		
+	# Delete node from GradientControl array, and data from colour and pos
+	control_nodes.remove_at(index)
+	colour_data.remove_at(index)
+	_position_data.remove_at(index)
+
+	if node_to_delete == selected_control:
+		selected_control = null
+		colour_preview.hide()
+		if colour_picker:
+			colour_picker.hide()
+	node_to_delete.queue_free()
+	
+	_recalculate_control_indexes()
+	
+	# recalculate gradient texture
+	_gradient.set_offsets(_position_data)
+	_gradient.set_colors(colour_data)
+	
+	# rebuild buffers
+	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
+	compute_shader.stage = dependant_stage
+
+
+func select_control(index : int, new_selected_node : ParamGradientControl) -> void:
+	if selected_control:
+		selected_control.set_deselected()
+	else: # if no control is selected, the preview will also be hidden
+		colour_preview.show()
+	
+	selected_control = new_selected_node
+	selected_index = index
+	preview_colour = colour_data[index]
+	undo_redo_colour = preview_colour
+
+
 #region UI input handling
 func _on_controls_container_gui_input(event: InputEvent) -> void:
 	if event is not InputEventMouseButton:
@@ -113,7 +210,8 @@ func _on_controls_container_gui_input(event: InputEvent) -> void:
 	elif (event as InputEventMouseButton).button_index == 1 and event.is_pressed():
 		if gradient_expanded:
 			var mouse_pos_x : float = (get_global_mouse_position() - gradient_controls_container.global_position).x
-			_create_control(mouse_pos_x)
+			create_control(mouse_pos_x)
+			ActionsManager.new_undo_action = [3, self, 6, gradient_controls_container.get_child(-1), mouse_pos_x]
 		else:
 			show_gradient_texture()
 			ActionsManager.new_undo_action = [3, self, 0]
@@ -173,106 +271,23 @@ func _create_controls() -> void:
 			gradient_control.bounds = [px_positions[i - 1] + PADDING, px_positions[i + 1] - PADDING]
 		
 		gradient_controls_container.add_child(gradient_control)
-		_control_nodes.append(gradient_control)
+		control_nodes.append(gradient_control)
 
 	controls_created = true
 
 
-@warning_ignore("return_value_discarded")
-func _create_control(px_position : float) -> void:
-	var new_control : ParamGradientControl = _gradient_control_scene.instantiate() as ParamGradientControl
-	var normalised_position : float = px_position / container_width
-
-	# Check the clicked position against current control indexes to find where it should be indexed
-	var index : int
-	for i : int in _position_data.size():
-		if normalised_position < _position_data[i]:
-			index = i
-			break
-	
-	# Sample the gradient at the click location to get the interpolated colour for the new node.
-	var sampled_col : Color = _gradient.sample(normalised_position)
-	_gradient.add_point(normalised_position, sampled_col)
-	
-	# Insert the new data into the storage arrays
-	colour_data.insert(index, sampled_col)
-	_position_data.insert(index, normalised_position)
-	_control_nodes.insert(index, new_control)
-	
-	_recalculate_control_indexes()
-	
-	# Create bounds for the new node, and update the existing bounds for the nodes before and after.
-	new_control.bounds = [
-		(_position_data[index - 1] * container_width) + PADDING, 
-		(_position_data[index + 1] * container_width) - PADDING
-		]
-	_control_nodes[index - 1].bounds[1] = px_position + PADDING
-	_control_nodes[index + 1].bounds[0] = px_position - PADDING
-	
-	# Set the control node variables
-	new_control.set_colour_indicator(sampled_col)
-	new_control.position += Vector2(px_position, 0)
-	new_control.gradient_controls_container = gradient_controls_container
-	_connect_control_signals(new_control)
-	
-	gradient_controls_container.add_child(new_control)
-	
-	# rebuild buffers
-	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
-	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
-	compute_shader.stage = dependant_stage
-
-
 func _on_control_deleted(index : int, node_to_delete : ParamGradientControl) -> void:
-	# recalculate bounds +1 and -1
-	if _control_nodes.size() <= 2:
+	if control_nodes.size() <= 2:
 		return
-	elif index == 0:
-		_control_nodes[1].bounds[0] = 0.0
-	elif index == _control_nodes.size() - 1:
-		_control_nodes[index - 1].bounds[1] = container_width
-	else:
-		var bound_1 : float = (_position_data[index - 1] * container_width) + PADDING
-		var bound_2 : float = (_position_data[index + 1] * container_width) - PADDING
-		_control_nodes[index + 1].bounds[0] = bound_1
-		_control_nodes[index - 1].bounds[1] = bound_2
-		
-	# Delete node from GradientControl array, and data from colour and pos
-	_control_nodes.remove_at(index)
-	colour_data.remove_at(index)
-	_position_data.remove_at(index)
-
-	if node_to_delete == selected_control:
-		selected_control = null
-		colour_preview.hide()
-		if colour_picker:
-			colour_picker.hide()
-	node_to_delete.queue_free()
-	
-	_recalculate_control_indexes()
-	
-	# recalculate gradient texture
-	_gradient.set_offsets(_position_data)
-	_gradient.set_colors(colour_data)
-	
-	# rebuild buffers
-	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
-	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
-	compute_shader.stage = dependant_stage
+	ActionsManager.new_undo_action = [
+			3, self, 5, index, node_to_delete.undo_redo_pos, colour_data[index], node_to_delete.is_selected
+	]
+	delete_control(index, node_to_delete)
 
 
 func _on_control_selected(index : int, new_selected_node : ParamGradientControl) -> void:
-	ActionsManager.new_undo_action = [3, self, 2, selected_control, selected_index, new_selected_node, index]
-	
-	if selected_control:
-		selected_control.set_deselected()
-	else: # if no control is selected, the preview will also be hidden
-		colour_preview.show()
-	
-	selected_control = new_selected_node
-	selected_index = index
-	preview_colour = colour_data[index]
-	undo_redo_colour = preview_colour
+	ActionsManager.new_undo_action = [3, self, 2, selected_index, index, selected_control]
+	select_control(index, new_selected_node)
 #endregion
 
 
@@ -286,10 +301,10 @@ func _on_bounds_changed(index : int) -> void:
 	var upper_control : ParamGradientControl
 	
 	if index != 0:
-		lower_control = _control_nodes[index - 1]
+		lower_control = control_nodes[index - 1]
 		lower_control.bounds[1] = (_position_data[index] * container_width) - PADDING
-	if index + 1 != _control_nodes.size():
-		upper_control = _control_nodes[index + 1]
+	if index + 1 != control_nodes.size():
+		upper_control = control_nodes[index + 1]
 		upper_control.bounds[0] = (_position_data[index] * container_width) + PADDING
 
 
@@ -330,8 +345,8 @@ func _connect_control_signals(control : ParamGradientControl) -> void:
 
 # Called when a control node is created or freed and their indexes are no longer valid.
 func _recalculate_control_indexes() -> void:
-	for i : int in _control_nodes.size():
-		_control_nodes[i].index = i
+	for i : int in control_nodes.size():
+		control_nodes[i].index = i
 	if selected_control:
 		selected_index = selected_control.index
 
