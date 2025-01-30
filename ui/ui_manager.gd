@@ -1,8 +1,20 @@
 class_name UIManager
 extends Control
 
+@export var undo_btn : Button
+@export var redo_btn : Button
 @export var file_menu : MenuButton
 @export var pause_renderer_btn : Button
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.is_action_pressed("undo"):
+		if !undo_btn.disabled:
+			ActionsManager.undo_action()
+	elif event.is_action_pressed("redo"):
+		if !redo_btn.disabled:
+			ActionsManager.redo_action()
+
 
 # Some UI elements are disabled until an asset is loaded.
 func enable_full_ui() -> void:

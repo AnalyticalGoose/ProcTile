@@ -59,7 +59,7 @@ size = Vector2(20, 20)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_pce4s"]
 
-[node name="UI" type="Control" node_paths=PackedStringArray("file_menu", "pause_renderer_btn")]
+[node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,6 +67,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cnay4")
+undo_btn = NodePath("RendererToolbar/LeftRendererToolbar/UndoBtn")
+redo_btn = NodePath("RendererToolbar/LeftRendererToolbar/RedoBtn")
 file_menu = NodePath("NavigationBar/NavigationMenu/FileMenuButton")
 pause_renderer_btn = NodePath("RendererToolbar/RightRendererToolbar/PauseRendererButton")
 

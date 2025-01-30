@@ -42,7 +42,45 @@ func _ready() -> void:
 	_load_mesh_settings()
 	_set_current_meshes()
 	_setup_settings_ui()
-	_rebuild_mesh()
+	rebuild_mesh()
+
+
+func scale_uvs(face : Face, toggled_on : bool) -> void:
+	if face == Face.BACK:
+		shrink_back_uvs = toggled_on
+	else:
+		shrink_sides_uvs = toggled_on
+	
+	if toggled_on:
+		_modify_uvs(face)
+	else:
+		rebuild_mesh()
+
+
+func update_checkbox(checkbox : CheckBox, toggled : bool) -> void:
+	checkbox.set_pressed_no_signal(toggled)
+
+
+# Deleting and adding sides is much more complex than shrinking UVs
+# As such, this loads and sets a new mesh with the correct faces then adjusts UVs.
+func rebuild_mesh() -> void:
+	var index : int
+	if mesh_index == Meshes.PLANE: # only 1 mesh used
+		index = 0
+	else:
+		# Multiply then add the bool (1 or 0) gives unique index between 0 and 3
+		index = int(cull_back_face) * 2 + int(cull_bottom_face)
+	
+	# Deep duplication of mesh to prevent destructively modifying base meshes
+	var rebuilt_mesh : Mesh = current_meshes[index].duplicate(true)
+	
+	array_mesh = rebuilt_mesh as ArrayMesh
+	surface_array = array_mesh.surface_get_arrays(0)
+	normals = surface_array[Mesh.ARRAY_NORMAL]
+	uvs = surface_array[Mesh.ARRAY_TEX_UV]
+	
+	_update_uvs()
+	mesh_instance.mesh = rebuilt_mesh
 
 
 func _load_mesh_settings() -> void:
@@ -125,28 +163,6 @@ func _set_camera_position(pos : CameraPosition) -> void:
 	camera_position = pos
 
 
-# Deleting and adding sides is much more complex than shrinking UVs
-# As such, this loads and sets a new mesh with the correct faces then adjusts UVs.
-func _rebuild_mesh() -> void:
-	var index : int
-	if mesh_index == Meshes.PLANE: # only 1 mesh used
-		index = 0
-	else:
-		# Multiply then add the bool (1 or 0) gives unique index between 0 and 3
-		index = int(cull_back_face) * 2 + int(cull_bottom_face)
-	
-	# Deep duplication of mesh to prevent destructively modifying base meshes
-	var rebuilt_mesh : Mesh = current_meshes[index].duplicate(true)
-	
-	array_mesh = rebuilt_mesh as ArrayMesh
-	surface_array = array_mesh.surface_get_arrays(0)
-	normals = surface_array[Mesh.ARRAY_NORMAL]
-	uvs = surface_array[Mesh.ARRAY_TEX_UV]
-	
-	_update_uvs()
-	mesh_instance.mesh = rebuilt_mesh
-
-
 func _update_uvs() -> void:
 	if shrink_back_uvs:
 		_modify_uvs(Face.BACK)
@@ -180,33 +196,29 @@ func _on_mesh_option_button_item_selected(index: int) -> void:
 		_enable_checkboxes()
 	
 	_set_current_meshes()
-	_rebuild_mesh()
+	rebuild_mesh()
 
 
 func _on_back_face_check_box_toggled(toggled_on: bool) -> void:
 	cull_back_face = toggled_on
-	_rebuild_mesh()
+	rebuild_mesh()
+	ActionsManager.new_undo_action = [8, self, 0, toggled_on]
 
 
 func _on_bottom_face_check_box_toggled(toggled_on: bool) -> void:
 	cull_bottom_face = toggled_on
-	_rebuild_mesh()
-	
+	rebuild_mesh()
+	ActionsManager.new_undo_action = [8, self, 1, toggled_on]
+
 
 func _on_back_uvs_check_box_toggled(toggled_on: bool) -> void:
-	shrink_back_uvs = toggled_on
-	if toggled_on:
-		_modify_uvs(Face.BACK)
-	else:
-		_rebuild_mesh()
-	
+	scale_uvs(Face.BACK, toggled_on)
+	ActionsManager.new_undo_action = [7, self, Face.BACK, toggled_on]
+
 
 func _on_sides_uvs_check_box_toggled(toggled_on: bool) -> void:
-	shrink_sides_uvs = toggled_on
-	if toggled_on:
-		_modify_uvs(Face.SIDES)
-	else:
-		_rebuild_mesh()
+	scale_uvs(Face.SIDES, toggled_on)
+	ActionsManager.new_undo_action = [7, self, Face.SIDES, toggled_on]
 
 
 func _on_save_settings_btn_pressed() -> void:

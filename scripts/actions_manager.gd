@@ -4,6 +4,7 @@ extends RefCounted
 ## TODO - check if manually typing in values (seed, slider etc) triggers undo redo
 
 enum ActionType {
+	# Shader Params
 	SECTION,
 	SLIDER,
 	DROPDOWN,
@@ -11,6 +12,10 @@ enum ActionType {
 	GRADIENT_CONTROL,
 	UNIFORM_COL,
 	SEED,
+	
+	# Mesh Settings
+	SCALE_UV,
+	DELETE_FACE,
 }
 
 const MAX_ACTIONS : int = 20
@@ -170,6 +175,33 @@ static func undo_action() -> void:
 							index, shader_index]
 					)
 					seeds_instance.set_seed_value(seed_value, index, shader_index)
+					
+		ActionType.SCALE_UV:
+			var mesh_settings : MeshSettings = action[1]
+			var face : int = action[2]
+			var toggled_on : bool = action[3]
+			var checkbox : CheckBox = mesh_settings.back_uvs_checkbox if face == 0 else mesh_settings.sides_uvs_checkbox
+			
+			mesh_settings.scale_uvs(face, !toggled_on)
+			mesh_settings.update_checkbox(checkbox, !toggled_on)
+			_add_redo_action([ActionType.SCALE_UV, mesh_settings, face, toggled_on])
+
+		ActionType.DELETE_FACE:
+			var mesh_settings : MeshSettings = action[1]
+			var face : int = action[2]
+			var toggled_on : bool = action[3]
+			var checkbox : CheckBox
+			
+			if face == 0:
+				mesh_settings.cull_back_face = !toggled_on
+				checkbox = mesh_settings.back_face_checkbox
+			elif face == 1:
+				mesh_settings.cull_bottom_face = !toggled_on
+				checkbox = mesh_settings.bottom_face_checkbox
+			
+			mesh_settings.rebuild_mesh()
+			mesh_settings.update_checkbox(checkbox, !toggled_on)
+			_add_redo_action([ActionType.DELETE_FACE, mesh_settings, face, toggled_on])
 
 
 	if _undo_actions.is_empty():
@@ -311,6 +343,34 @@ static func redo_action() -> void:
 							index, shader_index]
 					)
 					seeds_instance.set_seed_value(seed_value, index, shader_index)
+					
+		ActionType.SCALE_UV:
+			var mesh_settings : MeshSettings = action[1]
+			var face : int = action[2]
+			var toggled_on : bool = action[3]
+			var checkbox : CheckBox = mesh_settings.back_uvs_checkbox if face == 0 else mesh_settings.sides_uvs_checkbox
+			
+			mesh_settings.scale_uvs(face, toggled_on)
+			mesh_settings.update_checkbox(checkbox, toggled_on)
+			_add_undo_action([ActionType.SCALE_UV, mesh_settings, face, toggled_on])
+			
+		ActionType.DELETE_FACE:
+			var mesh_settings : MeshSettings = action[1]
+			var face : int = action[2]
+			var toggled_on : bool = action[3]
+			var checkbox : CheckBox
+			
+			if face == 0:
+				mesh_settings.cull_back_face = toggled_on
+				checkbox = mesh_settings.back_face_checkbox
+			elif face == 1:
+				mesh_settings.cull_bottom_face = toggled_on
+				checkbox = mesh_settings.bottom_face_checkbox
+			
+			mesh_settings.rebuild_mesh()
+			mesh_settings.update_checkbox(checkbox, toggled_on)
+			_add_undo_action([ActionType.DELETE_FACE, mesh_settings, face, toggled_on])
+
 
 	if _redo_actions.is_empty():
 		redo_btn.disabled = true

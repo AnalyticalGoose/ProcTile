@@ -55,7 +55,8 @@ var export_template_data : Array[Array] = []
 var filename_maps : Array[String] = []
 var filename_labels : Array[Node] = []
 
-@onready var mesh_settings_instance : MeshSettings = $/root/ProcTile/UI/RendererToolbar/HBoxContainer/MeshSettingsButton/MeshSettings
+@onready var mesh_settings_instance : MeshSettings = $/root/ProcTile/UI/RendererToolbar/RightRendererToolbar/MeshSettingsButton/MeshSettings
+
 
 const RESOLUTIONS : Array[int] = [512, 1024, 2048, 4096]
 const FILE_TYPES_STRINGS : Array[String] = [".png", ".jpg"]
