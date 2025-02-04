@@ -5,21 +5,24 @@ extends PanelContainer
 @export var menu_manager : HBoxContainer
 
 var compute_shader : ComputeShader
-var renderer : Renderer
+
+@onready var renderer : Renderer = $/root/ProcTile/Renderer as Renderer
 
 
 # Called when ser double-clicks on an asset in the selection window.
-@warning_ignore("unsafe_call_argument")
 func _on_asset_selector_item_activated(index: int) -> void:
-	if not renderer: ## TODO: try to get this in _ready()
-		renderer = $/root/ProcTile/Renderer as Renderer
-		
-	var asset_data : Dictionary = DataManager.material_data[index]
-	
-	compute_shader = renderer.create_compute_shader()
-	renderer.set_shader_material(asset_data.shader_data)
-	params_manager._build_params_ui(asset_data.ui_elements, compute_shader)
+	if compute_shader:
+		renderer.free_compute_resources()
+		params_manager.free_params_ui()
+		compute_shader.stage = 0
+	else:
+		compute_shader = renderer.create_compute_shader()
+		ui_manager.enable_full_ui()
 
-	ui_manager.enable_full_ui()
+	var asset_data : Dictionary = DataManager.material_data[index]
+	var shader_data : Array = asset_data.shader_data
+	var ui_data : Array = asset_data.ui_elements
 	
+	renderer.set_shader_material(shader_data)
+	params_manager._build_params_ui(ui_data, compute_shader)
 	renderer.asset_name = asset_data.name

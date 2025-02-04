@@ -59,14 +59,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
 environment = SubResource("Environment_cwj01")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.998925, -0.0343853, -0.0310748, 0.0459372, 0.823479, 0.565483, 0.00614515, -0.566303, 0.824174, 0, 6.58609, 10.382)
-visible = false
-sky_mode = 1
-
-[node name="OmniLight3D" type="OmniLight3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.845947, 2.32373, 3.91952)
-visible = false
-light_energy = 5.0
-omni_range = 15.0

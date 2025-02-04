@@ -21,6 +21,12 @@ enum ui_element {
 var current_container : ParamSection
 var compute_shader : ComputeShader
 
+
+func free_params_ui() -> void:
+	for child : ParamSection in params_container.get_children():
+		child.queue_free()
+
+
 func _build_params_ui(ui_data : Array, shader : ComputeShader) -> void:
 	#var ui_data : Array = DataManager.material_data[index].ui_elements
 	compute_shader = shader
