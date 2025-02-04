@@ -2,11 +2,8 @@ extends Node3D
 class_name Renderer
 
 var compute_shader : ComputeShader
-
-# TODO: refactor these out to database etc
-var texture_size : int
-var shader_path : String = "res://materials/brick_wall/brick_wall_compute.glsl"
 var asset_name : String
+var texture_size : int
 var paused : bool = false
 
 @onready var shader_material : ShaderMaterial = (
@@ -40,11 +37,10 @@ func _process(_delta: float) -> void: # does this need to be in process?
 
 func create_compute_shader() -> ComputeShader:
 	compute_shader = ComputeShader.new()
-	#compute_shader.renderer = self
 	return compute_shader
 
 
-func set_shader_material(shader_data : Array) -> void:
+func set_shader_material(shader_data : Array, shader_path : String) -> void:
 	RenderingServer.call_on_render_thread(compute_shader.init_compute.bind(shader_data, texture_size, shader_path))
 
 	# Linking compute and material shader

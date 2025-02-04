@@ -9,7 +9,7 @@ var compute_shader : ComputeShader
 @onready var renderer : Renderer = $/root/ProcTile/Renderer as Renderer
 
 
-# Called when ser double-clicks on an asset in the selection window.
+# Called when user double-clicks on an asset in the selection window.
 func _on_asset_selector_item_activated(index: int) -> void:
 	if compute_shader:
 		renderer.free_compute_resources()
@@ -20,9 +20,10 @@ func _on_asset_selector_item_activated(index: int) -> void:
 		ui_manager.enable_full_ui()
 
 	var asset_data : Dictionary = DataManager.material_data[index]
+	var shader_path : String = DataManager.shader_paths[index][0]
 	var shader_data : Array = asset_data.shader_data
 	var ui_data : Array = asset_data.ui_elements
 	
-	renderer.set_shader_material(shader_data)
-	params_manager._build_params_ui(ui_data, compute_shader)
+	renderer.set_shader_material(shader_data, shader_path)
+	params_manager.build_params_ui(ui_data, compute_shader)
 	renderer.asset_name = asset_data.name
