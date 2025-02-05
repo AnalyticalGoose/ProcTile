@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
 [ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
+[ext_resource type="Texture2D" uid="uid://ug8w1fu3qqn5" path="res://materials/ceramic_tile/bathroom_tiles_thumb.png" id="16_y0we1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -53,11 +54,11 @@ size = Vector2(20, 20)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_apq77"]
-
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ioblm"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_pce4s"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_8dmmi"]
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
 layout_mode = 3
@@ -381,7 +382,8 @@ item_6/icon = SubResource("PlaceholderTexture2D_e1l2p")
 custom_minimum_size = Vector2(0, 800)
 layout_direction = 1
 layout_mode = 2
-item_count = 4
+max_text_lines = 2
+item_count = 5
 max_columns = 4
 same_column_width = true
 fixed_column_width = 58
@@ -389,12 +391,14 @@ icon_mode = 0
 fixed_icon_size = Vector2i(54, 54)
 item_0/text = "Brick Wall"
 item_0/icon = ExtResource("13_2aspn")
-item_1/text = "Test Tiles"
-item_1/icon = SubResource("PlaceholderTexture2D_apq77")
+item_1/text = "Bathroom  Tiles"
+item_1/icon = ExtResource("16_y0we1")
 item_2/text = "Test Metal"
 item_2/icon = SubResource("PlaceholderTexture2D_ioblm")
 item_3/text = "Test Grass"
 item_3/icon = SubResource("PlaceholderTexture2D_pce4s")
+item_4/text = "Placehold"
+item_4/icon = SubResource("PlaceholderTexture2D_8dmmi")
 
 [node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
 z_index = -2

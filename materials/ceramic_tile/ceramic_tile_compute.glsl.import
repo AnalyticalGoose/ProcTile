@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bwq5eb104crk8"
+path="res://.godot/imported/ceramic_tile_compute.glsl-a79418f6dc691ac510ae2224947739bb.res"
+
+[deps]
+
+source_file="res://materials/ceramic_tile/ceramic_tile_compute.glsl"
+dest_files=["res://.godot/imported/ceramic_tile_compute.glsl-a79418f6dc691ac510ae2224947739bb.res"]
+
+[params]
+

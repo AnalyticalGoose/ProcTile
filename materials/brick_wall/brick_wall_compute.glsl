@@ -507,7 +507,7 @@ void main() {
 		vec4 brick_bounding_rect = get_brick_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.row_offset, int(params.pattern));
 		float pattern = get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar, _rounding, _bevel, 1.0 / params.rows);
 
-		float dilated_mask = 1.0 - get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar * 1.5, _rounding, _bevel, 1.0 / params.rows).x;
+		float dilated_mask = 1.0 - get_brick_pattern(uv, brick_bounding_rect.xy, brick_bounding_rect.zw, _mortar * 1.5, _rounding, _bevel, 1.0 / params.rows);
 		imageStore(r16f_buffer_2, ivec2(pixel), vec4(vec3(dilated_mask), 1.0));
 
 		// tones step to create brick and mortar masks
