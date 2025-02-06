@@ -24,7 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
 [ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
-[ext_resource type="Texture2D" uid="uid://ug8w1fu3qqn5" path="res://materials/ceramic_tile/bathroom_tiles_thumb.png" id="16_y0we1"]
+[ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -389,10 +389,10 @@ same_column_width = true
 fixed_column_width = 58
 icon_mode = 0
 fixed_icon_size = Vector2i(54, 54)
-item_0/text = "Brick Wall"
-item_0/icon = ExtResource("13_2aspn")
-item_1/text = "Bathroom  Tiles"
-item_1/icon = ExtResource("16_y0we1")
+item_0/text = "Bathroom  Tiles"
+item_0/icon = ExtResource("16_bboyx")
+item_1/text = "Brick Wall"
+item_1/icon = ExtResource("13_2aspn")
 item_2/text = "Test Metal"
 item_2/icon = SubResource("PlaceholderTexture2D_ioblm")
 item_3/text = "Test Grass"

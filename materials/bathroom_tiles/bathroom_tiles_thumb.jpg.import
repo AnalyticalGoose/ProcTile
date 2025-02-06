@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ug8w1fu3qqn5"
-path="res://.godot/imported/bathroom_tiles_thumb.png-ea849bb1111a8a9278b6176e007aac64.ctex"
+uid="uid://1aivf0sbe7cd"
+path="res://.godot/imported/bathroom_tiles_thumb.jpg-ea33da14da77b6cd51e52b8c4d97d561.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/ceramic_tile/bathroom_tiles_thumb.png"
-dest_files=["res://.godot/imported/bathroom_tiles_thumb.png-ea849bb1111a8a9278b6176e007aac64.ctex"]
+source_file="res://materials/bathroom_tiles/bathroom_tiles_thumb.jpg"
+dest_files=["res://.godot/imported/bathroom_tiles_thumb.jpg-ea33da14da77b6cd51e52b8c4d97d561.ctex"]
 
 [params]
 
