@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=36 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -55,10 +55,6 @@ size = Vector2(20, 20)
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ioblm"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_pce4s"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_8dmmi"]
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
 layout_mode = 3
@@ -383,7 +379,7 @@ custom_minimum_size = Vector2(0, 800)
 layout_direction = 1
 layout_mode = 2
 max_text_lines = 2
-item_count = 5
+item_count = 3
 max_columns = 4
 same_column_width = true
 fixed_column_width = 58
@@ -393,12 +389,8 @@ item_0/text = "Bathroom  Tiles"
 item_0/icon = ExtResource("16_bboyx")
 item_1/text = "Brick Wall"
 item_1/icon = ExtResource("13_2aspn")
-item_2/text = "Test Metal"
+item_2/text = "Test Wood"
 item_2/icon = SubResource("PlaceholderTexture2D_ioblm")
-item_3/text = "Test Grass"
-item_3/icon = SubResource("PlaceholderTexture2D_pce4s")
-item_4/text = "Placehold"
-item_4/icon = SubResource("PlaceholderTexture2D_8dmmi")
 
 [node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
 z_index = -2
