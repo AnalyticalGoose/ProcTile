@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cgshgftpvqqqj"
+path="res://.godot/imported/hardwood_floor_compute.glsl-605c6148722b4649929fdd275d36922b.res"
+
+[deps]
+
+source_file="res://materials/hardwood_floor/hardwood_floor_compute.glsl"
+dest_files=["res://.godot/imported/hardwood_floor_compute.glsl-605c6148722b4649929fdd275d36922b.res"]
+
+[params]
+

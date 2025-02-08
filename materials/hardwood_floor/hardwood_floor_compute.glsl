@@ -16,7 +16,8 @@ layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer;
+layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer_1;
+layout(rgba32f, set = 1, binding = 1) uniform image2D rgba32f_buffer_2;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
     float grain_seed_x;
@@ -32,6 +33,10 @@ layout(set = 4, binding = 0, std430) buffer readonly GradientColours {
     vec4 gradient_col[];
 };
 
+layout(set = 5, binding = 0, std430) buffer readonly GapColour {
+	vec4 gap_col;
+};
+
 layout(push_constant, std430) uniform restrict readonly Params {
     float pattern;
     float rows;
@@ -39,23 +44,52 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float offset;
     float gap;
     float repeat;
-
     float grain_base_scale_x;
     float grain_base_scale_y;
-
+    float roughness_value;
+    float roughness_width;
+    float noise_sobel_strength;
+    float gap_sobel_strength;
+    float blend_left;
+    float blend_right;
     float normals_format;
 	float texture_size;
 	float stage;
 } params;
 
 
-// Normal map
-const float sobel_strength = 0.12;
+const float grain_base_highs = 1.0;
+const float grain_base_lows = 0.1;
+
+const float grain_detailed_scale = 4.6;
+const int grain_detailed_iterations = 8;
+const float grain_detailed_size = 2.5;
+
+const vec2 dirt_scale = vec2(0.01, 0.15);
+const int dirt_iterations = 15;
+const float dirt_dimension = 0.26;
+const float dirt_size = 2.4;
+const float dirt_opacity = 0.2;
+
+const float lines_smooth_min = 0.1;
+const float lines_smooth_max = 0.9;
+const float lines_scale_factor = 1.0;
+const int lines_iterations = 2;
+const float lines_dimension = 2.0;
+const float lines_size = 2.5;
+const float lines_opacity = 0.2;
+
+const float occlusion_strength = 0.1;
 
 
 
 float rand(vec2 x) {
 	return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec2 rand2(vec2 x) {
+    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
+						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
 
 vec3 rand3(vec2 x) {
@@ -64,11 +98,9 @@ vec3 rand3(vec2 x) {
                               dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
 }
 
-
 vec3 multiply(vec3 base, vec3 blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
 }
-
 
 
 vec4 get_plank_bounds(vec2 uv, vec2 grid, float repeat, float row_offset, int pattern) {
@@ -136,37 +168,48 @@ float get_plank_pattern(vec2 uv, vec2 plank_min, vec2 plank_max, float gap, floa
 }
 
 
+float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
+    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 f = fract(coord);
+
+    float a[4];
+    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+
+    vec2 v[4];
+    v[0] = vec2(cos(a[0]), sin(a[0]));
+    v[1] = vec2(cos(a[1]), sin(a[1]));
+    v[2] = vec2(cos(a[2]), sin(a[2]));
+    v[3] = vec2(cos(a[3]), sin(a[3]));
+    
+    float p[4];
+    p[0] = dot(v[0], f);
+    p[1] = dot(v[1], f - vec2(0.0, 1.0));
+    p[2] = dot(v[2], f - vec2(1.0, 0.0));
+    p[3] = dot(v[3], f - vec2(1.0, 1.0));
+    
+    vec2 t =  f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    
+    return 0.5 + mix(mix(p[0], p[2], t.x), mix(p[1], p[3], t.x), t.y);
+}
 
 
+float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, float offset, float seed) {
+	float normalize_factor = 0.0;
+	float value = 0.0;
+	float scale = 1.0;
+	for (int i = 0; i < iterations; i++) {
+		float noise = perlin_2d(coord * size, size, offset, seed);
+		value += noise * scale;
+		normalize_factor += scale;
+		size *= 2.0;
+		scale *= persistence;
+	}
+	return value / normalize_factor;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// float hash21(vec2 p) {
-//     return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-// }
 
 // START OF Wood Texture - Adapted from https://www.shadertoy.com/view/mdy3R1 / dean_the_coder - CC BY-NC-SA 3.0 //
 #define sat(x)	clamp(x, 0.0, 1.0)
@@ -208,7 +251,7 @@ float fbm_2d(vec2 coord, int iterations, float persistence) {
     float total_amplitude = 0.0;
     persistence = clamp(persistence, 0.0, 1.0);
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < iterations; i++) {
         noise_sum += amplitude * value_noise_2d(coord);
         total_amplitude += amplitude;
         amplitude *= persistence;
@@ -236,7 +279,7 @@ float fbm_musgrave_2d(vec2 coord, int iterations, float dimension, float size, f
     vec2 seed_offset = vec2(hash21(vec2(seed, 0.0)), hash21(vec2(seed, 1.0))) * seed;
     coord += seed_offset;
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < iterations; i++) {
         float noise_value = value_noise_2d(coord) * 2.0 - 1.0;
         noise_sum  += noise_value * amplitude;
         amplitude *= persistence;
@@ -270,22 +313,43 @@ vec4 gradient_fct(float x) {
     return gradient_col[count - 1];
 }
 
+vec3 map_bw_colours(float x, vec3 col_white, vec3 col_black) {
+  if (x < 0.0) {
+    return col_black;
+  } else if (x < 1.0) {
+    return mix(col_black, col_white, x);
+  }
+  return col_white;
+}
 
 
 // Generate normals
-vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
+vec3 sobel_filter(ivec2 pixel_coords, float amount, float size, bool noise) {
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
     vec2 rv = vec2(0.0);
 
-    // Apply Sobel-like filter to compute gradient
-    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, e.y)).r;
-    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, e.y)).r;
-    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, -e.y)).r;
-    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, -e.y)).r;
-    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(2, 0)).r;
-    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(2, 0)).r;
-    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(0, 2)).r;
-    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(0, 2)).r;
+    if (noise == true) {
+        // Apply Sobel-like filter to compute gradient
+        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, e.y)).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, e.y)).r;
+        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, -e.y)).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, -e.y)).r;
+        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(2, 0)).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(2, 0)).r;
+        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(0, 2)).r;
+        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(0, 2)).r;
+    }
+    else {
+        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, e.y)).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, e.y)).r;
+        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, -e.y)).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, -e.y)).r;
+        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(2, 0)).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(2, 0)).r;
+        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(0, 2)).r;
+        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(0, 2)).r;
+    }
+
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -294,31 +358,21 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     return vec3(0.5) + 0.5 * normalize(vec3(rv, -1.0));
 }
 
-// const float wood_grain_seed = 4.2069;
-// const float grain_base_scale_x = 8.80;
-// const float grain_base_scale_y = 1.17;
+// Reorientated Normal Mapping - Stephen Hill & Colin Barre-Brisebois - https://blog.selfshadow.com/publications/blending-in-detail/
+// https://www.shadertoy.com/view/4t2SzR
+vec3 normal_rnm_blend(vec3 n1, vec3 n2) {
+    n1.z = 1.0 - n1.z;
+    n2.z = 1.0 - n2.z;
 
-const float grain_base_highs = 1.0;
-const float grain_base_lows = 0.1;
+    // unpacked and rmn blend
+    n1 = n1 * vec3(2, 2, 2) + vec3(-1, -1, 0);
+    n2 = n2 * vec3(-2, -2, 2) + vec3(1, 1, -1);
+    vec3 rnm = n1 * dot(n1, n2) / n1.z - n2;
 
-const float grain_detailed_scale = 4.6;
-const int grain_detailed_iterations = 8;
-const float grain_detailed_size = 2.5;
-
-const vec2 dirt_scale = vec2(0.01, 0.15);
-const int dirt_iterations = 15;
-const float dirt_dimension = 0.26;
-const float dirt_size = 2.4;
-const float dirt_opacity = 0.2;
-
-// const float lines_seed = 4.567;
-const float lines_smooth_min = 0.1;
-const float lines_smooth_max = 0.9;
-const float lines_scale_factor = 1.0;
-const int lines_iterations = 2;
-const float lines_dimension = 2.0;
-const float lines_size = 2.5;
-const float lines_opacity = 0.2;
+    // Restore z-axis and repack to to [0,1]
+    rnm.z = -rnm.z;
+    return rnm * 0.5 + 0.5;
+}
 
 
 void main() {
@@ -327,53 +381,26 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
+        float _blend_left = params.blend_left / 100;
+        float _blend_right = params.blend_right / 100;
+        float _roughness_value = params.roughness_value / 100;
+        float _roughness_width = params.roughness_width / 100;
+
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
         
         // float grain_base = fbm_distorted_2d(uv * grain_base_scale);
         // grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 
-        // Create a mirrored version of the UV
+        // Create a mirrored base for tileability
         vec2 mirrored_uv = vec2(1.0 - uv.x, uv.y);
-
-        // Sample noise at both original and mirrored UVs
         float grain_base_a = fbm_distorted_2d(uv * grain_base_scale);
         float grain_base_b = fbm_distorted_2d(mirrored_uv * grain_base_scale);
-
-        // Blend factor: stronger near the edges, weaker in the middle
-        float blend = smoothstep(0.3, 0.7, uv.x); 
-
-        // Blend the noise to create a seamless transition
+        float blend = smoothstep(_blend_left, _blend_right, uv.x); 
         float grain_base = mix(grain_base_a, grain_base_b, blend);
         grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 
-
-
-        /// EXPERIMENTAL TILING - isn't working quite yet, however if the artificial seam can be fixed it will look much better
-        // // Compute the plank row (every other row needs tiling)
-        // int row = int(mod(floor(uv.y * params.rows), 2.0));
-
-        // float grain_base;
-        // if (row == 0) {
-        //     // For rows that do not need tiling, use the texture without edge blending
-        //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
-        // } else {
-        //     // Apply the edge blending logic for rows that need tiling
-        //     float edge_blend = smoothstep(0.0, 1.0, abs(fract(uv.x) - 0.5) * 2.0);
-
-        //     // Sample the base texture
-        //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
-
-        //     // Blend the left and right edges for seamless tiling
-        //     float left_edge = fbm_distorted_2d(vec2(fract(uv.x - (1.0 / params.columns)), uv.y) * grain_base_scale);
-        //     float right_edge = fbm_distorted_2d(vec2(fract(uv.x + (1.0 / params.columns)), uv.y) * grain_base_scale);
-
-        //     // Combine the left and right edges smoothly
-        //     grain_base = mix(left_edge, right_edge, edge_blend);
-
-        //     // Apply the grain details
-        //     grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
-        // }
-
+        float roughness_input = 1.0 - clamp((grain_base - _roughness_value) / _roughness_width + 0.5, 0.0, 1.0);
+        imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness_input), 1.0));
 
         float grain_detailed = mix(fbm_musgrave_2d(vec2(grain_base * grain_detailed_scale), grain_detailed_iterations, 0.0, grain_detailed_size, 0.0), grain_base, 0.85);
         float dirt = 1.0 - fbm_musgrave_2d(fbm_wave_x_2d(uv * dirt_scale), dirt_iterations, dirt_dimension, dirt_size, 0.0) * dirt_opacity;
@@ -390,31 +417,79 @@ void main() {
             uv * lines_scale, lines_iterations, lines_dimension, lines_size, seed.grain_lines_seed)) * lines_opacity;
         
         grain_detailed *= dirt * grain_lines;
+        imageStore(rgba32f_buffer_1, ivec2(pixel), vec4(vec3(grain_detailed), 1.0));
 
-        vec3 wood_colour = gradient_fct(clamp(grain_detailed, 0.01, 0.99)).rgb;
-        vec4 wood_texture = vec4(pow(wood_colour, vec3(0.5)), 1.0); // colour correction
-
-        // vec3 coloured_wood = mix(mix(vec3(0.03, 0.012, 0.003), vec3(0.25, 0.11, 0.04), remap_01(grain_detailed, 0.19, 0.56)), vec3(0.52, 0.32, 0.19), remap_01(grain_detailed, 0.56, 1.0));
-        // vec4 wood_texture = vec4(pow(coloured_wood, vec3(0.5)), 1.0);
-        
-        imageStore(rgba32f_buffer, ivec2(pixel), wood_texture);
+        imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(0.0), 1.0));
     }
+
 
     if (params.stage == 1.0) {
         float _gap = params.gap / 100;
 
         // Generate base plank pattern
         vec4 plank_bounding_rect = get_plank_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.offset, int(params.pattern));
-        float pattern = get_plank_pattern(uv, plank_bounding_rect.xy, plank_bounding_rect.zw, _gap, 0.0, 0.0, 1.0 / params.rows);
-        
-        // // Plank sampled and given a random colour -  NOT USED CURRENTLY
-        // vec4 plank_fill = round(vec4(fract(plank_bounding_rect.xy), plank_bounding_rect.zw - plank_bounding_rect.xy) * params.texture_size) / params.texture_size;
-		// vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((seed.plank_colour_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
-        
-        vec4 wood_texture = imageLoad(rgba32f_buffer, ivec2(pixel));
+        float bevel_noise = fbm_perlin_2d(uv, vec2(13.0, 20.0), 4, 0.50, 0.0, 0.0);
+        float pattern = get_plank_pattern(uv, plank_bounding_rect.xy, plank_bounding_rect.zw, 0.0, 0.0, max(0.001, _gap * bevel_noise), 1.0 / params.rows);
+        imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(vec3(pattern), 1.0));
 
-        vec3 blend = multiply(wood_texture.rgb, vec3(pattern), 1.0);
+        float occlusion_tone_val = 1.0 - occlusion_strength;
+        float occlusion_input = occlusion_tone_val + pattern * (1.0 - occlusion_tone_val);
+        imageStore(occlusion_buffer, ivec2(pixel), vec4(vec3(occlusion_input), 1.0));
 
-        imageStore(albedo_buffer, ivec2(pixel), wood_texture);
+        float roughness_input = imageLoad(roughness_buffer, ivec2(pixel)).r;
+        imageStore(orm_buffer, ivec2(pixel), vec4(vec3(occlusion_input, roughness_input, 0.0), 1.0));
+
+        float grain_detailed = imageLoad(rgba32f_buffer_1, ivec2(pixel)).r;
+        vec3 wood_colour = gradient_fct(clamp(grain_detailed, 0.01, 0.99)).rgb;    
+        vec3 coloured_pattern = map_bw_colours(pattern, vec3(1.0), gap_col.rgb);
+        vec3 albedo_input = multiply(wood_colour, coloured_pattern, 1.0);
+
+        imageStore(albedo_buffer, ivec2(pixel), vec4(albedo_input, 1.0));
     }
+
+    if (params.stage == 2.0) {
+        float _noise_sobel_strength = params.noise_sobel_strength / 100;
+        float _gap_sobel_strength = params.gap_sobel_strength / 100;
+
+        vec3 noise_normals = sobel_filter(ivec2(pixel), _noise_sobel_strength, params.texture_size, true);
+        vec3 gap_normals = sobel_filter(ivec2(pixel), _gap_sobel_strength, params.texture_size, false);
+        vec3 blended_normals = normal_rnm_blend(noise_normals, gap_normals);
+        
+        if (params.normals_format == 0.0) {
+            vec3 opengl_normals = blended_normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(opengl_normals, 1.0));
+        } 
+        else if (params.normals_format == 1.0) {
+            vec3 directx_normals = blended_normals * vec3(-1.0, -1.0, -1.0) + vec3(1.0, 1.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
+        }
+    }
+
+
+    /// MISC EXPERIMENTAL TILING (stage 0) - isn't working quite yet, however if the artificial seam can be fixed it will look much better
+    /// The best solution would be to create a tileable grain base / musgrave noise.
+        
+    // // Compute the plank row (every other row needs tiling)
+    // int row = int(mod(floor(uv.y * params.rows), 2.0));
+
+    // float grain_base;
+    // if (row == 0) {
+    //     // For rows that do not need tiling, use the texture without edge blending
+    //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
+    // } else {
+    //     // Apply the edge blending logic for rows that need tiling
+    //     float edge_blend = smoothstep(0.0, 1.0, abs(fract(uv.x) - 0.5) * 2.0);
+
+    //     // Sample the base texture
+    //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
+
+    //     // Blend the left and right edges for seamless tiling
+    //     float left_edge = fbm_distorted_2d(vec2(fract(uv.x - (1.0 / params.columns)), uv.y) * grain_base_scale);
+    //     float right_edge = fbm_distorted_2d(vec2(fract(uv.x + (1.0 / params.columns)), uv.y) * grain_base_scale);
+
+    //     // Combine the left and right edges smoothly
+    //     grain_base = mix(left_edge, right_edge, edge_blend);
+
+    //     // Apply the grain details
+    //     grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 }
