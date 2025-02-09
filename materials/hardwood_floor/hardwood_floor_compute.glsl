@@ -52,6 +52,8 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float gap_sobel_strength;
     float blend_left;
     float blend_right;
+    float lines_scale_factor;
+    float lines_opacity;
     float normals_format;
 	float texture_size;
 	float stage;
@@ -73,14 +75,11 @@ const float dirt_opacity = 0.2;
 
 const float lines_smooth_min = 0.1;
 const float lines_smooth_max = 0.9;
-const float lines_scale_factor = 1.0;
 const int lines_iterations = 2;
 const float lines_dimension = 2.0;
 const float lines_size = 2.5;
-const float lines_opacity = 0.2;
 
 const float occlusion_strength = 0.1;
-
 
 
 float rand(vec2 x) {
@@ -293,7 +292,7 @@ vec2 fbm_wave_x_2d(vec2 coord) {
     wave_phase += 0.4 * fbm_2d(coord * 3.0, 3, 3.0);
     return vec2(sin(wave_phase) * 0.5 + 0.5, coord.y);
 }
-// END OF CC BY-NC-SA 3.0 - continued in main() function //
+// END OF CC BY-NC-SA 3.0 //
 
 
 vec4 gradient_fct(float x) {
@@ -388,10 +387,11 @@ void main() {
 
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
         
+        // No tiling or mirroring
         // float grain_base = fbm_distorted_2d(uv * grain_base_scale);
         // grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 
-        // Create a mirrored base for tileability
+        // Create a mirrored base for tiling by blending two base noise textures
         vec2 mirrored_uv = vec2(1.0 - uv.x, uv.y);
         float grain_base_a = fbm_distorted_2d(uv * grain_base_scale);
         float grain_base_b = fbm_distorted_2d(mirrored_uv * grain_base_scale);
@@ -402,20 +402,22 @@ void main() {
         float roughness_input = 1.0 - clamp((grain_base - _roughness_value) / _roughness_width + 0.5, 0.0, 1.0);
         imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness_input), 1.0));
 
+        // Apply FBM Musgrave using the grain base to generate a 'wood grain' texture
         float grain_detailed = mix(fbm_musgrave_2d(vec2(grain_base * grain_detailed_scale), grain_detailed_iterations, 0.0, grain_detailed_size, 0.0), grain_base, 0.85);
-        float dirt = 1.0 - fbm_musgrave_2d(fbm_wave_x_2d(uv * dirt_scale), dirt_iterations, dirt_dimension, dirt_size, 0.0) * dirt_opacity;
         
+        // Additional layers for extra flavour with grain lines that follow the general grain direction, and a 'dirt' layer which is just some waves / rings
+        float dirt = 1.0 - fbm_musgrave_2d(fbm_wave_x_2d(uv * dirt_scale), dirt_iterations, dirt_dimension, dirt_size, 0.0) * dirt_opacity;
         vec2 lines_scale;
         if (params.grain_base_scale_x > params.grain_base_scale_y) {
-            lines_scale = vec2(params.grain_base_scale_x * 80.0, params.grain_base_scale_y * 5.0) * lines_scale_factor;
+            lines_scale = vec2(params.grain_base_scale_x * 80.0, params.grain_base_scale_y * 5.0) * params.lines_scale_factor;
         }
         else {
-            lines_scale = vec2(params.grain_base_scale_x * 5.0, params.grain_base_scale_y * 80.0) * lines_scale_factor;
+            lines_scale = vec2(params.grain_base_scale_x * 5.0, params.grain_base_scale_y * 80.0) * params.lines_scale_factor;
         }
-        
         float grain_lines = 1.0 - smoothstep(lines_smooth_min, lines_smooth_max, fbm_musgrave_2d(
-            uv * lines_scale, lines_iterations, lines_dimension, lines_size, seed.grain_lines_seed)) * lines_opacity;
+            uv * lines_scale, lines_iterations, lines_dimension, lines_size, seed.grain_lines_seed)) * params.lines_opacity;
         
+        // Mix extra layers with the detailed base
         grain_detailed *= dirt * grain_lines;
         imageStore(rgba32f_buffer_1, ivec2(pixel), vec4(vec3(grain_detailed), 1.0));
 
@@ -432,13 +434,14 @@ void main() {
         float pattern = get_plank_pattern(uv, plank_bounding_rect.xy, plank_bounding_rect.zw, 0.0, 0.0, max(0.001, _gap * bevel_noise), 1.0 / params.rows);
         imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(vec3(pattern), 1.0));
 
+        // Store occlusion and roughness maps
         float occlusion_tone_val = 1.0 - occlusion_strength;
         float occlusion_input = occlusion_tone_val + pattern * (1.0 - occlusion_tone_val);
         imageStore(occlusion_buffer, ivec2(pixel), vec4(vec3(occlusion_input), 1.0));
-
         float roughness_input = imageLoad(roughness_buffer, ivec2(pixel)).r;
         imageStore(orm_buffer, ivec2(pixel), vec4(vec3(occlusion_input, roughness_input, 0.0), 1.0));
 
+        // Apply colour to the detailed base texture
         float grain_detailed = imageLoad(rgba32f_buffer_1, ivec2(pixel)).r;
         vec3 wood_colour = gradient_fct(clamp(grain_detailed, 0.01, 0.99)).rgb;    
         vec3 coloured_pattern = map_bw_colours(pattern, vec3(1.0), gap_col.rgb);
@@ -451,6 +454,7 @@ void main() {
         float _noise_sobel_strength = params.noise_sobel_strength / 100;
         float _gap_sobel_strength = params.gap_sobel_strength / 100;
 
+        // Create normal maps
         vec3 noise_normals = sobel_filter(ivec2(pixel), _noise_sobel_strength, params.texture_size, true);
         vec3 gap_normals = sobel_filter(ivec2(pixel), _gap_sobel_strength, params.texture_size, false);
         vec3 blended_normals = normal_rnm_blend(noise_normals, gap_normals);
