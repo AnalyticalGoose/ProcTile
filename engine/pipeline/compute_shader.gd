@@ -22,6 +22,7 @@ var rd : RenderingDevice
 var shader : RID
 var pipeline : RID
 var push_constant : PackedFloat32Array
+var push_constant_padding : int = 0
 var albedo : Texture2DRD
 var occlusion : Texture2DRD
 var roughness : Texture2DRD
@@ -179,6 +180,7 @@ func _create_push_constant(push_constant_data : Array, texture_size : int) -> Pa
 		var bytes_needed : int = (16 - (push_constant_size * 4 % 16))
 		for i : int in (bytes_needed / 4.0):
 			_push_constant.push_back(0.0)
+			push_constant_padding += 1
 			
 	return _push_constant
 

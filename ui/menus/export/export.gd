@@ -83,7 +83,9 @@ func progress_update(progress : int) -> void:
 		
 		# if exporting Directx normals, change back to OpenGL so the shader renders correctly.
 		if normals_type != 0.0: 
-			compute_shader.push_constant.set(compute_shader.push_constant.size() - 3, 0.0)
+			compute_shader.push_constant.set(
+				compute_shader.push_constant.size() - (3 + compute_shader.push_constant_padding), 0.0
+				)
 			compute_shader.stage = 0
 		
 		renderer.set_process(true)
@@ -252,7 +254,9 @@ func _on_export_button_pressed() -> void:
 
 
 func _recalculate_normals() -> void:
-	compute_shader.push_constant.set(compute_shader.push_constant.size() - 3, normals_type)
+	compute_shader.push_constant.set(
+		compute_shader.push_constant.size() - (3 + compute_shader.push_constant_padding), normals_type
+		)
 	compute_shader.stage = 0
 	
 	while compute_shader.stage != compute_shader._max_stage:
