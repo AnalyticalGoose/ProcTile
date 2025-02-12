@@ -43,8 +43,19 @@ float multiply(float base, float blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
 }
 
+float normal(float base, float blend, float opacity) {
+	return opacity * base + (1.0 - opacity) * blend;
+}
 
 
+float clamped_difference(float base, float blend) {
+    return clamp(blend - base, 0.0, 1.0);
+}
+
+
+float blendSubstract(float base, float blend) {
+	return max(base+blend-1.0,0.0);
+}
 
 
 float blendLinearBurn(float base, float blend) {
@@ -202,7 +213,6 @@ vec3 normal_rnm_blend(vec3 n1, vec3 n2, float opacity) {
 
 
 
-//// TEST GAUSSIAN
 float sample_bilinear(ivec2 base_coord, vec2 offset) {
     vec2 p = vec2(base_coord) + offset;
     ivec2 ip = ivec2(floor(p));
@@ -218,7 +228,7 @@ float sample_bilinear(ivec2 base_coord, vec2 offset) {
     return mix(lerp1, lerp2, f.y);
 }
 
-vec4 gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
+float gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
     float samples = sigma * 4.0;
     
     // Optionally use a LOD factor to step by more than 1 pixel. Mimics using a lower resolution mip level.
@@ -232,13 +242,11 @@ vec4 gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
     
     // Loop over a grid of s x s samples centered at the pixel.
     for (int i = 0; i < s * s; i++) {
-        // Compute 2D grid coordinates from the 1D loop counter.
         int ix = i % s;
         int iy = i / s;
-        // Compute the offset in pixel space.
-        // Centre the grid by subtracting half the total sample range.
+        // Center the grid by subtracting half the total sample range.
         vec2 d = vec2(float(ix), float(iy)) * float(sLOD) - 0.5 * samples;
-        // For Gaussian weight, scale the offset by sigma.
+        // Compute the Gaussian weight.
         vec2 dd = d / sigma;
         float g = exp(-0.5 * dot(dd, dd)) / (6.28 * sigma * sigma);
         
@@ -249,12 +257,11 @@ vec4 gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
     }
     
     float blurred = accum / sumWeights;
-    return vec4(blurred, blurred, blurred, 1.0);
+    return blurred;
 }
 //////
 
-
-
+const float tile_scale = 10.0; 
 
 const float brushed_scale = 30.0;
 const float bump_scale = 5.0;
@@ -277,7 +284,7 @@ void main() {
     }
 
     if (params.stage == 1.0) {
-        vec3 tile_weave = tile_weave(uv, vec2(10.0), 3.0, 0.4, 0.4);
+        vec3 tile_weave = tile_weave(uv, vec2(tile_scale), 3.0, 0.4, 0.4);
         vec2 gradient = vec2(tile_weave.y, tile_weave.z);
         vec3 checker_normals = normalize(vec3(-gradient, -1.0));
         checker_normals = checker_normals * 0.5 + 0.5;
@@ -302,16 +309,26 @@ void main() {
         float fbm_brushed = imageLoad(noise_buffer, ivec2(pixel)).r;
         float a_blend_opac = 0.2 * dot(checker_mask, 1.0);
         vec3 albedo = blendLinearLight(vec3(0.789), vec3(fbm_brushed), a_blend_opac);
-        // imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
-
-
-        imageStore(occlusion_buffer, ivec2(pixel), vec4(1.0));
-        imageStore(metallic_buffer, ivec2(pixel), vec4(0.9));
-        imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(0.3), 1.0));
+        imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
     }
 
     if (params.stage == 2.0) {
-        vec4 blur = gaussian_blur(ivec2(pixel), 10.0, 1);
-        imageStore(albedo_buffer, ivec2(pixel), blur);
+        float mask = imageLoad(mask_buffer, ivec2(pixel)).r;
+        
+        float blur = gaussian_blur(ivec2(pixel), 15.0, 1);
+        float occlusion = 1.0 - clamped_difference(mask, blur);
+
+        float bar_roughness = 0.7;
+        float plate_roughness = 0.35;
+        float roughness_opacity = min(1.0, -mask + 1.0);
+        float roughness = normal(plate_roughness, bar_roughness, roughness_opacity);
+
+        float metallic = 0.9;
+
+        imageStore(occlusion_buffer, ivec2(pixel), vec4(vec3(occlusion), 1.0));
+        imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness), 1.0));
+        imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(metallic), 1.0));
+        imageStore(orm_buffer, ivec2(pixel), vec4(occlusion, roughness, metallic, 1.0));
     }
 }
+

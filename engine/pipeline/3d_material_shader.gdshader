@@ -24,8 +24,8 @@ void fragment() {
 	vec4 normal_tex = texture(normal_input, UV);
 
 	ALBEDO = toLinear(albedo_tex).rgb;
-	//AO = occlusion_tex.r;
-	//ROUGHNESS = roughness_tex.r;
-	//METALLIC = metallic_tex.r;
-	//NORMAL_MAP = normal_tex.rgb;
+	AO = occlusion_tex.r;
+	ROUGHNESS = roughness_tex.r;
+	METALLIC = metallic_tex.r;
+	NORMAL_MAP = normal_tex.rgb;
 }
