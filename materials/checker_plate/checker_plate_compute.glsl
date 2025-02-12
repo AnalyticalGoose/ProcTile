@@ -17,27 +17,43 @@ layout(r16f, set = 1, binding = 1) uniform image2D noise_buffer;
 layout(r16f, set = 1, binding = 2) uniform image2D mask_buffer;
 
 layout(push_constant, std430) uniform restrict readonly Params {
+    float bars_type;
+    float bars_density;
+    float bars_count;
+    float bars_width;
+    float bars_smoothness;
+
+    float brushed_scale;
+    float bump_scale;
+    float noise_blend;
+    float noise_strength;
+    float bar_roughness;
+    float plate_roughness;
+    float metalness;
+
     float normals_format;
 	float texture_size;
 	float stage;
 } params;
 
+layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+    float brushed_noise_seed;
+    float bump_noise_seed;
+} seed;
 
-// Normal map
-const float sobel_strength = 0.05;
+layout(set = 3, binding = 0, std430) buffer readonly PlateColour {
+    vec4 plate_col;
+};
 
 
 float rand(vec2 x) {
 	return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-
 vec2 rand2(vec2 x) {
     return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
 						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
-
-
 
 float multiply(float base, float blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
@@ -47,41 +63,29 @@ float normal(float base, float blend, float opacity) {
 	return opacity * base + (1.0 - opacity) * blend;
 }
 
-
 float clamped_difference(float base, float blend) {
     return clamp(blend - base, 0.0, 1.0);
 }
 
-
-float blendSubstract(float base, float blend) {
+float linear_burn(float base, float blend) {
 	return max(base+blend-1.0,0.0);
 }
 
-
-float blendLinearBurn(float base, float blend) {
-	// Note : Same implementation as BlendSubtractf
-	return max(base+blend-1.0,0.0);
-}
-
-float blendLinearDodge(float base, float blend) {
-	// Note : Same implementation as BlendAddf
+float linear_dodge(float base, float blend) {
 	return min(base+blend,1.0);
 }
 
-float blendLinearLight(float base, float blend) {
-	return blend<0.5?blendLinearBurn(base,(2.0*blend)):blendLinearDodge(base,(2.0*(blend-0.5)));
+float linear_light(float base, float blend) {
+	return blend < 0.5 ? linear_burn(base, (2.0 * blend)) : linear_dodge(base, (2.0 * (blend - 0.5)));
 }
 
-vec3 blendLinearLight(vec3 base, vec3 blend) {
-	return vec3(blendLinearLight(base.r,blend.r),blendLinearLight(base.g,blend.g),blendLinearLight(base.b,blend.b));
+vec3 linear_light(vec3 base, vec3 blend) {
+	return vec3(linear_light(base.r, blend.r), linear_light(base.g, blend.g), linear_light(base.b, blend.b));
 }
 
-vec3 blendLinearLight(vec3 base, vec3 blend, float opacity) {
-	return (blendLinearLight(base, blend) * opacity + base * (1.0 - opacity));
+vec3 linear_light(vec3 base, vec3 blend, float opacity) {
+	return (linear_light(base, blend) * opacity + base * (1.0 - opacity));
 }
-
-
-
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
     vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
@@ -110,7 +114,6 @@ float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
     return 0.5 + mix(mix(p[0], p[2], t.x), mix(p[1], p[3], t.x), t.y);
 }
 
-
 float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, float offset, float seed) {
 	float normalize_factor = 0.0;
 	float value = 0.0;
@@ -125,14 +128,9 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 	return value / normalize_factor;
 }
 
-
-
-
-
-
-
-float sdf_lens(vec2 p, float width, float height)
-{
+// Procedural Tileable Shaders by tuxalin - https://github.com/tuxalin
+// https://github.com/tuxalin/procedural-tileable-shaders/blob/master/patterns.glsl
+float sdf_lens(vec2 p, float width, float height) {
     // Vesica SDF based on Inigo Quilez
     float d = height / width - width / 4.0;
     float r = width / 2.0 + d;
@@ -144,6 +142,22 @@ float sdf_lens(vec2 p, float width, float height)
     return (par.y * d > p.x * b) ? length(par.xy) : length(par.zw) - r;
 }
 
+float sdf_capsule(vec2 p, float radiusA, float radiusB, float height) {
+    // Capsule SDF based on Inigo Quilez
+    p.x = abs(p.x);
+    p.y += height * 0.5;
+    
+    float b = (radiusA - radiusB) / height;
+    vec2 c = vec2(sqrt(1.0 - b * b), b);
+    vec3 mnk = vec3(c.x, p.x, c.x) * p.xxy + vec3(c.y, p.y, -c.y) * p.yyx;
+    
+    if( mnk.z < 0.0   ) 
+        return sqrt(mnk.y) - radiusA;
+    else if(mnk.z > c.x * height) 
+        return sqrt(mnk.y + height * height - 2.0 * height * p.y) - radiusB;
+    return mnk.x - radiusA;
+}
+
 vec3 tile_weave(vec2 pos, vec2 scale, float count, float width, float smoothness) {
     vec2 i = floor(pos * scale);    
     float c = mod(i.x + i.y, 2.0);
@@ -151,16 +165,23 @@ vec3 tile_weave(vec2 pos, vec2 scale, float count, float width, float smoothness
     vec2 p = fract(pos.st * scale);
     p = mix(p.st, p.ts, c);
     p = fract(p * vec2(count, 1.0));
+
+    float d;
+    if (params.bars_type == 0.0) {
+        width *= 2.0;
+        p = p * 2.0 - 1.0;
+        d = sdf_lens(p, width, 1.0);
+    }
+    else if (params.bars_type == 1.0) {
+        p = p * 2.0 - 1.0;
+        d = sdf_capsule(p, width, width, 1.0 - max(width, width) * 0.75);
+    }
     
-    width *= 2.0;
-    p = p * 2.0 - 1.0;
-    float d = sdf_lens(p, width, 1.0);
     vec2 grad = vec2(dFdx(d), dFdy(d));
 
     float s = 1.0 - smoothstep(0.0, dot(abs(grad), vec2(1.0)) + smoothness, -d);
     return vec3(s, normalize(grad) * smoothstep(1.0, 0.99, s) * smoothstep(0.0, 0.01, s)); 
 }
-
 
 float map_bw_colours(float x, float col_white, float col_black) {
     if (x < 1.0) {
@@ -170,7 +191,6 @@ float map_bw_colours(float x, float col_white, float col_black) {
         return col_white;
     }
 }
-
 
 // Generate normals
 vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
@@ -194,7 +214,6 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     return vec3(0.5) + 0.5 * normalize(vec3(rv, -1.0));
 }
 
-
 // Reorientated Normal Mapping - Stephen Hill & Colin Barre-Brisebois - https://blog.selfshadow.com/publications/blending-in-detail/
 // https://www.shadertoy.com/view/4t2SzR
 // Version with opacity adjust
@@ -210,8 +229,6 @@ vec3 normal_rnm_blend(vec3 n1, vec3 n2, float opacity) {
     rnm.z = -rnm.z; 
     return rnm * 0.5 + 0.5;
 }
-
-
 
 float sample_bilinear(ivec2 base_coord, vec2 offset) {
     vec2 p = vec2(base_coord) + offset;
@@ -259,13 +276,6 @@ float gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
     float blurred = accum / sumWeights;
     return blurred;
 }
-//////
-
-const float tile_scale = 10.0; 
-
-const float brushed_scale = 30.0;
-const float bump_scale = 5.0;
-const float noise_blend = 1.0;
 
 
 void main() {
@@ -274,21 +284,23 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
-        float fbm_brushed =  fbm_perlin_2d(uv, vec2(1.0, brushed_scale), 10, 1.0, 0.0, 0.0);
+        float fbm_brushed =  fbm_perlin_2d(uv, vec2(1.0, params.brushed_scale), 10, 1.0, 0.0, seed.brushed_noise_seed);
         imageStore(noise_buffer, ivec2(pixel), vec4(vec3(fbm_brushed), 1.0));
 
-        float fbm_bump = fbm_perlin_2d(uv, vec2(bump_scale), 10, 1.0, 0.0, 0.0);
-        float fbm_blend = multiply(fbm_bump, fbm_brushed, 1.0); // may wish to reverse args
+        float fbm_bump = fbm_perlin_2d(uv, vec2(params.bump_scale), 10, 1.0, 0.0, seed.bump_noise_seed);
+        float fbm_blend = multiply(fbm_bump, fbm_brushed, params.noise_blend); // may wish to reverse args
 
-        imageStore(rgba32f_buffer, ivec2(pixel), vec4(vec3(fbm_blend), noise_blend));
+        imageStore(rgba32f_buffer, ivec2(pixel), vec4(vec3(fbm_blend), 1.0));
     }
 
     if (params.stage == 1.0) {
-        vec3 tile_weave = tile_weave(uv, vec2(tile_scale), 3.0, 0.4, 0.4);
+        float _normals_strength = params.noise_strength / 100;
+
+        vec3 tile_weave = tile_weave(uv, vec2(params.bars_density), params.bars_count, params.bars_width, params.bars_smoothness);
         vec2 gradient = vec2(tile_weave.y, tile_weave.z);
         vec3 checker_normals = normalize(vec3(-gradient, -1.0));
         checker_normals = checker_normals * 0.5 + 0.5;
-        vec3 noise_normals = sobel_filter(ivec2(pixel), sobel_strength, params.texture_size);
+        vec3 noise_normals = sobel_filter(ivec2(pixel), _normals_strength, params.texture_size);
 
         float checker_min = 1.0 - min(checker_normals.r, min(checker_normals.g, checker_normals.b));
         float checker_mask = map_bw_colours(checker_min, 1.0, 0.0);
@@ -307,28 +319,28 @@ void main() {
         }
 
         float fbm_brushed = imageLoad(noise_buffer, ivec2(pixel)).r;
-        float a_blend_opac = 0.2 * dot(checker_mask, 1.0);
-        vec3 albedo = blendLinearLight(vec3(0.789), vec3(fbm_brushed), a_blend_opac);
+        float albedo_blend_opacity = 0.2 * dot(checker_mask, 1.0);
+        vec3 albedo = linear_light(plate_col.rgb, vec3(fbm_brushed), albedo_blend_opacity);
         imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
     }
 
     if (params.stage == 2.0) {
+        float _bar_roughness = params.bar_roughness / 100;
+        float _plate_roughness = params.plate_roughness / 100;
+        float _metalness = params.metalness / 100;
+
         float mask = imageLoad(mask_buffer, ivec2(pixel)).r;
         
         float blur = gaussian_blur(ivec2(pixel), 15.0, 1);
         float occlusion = 1.0 - clamped_difference(mask, blur);
 
-        float bar_roughness = 0.7;
-        float plate_roughness = 0.35;
         float roughness_opacity = min(1.0, -mask + 1.0);
-        float roughness = normal(plate_roughness, bar_roughness, roughness_opacity);
-
-        float metallic = 0.9;
+        float roughness = normal(_plate_roughness, _bar_roughness, roughness_opacity);
 
         imageStore(occlusion_buffer, ivec2(pixel), vec4(vec3(occlusion), 1.0));
         imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness), 1.0));
-        imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(metallic), 1.0));
-        imageStore(orm_buffer, ivec2(pixel), vec4(occlusion, roughness, metallic, 1.0));
+        imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(_metalness), 1.0));
+        imageStore(orm_buffer, ivec2(pixel), vec4(occlusion, roughness, _metalness, 1.0));
     }
 }
 
