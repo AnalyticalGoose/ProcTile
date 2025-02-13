@@ -19,7 +19,7 @@ func _on_asset_selector_item_activated(index: int) -> void:
 		compute_shader = renderer.create_compute_shader()
 		ui_manager.enable_full_ui()
 
-	var asset_data : Dictionary = DataManager.material_data[index]
+	var asset_data : Dictionary = DataManager.material_data[index].duplicate(true)
 	var shader_path : String = DataManager.shader_paths[index][0]
 	var shader_data : Array = asset_data.shader_data
 	var ui_data : Array = asset_data.ui_elements
