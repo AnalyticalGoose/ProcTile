@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://blhcmxy0f3gdg"
+path="res://.godot/imported/checker_plate_compute.glsl-ce33d9a19d0640003d21c95bb0d311c6.res"
+
+[deps]
+
+source_file="res://materials/3d_realistic/checker_plate/checker_plate_compute.glsl"
+dest_files=["res://.godot/imported/checker_plate_compute.glsl-ce33d9a19d0640003d21c95bb0d311c6.res"]
+
+[params]
+

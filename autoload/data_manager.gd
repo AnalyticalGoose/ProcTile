@@ -19,12 +19,12 @@ func _ready() -> void:
 	var material_database : Database = Database.new()
 	_init_schema(DatabaseType.MATERIAL, material_database)
 	
-	var material_dir : DirAccess = DirAccess.open("res://materials/")
+	var material_dir : DirAccess = DirAccess.open("res://materials/3d_realistic/")
 	var dir_array : PackedStringArray = material_dir.get_directories()
 	
 	for i : int in dir_array.size():
 		var dir : String = dir_array[i]
-		var base_path : String = "res://materials/" + dir + "/" + dir
+		var base_path : String = "res://materials/3d_realistic/" + dir + "/" + dir
 		material_database.load_from_path(base_path + "_data.cfg")
 		shader_paths[i] = [
 				base_path + "_compute.glsl",

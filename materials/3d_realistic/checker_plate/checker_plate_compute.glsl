@@ -8,7 +8,7 @@ layout(derivative_group_quadsNV) in;
 layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
 layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
 layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(r16f, set = 0, binding = 3) uniform image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 

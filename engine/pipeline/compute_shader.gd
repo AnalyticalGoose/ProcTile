@@ -6,13 +6,19 @@ extends RefCounted
 ## the push constant and required image / data storage buffers, and can be called
 ## from the renderer to update and dispatch the shader each frame.
 
+enum material_type {
+	REALISTIC_3D,
+	PIXEL_2D,
+	STYLISED_3D,
+}
+
 enum tf_size {
 	R16F,
 	RGBA32F,
 	RGB32F,
 }
 
-enum storage_types {
+enum storage_type {
 	SEEDS,
 	FLOAT32,
 	VEC4,
@@ -65,12 +71,15 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
-	base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-	base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-	base_textures_rds[2] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-	base_textures_rds[3] = rd.texture_create(r16f_tf, RDTextureView.new(), [])
-	base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-	base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	var _mat_type : int = init_data[0][1]
+	match _mat_type:
+		material_type.REALISTIC_3D:
+			base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+			base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+			base_textures_rds[2] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+			base_textures_rds[3] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+			base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+			base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 
 	var base_texture_uniforms : Array[RDUniform] = []
 	for i : int in range(6):
@@ -120,12 +129,12 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 		var buffer_data : Array = storage_buffer_data[i]
 		var packed_data : PackedByteArray
 		match storage_buffer_types[i]:
-			storage_types.SEEDS:
+			storage_type.SEEDS:
 				seeds_array = buffer_data
 				packed_data = PackedFloat32Array(buffer_data).to_byte_array()
-			storage_types.FLOAT32:
+			storage_type.FLOAT32:
 				packed_data = PackedFloat32Array(buffer_data).to_byte_array()
-			storage_types.VEC4:
+			storage_type.VEC4:
 				var colour_data : Array = []
 				for rgb : Array in buffer_data:
 					@warning_ignore("unsafe_call_argument", "return_value_discarded")
