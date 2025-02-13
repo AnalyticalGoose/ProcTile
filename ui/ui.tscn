@@ -23,10 +23,10 @@
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
-[ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/3d_realistic/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
-[ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3d_realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
-[ext_resource type="Texture2D" uid="uid://c5ds7isye1occ" path="res://materials/3d_realistic/hardwood_floor/hardwood_floor_thumb.png" id="17_gh2kt"]
-[ext_resource type="Texture2D" uid="uid://btubkvyddqg7q" path="res://materials/3d_realistic/checker_plate/checker_plate_thumb.png" id="17_io8n0"]
+[ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
+[ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
+[ext_resource type="Texture2D" uid="uid://c5ds7isye1occ" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.png" id="17_gh2kt"]
+[ext_resource type="Texture2D" uid="uid://btubkvyddqg7q" path="res://materials/3D/realistic/checker_plate/checker_plate_thumb.png" id="17_io8n0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1aivf0sbe7cd"
-path="res://.godot/imported/bathroom_tiles_thumb.jpg-ae9273e4ec176809e7263d62b0376a37.ctex"
+uid="uid://c5ds7isye1occ"
+path="res://.godot/imported/hardwood_floor_thumb.png-2d101b9809fb8c8663b2abe11d3ab425.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/3d_realistic/bathroom_tiles/bathroom_tiles_thumb.jpg"
-dest_files=["res://.godot/imported/bathroom_tiles_thumb.jpg-ae9273e4ec176809e7263d62b0376a37.ctex"]
+source_file="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.png"
+dest_files=["res://.godot/imported/hardwood_floor_thumb.png-2d101b9809fb8c8663b2abe11d3ab425.ctex"]
 
 [params]
 

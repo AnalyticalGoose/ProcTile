@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://btubkvyddqg7q"
-path="res://.godot/imported/checker_plate_thumb.png-87ff0086a5d899a9f3cb0c8240ee36ab.ctex"
+path="res://.godot/imported/checker_plate_thumb.png-96d0acc4f54d530f6c349dfdd0716fb0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/3d_realistic/checker_plate/checker_plate_thumb.png"
-dest_files=["res://.godot/imported/checker_plate_thumb.png-87ff0086a5d899a9f3cb0c8240ee36ab.ctex"]
+source_file="res://materials/3D/realistic/checker_plate/checker_plate_thumb.png"
+dest_files=["res://.godot/imported/checker_plate_thumb.png-96d0acc4f54d530f6c349dfdd0716fb0.ctex"]
 
 [params]
 

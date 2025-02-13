@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bwq5eb104crk8"
+path="res://.godot/imported/bathroom_tiles_compute.glsl-4c63261c948a504864d943bb13fb1890.res"
+
+[deps]
+
+source_file="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_compute.glsl"
+dest_files=["res://.godot/imported/bathroom_tiles_compute.glsl-4c63261c948a504864d943bb13fb1890.res"]
+
+[params]
+
