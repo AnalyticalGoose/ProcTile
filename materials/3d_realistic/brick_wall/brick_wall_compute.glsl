@@ -592,6 +592,9 @@ void main() {
 
 		// ORM input
 		imageStore(orm_buffer, ivec2(pixel), vec4(occlusion, roughness_input.r, 0.0, 1.0));
+
+        // metallic
+        imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(0.0), 1.0));
 	}
 
 	if (params.stage == 3.0) {
