@@ -11,7 +11,7 @@ var settings_data : Array[Dictionary]
 var shader_paths : Dictionary = {}
 
 const SETTINGS_PATH : String = "user://settings.cfg"
-
+const MATERIAL_DIRS : Array[String] = ["res://materials/3D/realistic/", "res://materials/2D/pixel/"]
 
 func _ready() -> void:
 	_load_settings()
@@ -19,17 +19,20 @@ func _ready() -> void:
 	var material_database : Database = Database.new()
 	_init_schema(DatabaseType.MATERIAL, material_database)
 	
-	var material_dir : DirAccess = DirAccess.open("res://materials/3D/realistic/")
-	var dir_array : PackedStringArray = material_dir.get_directories()
+	var i : int = 0
 	
-	for i : int in dir_array.size():
-		var dir : String = dir_array[i]
-		var base_path : String = "res://materials/3D/realistic/" + dir + "/" + dir
-		material_database.load_from_path(base_path + "_data.cfg")
-		shader_paths[i] = [
-				base_path + "_compute.glsl",
-				base_path + "_data.cfg"
-		]
+	for path : String in MATERIAL_DIRS:
+		var material_dir : DirAccess = DirAccess.open(path)
+		var dir_array : PackedStringArray = material_dir.get_directories()
+		
+		for dir : String in dir_array:
+			var base_path : String = path + dir + "/" + dir
+			material_database.load_from_path(base_path + "_data.cfg")
+			shader_paths[i] = [
+					base_path + "_compute.glsl",
+					base_path + "_data.cfg"
+			]
+			i += 1
 
 	material_data = material_database.get_array()
 

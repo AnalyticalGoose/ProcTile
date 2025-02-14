@@ -27,5 +27,3 @@ func _on_asset_selector_item_activated(index: int) -> void:
 	renderer.set_shader_material(shader_data, shader_path)
 	params_manager.build_params_ui(ui_data, compute_shader)
 	renderer.asset_name = asset_data.name
-	
-	print_orphan_nodes()

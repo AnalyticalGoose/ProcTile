@@ -1,8 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://5heo5h26pf75"]
+[gd_scene load_steps=14 format=4 uid="uid://5heo5h26pf75"]
 
 [ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" path="res://engine/pipeline/3d_material_shader.gdshader" id="2_frhbj"]
-[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_e3wv5"]
 [ext_resource type="Texture2D" uid="uid://nr8rjtj3cian" path="res://engine/render/hdri/portland_landing_pad_1k.hdr" id="4_ykixy"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_h5fst"]
@@ -24,6 +23,21 @@ shader_parameter/occlusion_input = SubResource("Texture2DRD_u8qvg")
 shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
 shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
 shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bl7lb"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -0.1, 2, 2, 0.2),
+"attribute_data": PackedByteArray("VFVUVaqqVFVUVaqqqqqqqv//AAD/////AAAAAAAA//8AAKqqAABUVVRVqqpUVVRV//8AAP////8AAAAAAAD//1RVAACqqgAAVFVUVaqqVFWqqqqq//+qqqqq////////"),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAgABAAMABAAFAAYABgAFAAcACAAJAAoACgAJAAsADAANAA4ADgANAA8AEAARABIAEgARABMAFAAVABYAFgAVABcA"),
+"name": "Cube",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAD/////VNUAAAAA//9U1QAA//8AAFTVAAAAAAAAVNUAAP//AAD//wAAAAAAAP///////wAA/////wAAAAD///////8AAP////8AAAAA////////////////AAD/////////////AID//wAA//8AgAAA/////wCAAAAAAP//AID//wAAAAD//wAAAAAAAP////8AAP////8AAAAA/////wAA//8AAP+//////wAA/78AAP//////v/////////+/VFWqqlRVqqpUVaqqVFWqqv9/////f////3////9/////v/9//7//f/+//3//v/9//3////9/////f////3////9//z//f/8//3//P/9//z////9/////f////3////9/")
+}]
+blend_shape_mode = 0
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_p2h4v"]
 panorama = ExtResource("4_ykixy")
@@ -47,7 +61,7 @@ script = ExtResource("1_11juy")
 
 [node name="Mesh" type="MeshInstance3D" parent="MeshPivot"]
 material_override = SubResource("ShaderMaterial_cnb6x")
-mesh = ExtResource("3_e3wv5")
+mesh = SubResource("ArrayMesh_bl7lb")
 skeleton = NodePath("")
 
 [node name="CameraPivot" type="Node3D" parent="."]

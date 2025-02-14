@@ -1,9 +1,0 @@
-// float rand(vec2 x) { // 4K - 11/12 -- 2k - 43/44
-//     return fract(cos(mod(dot(x, vec2(13.9898, 8.141)), 3.14)) * 43758.5);
-// }
-
-// float rand(vec2 x) { // 4K - 11 -- 2k - 45/46
-//     vec3 x3 = fract(vec3(x.xyx) * 0.1031);
-//     x3 += dot(x3, x3.yzx + 33.33);
-//     return fract((x3.x + x3.y) * x3.z);
-// }

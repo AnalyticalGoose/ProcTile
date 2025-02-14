@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -55,6 +55,8 @@ size = Vector2(20, 20)
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xlou5"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ff6nv"]
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
 layout_mode = 3
@@ -379,7 +381,7 @@ custom_minimum_size = Vector2(0, 800)
 layout_direction = 1
 layout_mode = 2
 max_text_lines = 2
-item_count = 4
+item_count = 5
 max_columns = 4
 same_column_width = true
 fixed_column_width = 58
@@ -393,6 +395,8 @@ item_2/text = "Checker     Plate"
 item_2/icon = ExtResource("17_io8n0")
 item_3/text = "Hardwood Floor"
 item_3/icon = ExtResource("17_gh2kt")
+item_4/text = "Pixel Brick Wall"
+item_4/icon = SubResource("PlaceholderTexture2D_ff6nv")
 
 [node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
 z_index = -2

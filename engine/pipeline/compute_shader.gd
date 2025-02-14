@@ -6,12 +6,6 @@ extends RefCounted
 ## the push constant and required image / data storage buffers, and can be called
 ## from the renderer to update and dispatch the shader each frame.
 
-enum material_type {
-	REALISTIC_3D,
-	PIXEL_2D,
-	STYLISED_3D,
-}
-
 enum tf_size {
 	R16F,
 	RGBA32F,
@@ -36,8 +30,7 @@ var metallic : Texture2DRD
 var normal : Texture2DRD
 var seeds_array : Array
 var stage : float = 0.0
-# Albedo, occlusion, roughness, metallic, normal and packed orm
-var base_textures_rds : Array[RID] = [RID(), RID(), RID(), RID(), RID(), RID()] 
+var base_textures_rds : Array[RID] # Albedo, occlusion, roughness, metallic, normal and packed ORM
 
 var _uniform_rds : Array[RID] 
 var _uniform_sets : Array[RID] 
@@ -47,6 +40,7 @@ var _image_buffer_uniform_set : RID
 var _push_constant_stage_index : int # idx of 'stage' var in pc, changes per shader
 var _group_size : int # x & y local_size groups of shader
 var _max_stage : float
+var _3d_material : bool
 
 #var _base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
 #var buffer_sets : Array[RID]
@@ -71,18 +65,21 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
-	var _mat_type : int = init_data[0][1]
-	match _mat_type:
-		material_type.REALISTIC_3D:
-			base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-			base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-			base_textures_rds[2] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-			base_textures_rds[3] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-			base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
-			base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	_3d_material = init_data[0][1]
+	if _3d_material:
+		base_textures_rds = [RID(), RID(), RID(), RID(), RID(), RID()] 
+		base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+		base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+		base_textures_rds[2] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+		base_textures_rds[3] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+		base_textures_rds[4] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+		base_textures_rds[5] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
+	else:
+		base_textures_rds = [RID()] 
+		base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 
 	var base_texture_uniforms : Array[RDUniform] = []
-	for i : int in range(6):
+	for i : int in base_textures_rds.size():
 		var uniform : RDUniform = RDUniform.new()
 		uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		uniform.binding = i
@@ -152,10 +149,12 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 
 func set_texture_rids() -> void:
 	albedo.texture_rd_rid = base_textures_rds[0]
-	occlusion.texture_rd_rid = base_textures_rds[1]
-	roughness.texture_rd_rid = base_textures_rds[2]
-	metallic.texture_rd_rid = base_textures_rds[3]
-	normal.texture_rd_rid = base_textures_rds[4]
+	
+	if _3d_material:
+		occlusion.texture_rd_rid = base_textures_rds[1]
+		roughness.texture_rd_rid = base_textures_rds[2]
+		metallic.texture_rd_rid = base_textures_rds[3]
+		normal.texture_rd_rid = base_textures_rds[4]
 
 
 # Update storage buffer where data has been updated, but the buffer size has not been changed.
@@ -197,7 +196,7 @@ func _create_push_constant(push_constant_data : Array, texture_size : int) -> Pa
 @warning_ignore("return_value_discarded")
 func _render_process() -> void:
 	push_constant.set(_push_constant_stage_index, stage)
-	
+
 	if stage != _max_stage:
 			stage += 1
 		
