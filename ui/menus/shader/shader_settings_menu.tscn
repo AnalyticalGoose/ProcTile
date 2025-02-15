@@ -1,0 +1,164 @@
+[gd_scene load_steps=15 format=3 uid="uid://cgiow31lvkawx"]
+
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh/mesh_menu_theme.tres" id="1_u53sa"]
+[ext_resource type="Script" path="res://ui/menus/mesh/mesh_settings.gd" id="2_4q6f7"]
+[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_41n3a"]
+[ext_resource type="ArrayMesh" uid="uid://c62xi1dgnpy63" path="res://meshes/tile/tile_bottom_cull.obj" id="4_uc63i"]
+[ext_resource type="ArrayMesh" uid="uid://cjstuqnwwcakd" path="res://meshes/tile/tile_back_cull.obj" id="5_aj7t6"]
+[ext_resource type="ArrayMesh" uid="uid://c41mp0hqr2wd7" path="res://meshes/tile/tile_back_bottom_cull.obj" id="6_ev87f"]
+[ext_resource type="ArrayMesh" uid="uid://dvlccqssfgtla" path="res://meshes/cube/cube.obj" id="7_qbsy4"]
+[ext_resource type="ArrayMesh" uid="uid://cajhs8akx4so1" path="res://meshes/cube/cube_bottom_cull.obj" id="8_e8rss"]
+[ext_resource type="ArrayMesh" uid="uid://b07kby7uucp66" path="res://meshes/cube/cube_back_cull.obj" id="9_r08fg"]
+[ext_resource type="ArrayMesh" uid="uid://chi1i16cm6nhp" path="res://meshes/cube/cube_back_bottom_cull.obj" id="10_0wiru"]
+[ext_resource type="ArrayMesh" uid="uid://cwiiygkn64bk1" path="res://meshes/plane/plane.obj" id="11_wbc8i"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uav13"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ktrdi"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.332881, 0.332881, 0.33288, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vq8t6"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.197937, 0.197937, 0.197937, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="ShaderSettings" type="PanelContainer" node_paths=PackedStringArray("mesh_options", "back_face_checkbox", "bottom_face_checkbox", "back_uvs_checkbox", "sides_uvs_checkbox")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -182.0
+offset_right = 10.0
+offset_bottom = 280.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("1_u53sa")
+script = ExtResource("2_4q6f7")
+tile_meshes = Array[Mesh]([ExtResource("3_41n3a"), ExtResource("4_uc63i"), ExtResource("5_aj7t6"), ExtResource("6_ev87f")])
+cube_meshes = Array[Mesh]([ExtResource("7_qbsy4"), ExtResource("8_e8rss"), ExtResource("9_r08fg"), ExtResource("10_0wiru")])
+plane_meshes = Array[Mesh]([ExtResource("11_wbc8i")])
+mesh_options = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/ResolutionOptionButton")
+back_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox")
+bottom_face_checkbox = NodePath("MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox")
+back_uvs_checkbox = NodePath("MarginContainer/VBoxContainer/UVsContainer/BackUVsCheckBox")
+sides_uvs_checkbox = NodePath("MarginContainer/VBoxContainer/UVsContainer/SidesUVsCheckBox")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HeadingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Shader Settings"
+
+[node name="Heading Seperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResolutionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="ResolutionLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Resolution"
+
+[node name="ResolutionOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "4096"
+popup/item_1/text = "2048"
+popup/item_1/id = 1
+popup/item_2/text = "1024"
+popup/item_2/id = 2
+
+[node name="FacesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="FacesLabel" type="Label" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Remove Faces"
+
+[node name="BackFaceCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+text = "Back"
+flat = true
+
+[node name="BottomFaceCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/FacesContainer"]
+layout_mode = 2
+text = "Bottom"
+flat = true
+
+[node name="UVsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="UvsLabel" type="Label" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Shrink UVs"
+
+[node name="BackUVsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+text = "Back"
+flat = true
+
+[node name="SidesUVsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UVsContainer"]
+layout_mode = 2
+text = "Sides"
+flat = true
+
+[node name="ButtonsSeperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 13
+alignment = 1
+
+[node name="SaveSettingsBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Save Settings"
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Close"
+
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionOptionButton" to="." method="_on_mesh_option_button_item_selected"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BackFaceCheckBox" to="." method="_on_back_face_check_box_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/FacesContainer/BottomFaceCheckBox" to="." method="_on_bottom_face_check_box_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/SaveSettingsBtn" to="." method="_on_save_settings_btn_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/CloseBtn" to="." method="_on_close_btn_pressed"]

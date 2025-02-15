@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=34 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
 [ext_resource type="PackedScene" uid="uid://ci4s2srdlp13f" path="res://ui/menus/export/export.tscn" id="3_34tcw"]
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
-[ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_mesh.png" id="6_1sqbh"]
+[ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
 [ext_resource type="Script" path="res://ui/bars/renderer_toolbar.gd" id="6_s0trs"]
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
@@ -23,10 +23,15 @@
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
+[ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
+[ext_resource type="Texture2D" uid="uid://bohvlsbw0u1io" path="res://ui/icons/icon_shader_settings.png" id="11_uj4vs"]
+[ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/shader/shader_settings_menu.tscn" id="12_6v7e3"]
 [ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
 [ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
+[ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
 [ext_resource type="Texture2D" uid="uid://c5ds7isye1occ" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.png" id="17_gh2kt"]
 [ext_resource type="Texture2D" uid="uid://btubkvyddqg7q" path="res://materials/3D/realistic/checker_plate/checker_plate_thumb.png" id="17_io8n0"]
+[ext_resource type="Texture2D" uid="uid://u38h71xrelqh" path="res://materials/2D/pixel/pixel_brick_wall/pixel_brick_wall_thumb.png" id="23_x42nr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -38,25 +43,6 @@ border_width_bottom = 2
 border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
 border_blend = true
 corner_detail = 1
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ya5vo"]
-size = Vector2(20, 20)
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_616qv"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_3ltwh"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xj2i0"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_hut6x"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_av6ya"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_xlou5"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_e1l2p"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ff6nv"]
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
 layout_mode = 3
@@ -150,35 +136,92 @@ export_menu_scene = ExtResource("3_34tcw")
 [node name="EditMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 layout_mode = 2
 theme = ExtResource("1_x425p")
+disabled = true
 text = "Edit"
-flat = false
 switch_on_hover = true
 item_count = 13
-popup/item_0/text = "New..."
-popup/item_1/text = "Open..."
+popup/item_0/text = "     New..."
+popup/item_0/disabled = true
+popup/item_1/text = "     Open..."
 popup/item_1/id = 1
-popup/item_2/text = "Recent"
+popup/item_1/disabled = true
+popup/item_2/text = "     Recent"
 popup/item_2/id = 2
+popup/item_2/disabled = true
 popup/item_3/id = 3
+popup/item_3/disabled = true
 popup/item_3/separator = true
-popup/item_4/text = "Save"
-popup/item_4/id = 4
-popup/item_5/text = "Save as..."
-popup/item_5/id = 5
+popup/item_4/text = "     Save"
+popup/item_4/id = 3
+popup/item_4/disabled = true
+popup/item_5/text = "     Save as..."
+popup/item_5/id = 4
+popup/item_5/disabled = true
 popup/item_6/id = 6
+popup/item_6/disabled = true
 popup/item_6/separator = true
-popup/item_7/text = "Import material..."
-popup/item_7/id = 7
-popup/item_8/text = "Import mesh..."
-popup/item_8/id = 8
+popup/item_7/text = "     Import material..."
+popup/item_7/id = 5
+popup/item_7/disabled = true
+popup/item_8/text = "     Import mesh..."
+popup/item_8/id = 6
+popup/item_8/disabled = true
 popup/item_9/id = 9
+popup/item_9/disabled = true
 popup/item_9/separator = true
-popup/item_10/text = "Export..."
-popup/item_10/id = 10
+popup/item_10/text = "     Export..."
+popup/item_10/id = 7
+popup/item_10/disabled = true
 popup/item_11/id = 11
+popup/item_11/disabled = true
 popup/item_11/separator = true
-popup/item_12/text = "Quit"
-popup/item_12/id = 12
+popup/item_12/text = "     Quit"
+popup/item_12/id = 8
+
+[node name="HelpMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
+layout_mode = 2
+theme = ExtResource("1_x425p")
+disabled = true
+text = "Help"
+switch_on_hover = true
+item_count = 13
+popup/item_0/text = "     New..."
+popup/item_0/disabled = true
+popup/item_1/text = "     Open..."
+popup/item_1/id = 1
+popup/item_1/disabled = true
+popup/item_2/text = "     Recent"
+popup/item_2/id = 2
+popup/item_2/disabled = true
+popup/item_3/id = 3
+popup/item_3/disabled = true
+popup/item_3/separator = true
+popup/item_4/text = "     Save"
+popup/item_4/id = 3
+popup/item_4/disabled = true
+popup/item_5/text = "     Save as..."
+popup/item_5/id = 4
+popup/item_5/disabled = true
+popup/item_6/id = 6
+popup/item_6/disabled = true
+popup/item_6/separator = true
+popup/item_7/text = "     Import material..."
+popup/item_7/id = 5
+popup/item_7/disabled = true
+popup/item_8/text = "     Import mesh..."
+popup/item_8/id = 6
+popup/item_8/disabled = true
+popup/item_9/id = 9
+popup/item_9/disabled = true
+popup/item_9/separator = true
+popup/item_10/text = "     Export..."
+popup/item_10/id = 7
+popup/item_10/disabled = true
+popup/item_11/id = 11
+popup/item_11/disabled = true
+popup/item_11/separator = true
+popup/item_12/text = "     Quit"
+popup/item_12/id = 8
 
 [node name="LeftOptions" type="PanelContainer" parent="."]
 z_index = -1
@@ -189,7 +232,7 @@ offset_bottom = 1080.0
 grow_vertical = 2
 theme = ExtResource("1_x425p")
 
-[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "mesh_settings")]
+[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "mesh_settings", "shader_settings")]
 top_level = true
 layout_mode = 1
 anchors_preset = 10
@@ -208,6 +251,7 @@ pause_icon = ExtResource("6_wvlpy")
 play_icon = ExtResource("8_fa1dh")
 mesh_btn = NodePath("RightRendererToolbar/MeshSettingsButton")
 mesh_settings = NodePath("RightRendererToolbar/MeshSettingsButton/MeshSettings")
+shader_settings = NodePath("RightRendererToolbar/ShaderSettingsButton/ShaderSettings")
 
 [node name="LeftRendererToolbar" type="HBoxContainer" parent="RendererToolbar"]
 modulate = Color(0.8, 0.8, 0.8, 1)
@@ -217,6 +261,7 @@ size_flags_horizontal = 0
 [node name="UndoBtn" type="Button" parent="RendererToolbar/LeftRendererToolbar"]
 custom_minimum_size = Vector2(35, 0)
 layout_mode = 2
+tooltip_text = "Undo"
 disabled = true
 icon = ExtResource("9_7vcxs")
 icon_alignment = 1
@@ -225,6 +270,7 @@ expand_icon = true
 [node name="RedoBtn" type="Button" parent="RendererToolbar/LeftRendererToolbar"]
 custom_minimum_size = Vector2(35, 0)
 layout_mode = 2
+tooltip_text = "Redo"
 disabled = true
 icon = ExtResource("10_k2v5f")
 icon_alignment = 1
@@ -239,17 +285,41 @@ alignment = 2
 [node name="PauseRendererButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
 custom_minimum_size = Vector2(35, 0)
 layout_mode = 2
+tooltip_text = "Pause Shader"
 disabled = true
 toggle_mode = true
 icon = ExtResource("6_wvlpy")
 icon_alignment = 1
 expand_icon = true
 
+[node name="ShaderSettingsButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
+visible = false
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+tooltip_text = "Shader Settings"
+toggle_mode = true
+icon = ExtResource("11_uj4vs")
+icon_alignment = 1
+expand_icon = true
+
+[node name="ShaderSettings" parent="RendererToolbar/RightRendererToolbar/ShaderSettingsButton" instance=ExtResource("12_6v7e3")]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.286
+anchor_right = 1.286
+offset_left = -192.01
+offset_right = -0.0100021
+grow_vertical = 1
+script = null
+metadata/_edit_use_anchors_ = true
+
 [node name="MeshSettingsButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
 custom_minimum_size = Vector2(35, 0)
 layout_mode = 2
+tooltip_text = "Mesh Settings"
 toggle_mode = true
-icon = ExtResource("6_1sqbh")
+icon = ExtResource("11_rhyqh")
 icon_alignment = 1
 expand_icon = true
 
@@ -322,7 +392,7 @@ theme_override_font_sizes/font_size = 12
 text = "Version: 0.1.0"
 horizontal_alignment = 2
 
-[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "params_manager", "menu_manager")]
+[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "params_manager", "menu_manager", "assets_filter", "asset_selectors")]
 z_index = -2
 layout_mode = 2
 offset_left = 30.0
@@ -335,6 +405,8 @@ script = ExtResource("2_iuucp")
 ui_manager = NodePath("..")
 params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
+assets_filter = NodePath("AssetsMargin/AssetsVBox/AssetsFilter")
+asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector3D"), NodePath("AssetsMargin/AssetsVBox/AssetSelector2D")]
 
 [node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
 layout_mode = 2
@@ -356,32 +428,28 @@ text = "Assets"
 
 [node name="AssetsSearch" type="LineEdit" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 layout_mode = 2
-placeholder_text = "Search"
+placeholder_text = "*Search Disabled*"
 clear_button_enabled = true
-right_icon = SubResource("PlaceholderTexture2D_ya5vo")
 
 [node name="AssetsFilter" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+modulate = Color(0.784314, 0.784314, 0.784314, 1)
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"FilterItemList"
 auto_height = true
-item_count = 7
+item_count = 2
 max_columns = 8
-fixed_icon_size = Vector2i(24, 24)
-item_0/icon = SubResource("PlaceholderTexture2D_616qv")
-item_1/icon = SubResource("PlaceholderTexture2D_3ltwh")
-item_2/icon = SubResource("PlaceholderTexture2D_xj2i0")
-item_3/icon = SubResource("PlaceholderTexture2D_hut6x")
-item_4/icon = SubResource("PlaceholderTexture2D_av6ya")
-item_5/icon = SubResource("PlaceholderTexture2D_xlou5")
-item_6/icon = SubResource("PlaceholderTexture2D_e1l2p")
+icon_mode = 0
+fixed_icon_size = Vector2i(28, 28)
+item_0/icon = ExtResource("6_1sqbh")
+item_1/icon = ExtResource("16_hkc0u")
 
-[node name="AssetSelector" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+[node name="AssetSelector3D" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 custom_minimum_size = Vector2(0, 800)
 layout_direction = 1
 layout_mode = 2
 max_text_lines = 2
-item_count = 5
+item_count = 4
 max_columns = 4
 same_column_width = true
 fixed_column_width = 58
@@ -395,8 +463,21 @@ item_2/text = "Checker     Plate"
 item_2/icon = ExtResource("17_io8n0")
 item_3/text = "Hardwood Floor"
 item_3/icon = ExtResource("17_gh2kt")
-item_4/text = "Pixel Brick Wall"
-item_4/icon = SubResource("PlaceholderTexture2D_ff6nv")
+
+[node name="AssetSelector2D" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+visible = false
+custom_minimum_size = Vector2(0, 800)
+layout_direction = 1
+layout_mode = 2
+max_text_lines = 2
+item_count = 1
+max_columns = 4
+same_column_width = true
+fixed_column_width = 58
+icon_mode = 0
+fixed_icon_size = Vector2i(54, 54)
+item_0/text = "Pixel Brick Wall"
+item_0/icon = ExtResource("23_x42nr")
 
 [node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
 z_index = -2
@@ -425,7 +506,7 @@ layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 200
 theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 68
+theme_override_constants/margin_bottom = 100
 
 [node name="ScrollContainer" type="ScrollContainer" parent="ParamsWindow/MarginContainer"]
 layout_mode = 2
@@ -449,5 +530,8 @@ script = ExtResource("7_08hm7")
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/UndoBtn" to="RendererToolbar" method="_on_undo_btn_pressed"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
+[connection signal="toggled" from="RendererToolbar/RightRendererToolbar/ShaderSettingsButton" to="RendererToolbar" method="_on_shader_settings_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/MeshSettingsButton" to="RendererToolbar" method="_on_mesh_settings_button_toggled"]
-[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
+[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]

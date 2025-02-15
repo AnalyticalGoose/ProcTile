@@ -7,6 +7,7 @@ extends Node
 @export var play_icon : CompressedTexture2D
 @export var mesh_btn : Button
 @export var mesh_settings : MeshSettings
+@export var shader_settings : PanelContainer
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer
 
@@ -32,6 +33,13 @@ func _on_mesh_settings_button_toggled(toggled_on: bool) -> void:
 		mesh_settings.show()
 	else:
 		mesh_settings.hide()
+
+
+func _on_shader_settings_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		shader_settings.show()
+	else:
+		shader_settings.hide()
 
 
 func _on_undo_btn_pressed() -> void:

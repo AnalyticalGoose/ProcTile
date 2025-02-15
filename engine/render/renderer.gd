@@ -1,7 +1,13 @@
 extends Node3D
 class_name Renderer
 
+enum MaterialType {
+	PBR_3D,
+	PIXEL_2D,
+}
+
 var compute_shader : ComputeShader
+var material_type : MaterialType = MaterialType.PBR_3D
 var asset_name : String
 var texture_size : int
 var paused : bool = false
@@ -49,6 +55,16 @@ func set_shader_material(shader_data : Array, shader_path : String) -> void:
 	compute_shader.roughness = shader_material.get_shader_parameter("roughness_input")
 	compute_shader.metallic = shader_material.get_shader_parameter("metallic_input")
 	compute_shader.normal = shader_material.get_shader_parameter("normal_input")
+	
 	RenderingServer.call_on_render_thread(compute_shader.set_texture_rids)
 	
 	set_process(true)
+
+
+func change_mesh_shader(type: int) -> void:
+	if type == MaterialType.PBR_3D:
+		shader_material.set_shader_parameter("texture_3D", true)
+	elif type == MaterialType.PIXEL_2D:
+		shader_material.set_shader_parameter("texture_3D", false)
+	
+	material_type = type as MaterialType

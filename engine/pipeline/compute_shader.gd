@@ -23,6 +23,7 @@ var shader : RID
 var pipeline : RID
 var push_constant : PackedFloat32Array
 var push_constant_padding : int = 0
+var is_3D_material : bool
 var albedo : Texture2DRD
 var occlusion : Texture2DRD
 var roughness : Texture2DRD
@@ -40,7 +41,7 @@ var _image_buffer_uniform_set : RID
 var _push_constant_stage_index : int # idx of 'stage' var in pc, changes per shader
 var _group_size : int # x & y local_size groups of shader
 var _max_stage : float
-var _3d_material : bool
+
 
 #var _base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
 #var buffer_sets : Array[RID]
@@ -65,8 +66,8 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var rgba16f_tf : RDTextureFormat = TextureFormat.get_rgba16f(texture_size)
 	var rgba32f_tf : RDTextureFormat = TextureFormat.get_rgba32f(texture_size)
 
-	_3d_material = init_data[0][1]
-	if _3d_material:
+	is_3D_material = init_data[0][1]
+	if is_3D_material:
 		base_textures_rds = [RID(), RID(), RID(), RID(), RID(), RID()] 
 		base_textures_rds[0] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
 		base_textures_rds[1] = rd.texture_create(rgba16f_tf, RDTextureView.new(), [])
@@ -150,7 +151,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 func set_texture_rids() -> void:
 	albedo.texture_rd_rid = base_textures_rds[0]
 	
-	if _3d_material:
+	if is_3D_material:
 		occlusion.texture_rd_rid = base_textures_rds[1]
 		roughness.texture_rd_rid = base_textures_rds[2]
 		metallic.texture_rd_rid = base_textures_rds[3]

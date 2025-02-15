@@ -18,5 +18,9 @@ static func get_export_template_data(output_template : int) -> Array[Array]:
 				[3, Image.FORMAT_RGBAH, "_metallic"],
 				[4, Image.FORMAT_RGBAH, "_normal"],
 			]
+		2:
+			return [
+				[0, Image.FORMAT_RGBAH, "_baseColor"],
+			]
 		_:
 			return []

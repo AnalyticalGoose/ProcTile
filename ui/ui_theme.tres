@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=16 format=3 uid="uid://dfgva2nypdu6x"]
+[gd_resource type="Theme" load_steps=18 format=3 uid="uid://dfgva2nypdu6x"]
 
 [ext_resource type="FontFile" uid="uid://cl43lyktll62p" path="res://ui/fonts/poppins/Poppins-Regular.ttf" id="1_q2vdh"]
 
@@ -54,11 +54,15 @@ corner_detail = 1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_68ca2"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qo4v4"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_edi4o"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7kb0j"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pecqt"]
 bg_color = Color(0.180005, 0.180005, 0.180005, 1)
 corner_detail = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v283h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ljof"]
 content_margin_left = 20.0
@@ -113,12 +117,15 @@ Button/styles/hover = SubResource("StyleBoxFlat_2dlwt")
 Button/styles/normal = SubResource("StyleBoxFlat_5i5bx")
 Button/styles/pressed = SubResource("StyleBoxFlat_x8o2p")
 FilterItemList/base_type = &"ItemList"
+FilterItemList/constants/icon_margin = 1
 FilterItemList/styles/focus = SubResource("StyleBoxEmpty_68ca2")
-FilterItemList/styles/panel = SubResource("StyleBoxEmpty_qo4v4")
+FilterItemList/styles/panel = SubResource("StyleBoxEmpty_edi4o")
 ItemList/constants/h_separation = 4
 ItemList/font_sizes/font_size = 10
+ItemList/styles/focus = SubResource("StyleBoxEmpty_7kb0j")
 LPanelContainer/base_type = &"PanelContainer"
 LPanelContainer/styles/panel = SubResource("StyleBoxFlat_pecqt")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_v283h")
 MenuButton/styles/hover = SubResource("StyleBoxFlat_4ljof")
 MenuButton/styles/normal = SubResource("StyleBoxFlat_732l3")
 MenuButton/styles/pressed = SubResource("StyleBoxFlat_qjtr1")
