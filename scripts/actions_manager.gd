@@ -71,8 +71,8 @@ static func undo_action() -> void:
 					var selected_index : int = action[4]
 					var selected_control : ParamGradientControl = gradient_col_instance.control_nodes[selected_index]
 					
-					var previous_control : ParamGradientControl = action[5]
-					if previous_control:
+					var previous_control : ParamGradientControl 
+					if previous_index != -1: # default null / nothing selected
 						previous_control = gradient_col_instance.control_nodes[previous_index]
 					
 					_add_redo_action(
@@ -119,15 +119,17 @@ static func undo_action() -> void:
 					)
 				
 				6: # Control created
-					var control : ParamGradientControl = action[3]
+					#var control : ParamGradientControl = action[3]
+					var control : ParamGradientControl = gradient_col_instance.control_nodes[action[3]]
 					gradient_col_instance.delete_control(control.index, control)
 					
 					_add_redo_action([3, gradient_col_instance, 6, control, action[4]])
 					
 		ActionType.GRADIENT_CONTROL:
-			var gradient_control : ParamGradientControl = action[1]
-			var last_pos : float = action[2]
-			var new_pos : float = action[3]
+			var gradient_col_instance : ParamGradient = action[1]
+			var gradient_control : ParamGradientControl = gradient_col_instance.control_nodes[action[2]]
+			var last_pos : float = action[3]
+			var new_pos : float = action[4]
 			gradient_control.set_pos(last_pos)
 			_add_redo_action([ActionType.GRADIENT_CONTROL, gradient_control, last_pos, new_pos])
 		
@@ -202,7 +204,6 @@ static func undo_action() -> void:
 			mesh_settings.rebuild_mesh()
 			mesh_settings.update_checkbox(checkbox, !toggled_on)
 			_add_redo_action([ActionType.DELETE_FACE, mesh_settings, face, toggled_on])
-
 
 	if _undo_actions.is_empty():
 		undo_btn.disabled = true

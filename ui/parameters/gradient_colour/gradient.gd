@@ -23,7 +23,7 @@ var buffer_sets : Array[int] # offset set, colour set
 var dependant_stage : int
 var colour_picker : ParamColourPicker
 var selected_control : ParamGradientControl
-var selected_index : int
+var selected_index : int = -1
 var controls_created : bool = false
 var gradient_expanded : bool = false
 var preview_colour : Color:
@@ -138,8 +138,8 @@ func create_control(px_position : float, create_with_col : bool = false, col : C
 		(_position_data[index - 1] * container_width) + PADDING, 
 		(_position_data[index + 1] * container_width) - PADDING
 		]
-	control_nodes[index - 1].bounds[1] = px_position + PADDING
-	control_nodes[index + 1].bounds[0] = px_position - PADDING
+	control_nodes[index - 1].bounds[1] = px_position - PADDING
+	control_nodes[index + 1].bounds[0] = px_position + PADDING
 	
 	# Set the control node variables
 	new_control.set_colour_indicator(sampled_col)
@@ -211,7 +211,8 @@ func _on_controls_container_gui_input(event: InputEvent) -> void:
 		if gradient_expanded:
 			var mouse_pos_x : float = (get_global_mouse_position() - gradient_controls_container.global_position).x
 			create_control(mouse_pos_x)
-			ActionsManager.new_undo_action = [3, self, 6, gradient_controls_container.get_child(-1), mouse_pos_x]
+			#var created_control_index : int = 
+			ActionsManager.new_undo_action = [3, self, 6, (gradient_controls_container.get_child(-1) as ParamGradientControl).index, mouse_pos_x]
 		else:
 			show_gradient_texture()
 			ActionsManager.new_undo_action = [3, self, 0]

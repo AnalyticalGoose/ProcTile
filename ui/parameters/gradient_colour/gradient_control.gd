@@ -47,7 +47,8 @@ func _process(_delta: float) -> void:
 		# bounds only need to be recalculated at the last position after the node has been dragged.
 		bounds_changed.emit(index)
 		
-		ActionsManager.new_undo_action = [4, self, undo_redo_pos, position.x]
+		var gradient_col_instance : ParamGradient = gradient_controls_container.get_parent().get_parent()
+		ActionsManager.new_undo_action = [4, gradient_col_instance, index, undo_redo_pos, position.x]
 		undo_redo_pos = last_pos
 
 
