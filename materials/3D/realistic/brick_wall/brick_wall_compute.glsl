@@ -286,11 +286,10 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 }
 
 vec4 gradient_fct(float x) {
-    int count = int(gl_NumWorkGroups.x); // Use the number of offsets dynamically
+    int count = int(gradient_col.length()); // Use the number of offsets dynamically
     if (x < gradient_offsets[0]) {
         return gradient_col[0];
     }
-
     for (int i = 1; i < count; i++) {
         if (x < gradient_offsets[i]) {
             float range = gradient_offsets[i] - gradient_offsets[i - 1];
@@ -298,7 +297,6 @@ vec4 gradient_fct(float x) {
             return mix(gradient_col[i - 1], gradient_col[i], factor);
         }
     }
-
     return gradient_col[count - 1];
 }
 
