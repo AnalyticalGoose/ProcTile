@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
  
 ### Added
+- Add camera settings menu including optional camera orbit [GH-b588e8a](https://github.com/AnalyticalGoose/ProcTile/issues/9)
  
 ### Changed
 - Improve camera controller consistency prevent snapping on Y-axis [GH-550ca26](https://github.com/AnalyticalGoose/ProcTile/issues/8)
