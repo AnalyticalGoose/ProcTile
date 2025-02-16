@@ -6,8 +6,10 @@ extends Node
 @export var pause_icon : CompressedTexture2D
 @export var play_icon : CompressedTexture2D
 @export var mesh_btn : Button
+
 @export var mesh_settings : MeshSettings
 @export var shader_settings : PanelContainer
+@export var camera_settings : PanelContainer
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer
 
@@ -40,6 +42,13 @@ func _on_shader_settings_button_toggled(toggled_on: bool) -> void:
 		shader_settings.show()
 	else:
 		shader_settings.hide()
+
+
+func _on_camera_settings_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		camera_settings.show()
+	else:
+		camera_settings.hide()
 
 
 func _on_undo_btn_pressed() -> void:

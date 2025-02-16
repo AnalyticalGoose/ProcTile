@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=18 format=3 uid="uid://dfgva2nypdu6x"]
+[gd_resource type="Theme" load_steps=22 format=3 uid="uid://dfgva2nypdu6x"]
 
 [ext_resource type="FontFile" uid="uid://cl43lyktll62p" path="res://ui/fonts/poppins/Poppins-Regular.ttf" id="1_q2vdh"]
 
@@ -52,9 +52,30 @@ border_color = Color(0.0962047, 0.0962048, 0.0962047, 1)
 border_blend = true
 corner_detail = 1
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ufqol"]
+content_margin_left = 7.0
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_68ca2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_edi4o"]
+
+[sub_resource type="Gradient" id="Gradient_apnni"]
+offsets = PackedFloat32Array(0.574074, 0.728395)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_w313q"]
+gradient = SubResource("Gradient_apnni")
+width = 12
+height = 12
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_a7eqj"]
+color = Color(0.0962047, 0.0962048, 0.0962047, 1)
+grow_begin = 0.0
+grow_end = 0.0
+thickness = 3
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7kb0j"]
 
@@ -116,10 +137,13 @@ Button/styles/focus = SubResource("StyleBoxEmpty_tia7m")
 Button/styles/hover = SubResource("StyleBoxFlat_2dlwt")
 Button/styles/normal = SubResource("StyleBoxFlat_5i5bx")
 Button/styles/pressed = SubResource("StyleBoxFlat_x8o2p")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxEmpty_ufqol")
 FilterItemList/base_type = &"ItemList"
 FilterItemList/constants/icon_margin = 1
 FilterItemList/styles/focus = SubResource("StyleBoxEmpty_68ca2")
 FilterItemList/styles/panel = SubResource("StyleBoxEmpty_edi4o")
+HSlider/icons/grabber = SubResource("GradientTexture2D_w313q")
+HSlider/styles/slider = SubResource("StyleBoxLine_a7eqj")
 ItemList/constants/h_separation = 4
 ItemList/font_sizes/font_size = 10
 ItemList/styles/focus = SubResource("StyleBoxEmpty_7kb0j")

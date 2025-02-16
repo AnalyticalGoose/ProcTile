@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://ba73vns3n4ihl"]
+
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh_settings/mesh_menu_theme.tres" id="1_2oa6r"]
+
+[node name="CameraSettings" type="PanelContainer"]
+anchors_preset = -1
+anchor_left = 1.286
+anchor_top = 1.0
+anchor_right = 1.286
+anchor_bottom = 1.0
+offset_left = -192.12
+offset_right = -0.120117
+offset_bottom = 131.0
+grow_horizontal = 0
+theme = ExtResource("1_2oa6r")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="HeadingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Camera Settings"
+
+[node name="Heading Seperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="OrbitContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="OrbitLabel" type="Label" parent="MarginContainer/VBoxContainer/OrbitContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Orbit Mesh"
+
+[node name="OrbitMeshCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/OrbitContainer"]
+layout_mode = 2
+text = "Enable"
+flat = true
+
+[node name="OrbitSpeedContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="OrbitSpeedLabel" type="Label" parent="MarginContainer/VBoxContainer/OrbitSpeedContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Orbit Speed"
+
+[node name="OrbitSpeedHSlider" type="HSlider" parent="MarginContainer/VBoxContainer/OrbitSpeedContainer"]
+layout_mode = 2
+min_value = 0.01
+max_value = 2.0
+step = 0.01
+value = 1.0
+scrollable = false

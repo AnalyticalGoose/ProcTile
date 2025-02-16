@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=36 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -21,12 +21,14 @@
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="Texture2D" uid="uid://n33sjanx45ou" path="res://ui/icons/icon_undo.png" id="9_7vcxs"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
-[ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh/mesh_settings_menu.tscn" id="10_d81an"]
+[ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh_settings/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
 [ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
 [ext_resource type="Texture2D" uid="uid://bohvlsbw0u1io" path="res://ui/icons/icon_shader_settings.png" id="11_uj4vs"]
-[ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/shader/shader_settings_menu.tscn" id="12_6v7e3"]
+[ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
 [ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
+[ext_resource type="Texture2D" uid="uid://dvwro6r1w68qx" path="res://ui/icons/icon_camera_settings.png" id="15_netph"]
+[ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
 [ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
 [ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
 [ext_resource type="Texture2D" uid="uid://c5ds7isye1occ" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.png" id="17_gh2kt"]
@@ -232,7 +234,7 @@ offset_bottom = 1080.0
 grow_vertical = 2
 theme = ExtResource("1_x425p")
 
-[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "mesh_settings", "shader_settings")]
+[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "mesh_settings", "shader_settings", "camera_settings")]
 top_level = true
 layout_mode = 1
 anchors_preset = 10
@@ -252,6 +254,7 @@ play_icon = ExtResource("8_fa1dh")
 mesh_btn = NodePath("RightRendererToolbar/MeshSettingsButton")
 mesh_settings = NodePath("RightRendererToolbar/MeshSettingsButton/MeshSettings")
 shader_settings = NodePath("RightRendererToolbar/ShaderSettingsButton/ShaderSettings")
+camera_settings = NodePath("RightRendererToolbar/CameraSettingsButton/CameraSettings")
 
 [node name="LeftRendererToolbar" type="HBoxContainer" parent="RendererToolbar"]
 modulate = Color(0.8, 0.8, 0.8, 1)
@@ -333,6 +336,19 @@ offset_left = -192.0
 offset_right = 0.0
 grow_vertical = 1
 metadata/_edit_use_anchors_ = true
+
+[node name="CameraSettingsButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+tooltip_text = "Camera Settings"
+toggle_mode = true
+icon = ExtResource("15_netph")
+icon_alignment = 1
+expand_icon = true
+
+[node name="CameraSettings" parent="RendererToolbar/RightRendererToolbar/CameraSettingsButton" instance=ExtResource("15_urh8k")]
+visible = false
+layout_mode = 1
 
 [node name="RightOptions" type="PanelContainer" parent="."]
 z_index = -1
@@ -532,6 +548,11 @@ script = ExtResource("7_08hm7")
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/ShaderSettingsButton" to="RendererToolbar" method="_on_shader_settings_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/MeshSettingsButton" to="RendererToolbar" method="_on_mesh_settings_button_toggled"]
+[connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton" to="RendererToolbar" method="_on_camera_settings_button_toggled"]
+[connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitContainer/OrbitMeshCheckBox" to="RendererWindow" method="_on_orbit_mesh_check_box_toggled"]
+[connection signal="value_changed" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitSpeedContainer/OrbitSpeedHSlider" to="RendererWindow" method="_on_orbit_speed_h_slider_value_changed"]
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
 [connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+
+[editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]
