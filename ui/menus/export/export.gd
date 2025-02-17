@@ -128,6 +128,8 @@ func _load_export_settings() -> void:
 
 
 func _setup_export_ui() -> void:
+	file_dialog.set_current_dir(output_directory)
+	
 	# get template data
 	var template : int = output_template_3D if compute_shader.is_3D_material else output_template_2D
 	export_template_data = ExportTemplate.get_export_template_data(template)

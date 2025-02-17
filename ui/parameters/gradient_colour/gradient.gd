@@ -56,11 +56,22 @@ func setup_properties(data : Array) -> void:
 	var raw_colour_data : Array = data[3]
 	colour_data = _convert_to_colours(raw_colour_data)
 	
-	#undo_redo_colour = preview_colour
-	_gradient.set_offsets(_position_data)
-	_gradient.set_colors(colour_data)
-	_gradient_texture = gradient_texture_rect.texture
-	_gradient_texture.gradient = _gradient
+	_setup_gradient()
+
+
+# Alternative to setup_properties, for loading save data
+func load_properties(save_data : Array) -> void:
+	_position_data = save_data[0]
+	colour_data = save_data[1]
+	
+	_setup_gradient()
+	
+	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
+	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
+
+
+func get_gradient_data() -> Array[Array]:
+	return [_position_data, colour_data]
 
 
 func show_gradient_texture() -> void:
@@ -342,6 +353,13 @@ func _connect_control_signals(control : ParamGradientControl) -> void:
 	control.deleted.connect(_on_control_deleted.bind(control))
 	control.offset_changed.connect(_on_offset_changed)
 	control.bounds_changed.connect(_on_bounds_changed)
+
+
+func _setup_gradient() -> void:
+	_gradient.set_offsets(_position_data)
+	_gradient.set_colors(colour_data)
+	_gradient_texture = gradient_texture_rect.texture
+	_gradient_texture.gradient = _gradient
 
 
 # Called when a control node is created or freed and their indexes are no longer valid.

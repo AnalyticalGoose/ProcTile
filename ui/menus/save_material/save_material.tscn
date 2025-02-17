@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://dt85qd3mt5dxd"]
+
+[ext_resource type="Script" path="res://ui/menus/save_material/save_material.gd" id="1_ghnej"]
+
+[node name="SaveMaterial" type="FileDialog"]
+title = "Save Material"
+access = 2
+filters = PackedStringArray("*.ptm")
+use_native_dialog = true
+script = ExtResource("1_ghnej")
+
+[connection signal="canceled" from="." to="." method="_on_canceled"]
+[connection signal="file_selected" from="." to="." method="_on_file_selected"]

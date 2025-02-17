@@ -39,6 +39,25 @@ func _ready() -> void:
 	material_data = material_database.get_array()
 
 
+func save_material(path : String, serialised_data : Array[Array]) -> void:
+	var cfg_file : ConfigFile = ConfigFile.new()
+	
+	cfg_file.set_value("compatibility", "version", ProjectSettings.get_setting("application/config/version"))
+	cfg_file.set_value("material_settings", "data", serialised_data)
+	
+	if cfg_file.save(path):
+		Logger.puts_error("Cannot save material to " + path)
+
+
+func load_material_settings(path : String) -> Array[Array]:
+	var cfg_file : ConfigFile = ConfigFile.new()
+	if cfg_file.load(path):
+		Logger.puts_error("Cannot find user settings at" + path)
+	
+	var material_settings : Array[Array] = cfg_file.get_value("material_settings", "data")
+	return material_settings
+
+
 func save_export_settings(
 		dir : String, template_3D : int, template_2D : int, res_3D : int, res_2D : int, 
 		format : int, interp : int, normals : int, mesh_export : int, mesh : int

@@ -10,12 +10,7 @@ extends VBoxContainer
 
 var compute_shader : ComputeShader
 var colour_picker : ParamColourPicker
-var preview_colour : Color:
-	set(col):
-		preview_colour = col
-		colour_preview.color = col
-		if colour_picker:
-			colour_picker.set_colour(col)
+
 var dependant_stage : int
 var buffer_index : int
 var buffer_set : int
@@ -26,8 +21,9 @@ var undo_redo_colour : Color
 func setup_properties(data : Array) -> void:
 	label.text = data[1]
 	var colour_data : Array = data[2]
-	preview_colour = Color(colour_data[0], colour_data[1], colour_data[2])
-	undo_redo_colour = preview_colour
+	var colour : Color = Color(colour_data[0], colour_data[1], colour_data[2])
+	undo_redo_colour = colour
+	colour_preview.color = colour
 	dependant_stage = data[3]
 	buffer_index = data[4]
 	buffer_set = data[5]
@@ -69,7 +65,7 @@ func _on_gui_input(_event: InputEvent) -> void:
 
 func _create_colour_picker() -> void:
 	colour_picker = colour_picker_scene.instantiate() as ParamColourPicker
-	colour_picker.set_colour(preview_colour)
+	colour_picker.set_colour(colour_preview.color)
 	@warning_ignore("return_value_discarded")
 	colour_picker.col_picked.connect(_on_colour_picked)
 	colour_preview.add_sibling(colour_picker) # add node between preview & spacer

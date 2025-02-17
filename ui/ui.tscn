@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -10,10 +10,12 @@
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
+[ext_resource type="PackedScene" uid="uid://1grqiac6heen" path="res://ui/menus/load_material/load_material.tscn" id="6_ievu1"]
 [ext_resource type="Script" path="res://ui/bars/renderer_toolbar.gd" id="6_s0trs"]
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
 [ext_resource type="Texture2D" uid="uid://cx42hbrly0fvi" path="res://ui/icons/icon_pause.png" id="6_wvlpy"]
 [ext_resource type="PackedScene" uid="uid://d18ju7bnukh46" path="res://ui/parameters/gradient_colour/gradient.tscn" id="6_yy2h4"]
+[ext_resource type="PackedScene" uid="uid://dt85qd3mt5dxd" path="res://ui/menus/save_material/save_material.tscn" id="7_6kvh1"]
 [ext_resource type="Script" path="res://ui/parameters/section/section.gd" id="7_08hm7"]
 [ext_resource type="PackedScene" uid="uid://coiefeptq306s" path="res://ui/parameters/dropdown/dropdown.tscn" id="7_ggaj0"]
 [ext_resource type="Script" path="res://ui/parameters/params_manager.gd" id="7_xyjtw"]
@@ -88,7 +90,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_deoo3")
 layout_mode = 2
 theme = ExtResource("1_x425p")
 
-[node name="FileMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
+[node name="FileMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu" node_paths=PackedStringArray("params_container")]
 layout_mode = 2
 theme = ExtResource("1_x425p")
 text = "File"
@@ -99,7 +101,6 @@ popup/item_0/text = "     New..."
 popup/item_0/disabled = true
 popup/item_1/text = "     Open..."
 popup/item_1/id = 1
-popup/item_1/disabled = true
 popup/item_2/text = "     Recent"
 popup/item_2/id = 2
 popup/item_2/disabled = true
@@ -111,7 +112,6 @@ popup/item_4/id = 3
 popup/item_4/disabled = true
 popup/item_5/text = "     Save as..."
 popup/item_5/id = 4
-popup/item_5/disabled = true
 popup/item_6/id = 6
 popup/item_6/disabled = true
 popup/item_6/separator = true
@@ -134,6 +134,9 @@ popup/item_12/text = "     Quit"
 popup/item_12/id = 8
 script = ExtResource("2_y3rwe")
 export_menu_scene = ExtResource("3_34tcw")
+load_material_menu_scene = ExtResource("6_ievu1")
+save_material_menu_scene = ExtResource("7_6kvh1")
+params_container = NodePath("../../../ParamsWindow/MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
 
 [node name="EditMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 layout_mode = 2

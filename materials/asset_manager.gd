@@ -1,3 +1,4 @@
+class_name AssetsManager
 extends PanelContainer
 
 @export var ui_manager : UIManager
