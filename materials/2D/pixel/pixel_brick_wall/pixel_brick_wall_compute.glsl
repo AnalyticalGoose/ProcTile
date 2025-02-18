@@ -125,7 +125,7 @@ float get_brick_pattern(vec2 uv, vec2 brick_min, vec2 brick_max, float mortar, f
 }
 
 vec4 gradient_fct(float x) {
-    int count = int(gl_NumWorkGroups.x); // Use the number of offsets dynamically
+    int count = int(gradient_col.length()); // Use the number of offsets dynamically
     if (x < gradient_offsets[0]) {
         return gradient_col[0];
     }
