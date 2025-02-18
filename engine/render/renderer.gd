@@ -8,9 +8,11 @@ enum MaterialType {
 
 var compute_shader : ComputeShader
 var material_type : MaterialType = MaterialType.PBR_3D
-var asset_name : String
 var texture_size : int
 var paused : bool = false
+
+#var asset_name : String
+#var asset_id : int
 
 @onready var shader_material : ShaderMaterial = (
 		$/root/ProcTile/Renderer/MeshPivot/Mesh as MeshInstance3D
@@ -68,3 +70,4 @@ func change_mesh_shader(type: int) -> void:
 		shader_material.set_shader_parameter("texture_3D", false)
 	
 	material_type = type as MaterialType
+	DataManager.current_material_type = material_type

@@ -11,6 +11,10 @@ var material_offets : Array[int] = [0]
 var settings_data : Array[Dictionary]
 var shader_paths : Dictionary = {}
 
+var current_material_name : String
+var current_material_id : int
+var current_material_type : int = 0
+
 const SETTINGS_PATH : String = "user://settings.cfg"
 const MATERIAL_DIRS : Array[String] = ["res://materials/3D/realistic/", "res://materials/2D/pixel/"]
 
@@ -39,9 +43,18 @@ func _ready() -> void:
 	material_data = material_database.get_array()
 
 
+func get_material_index_from_id(material_id : int) -> int:
+	for i : int in material_data.size():
+		if material_data[i].id == material_id:
+			return i
+	return 0
+
+
 func save_material(path : String, serialised_data : Array[Array]) -> void:
 	var cfg_file : ConfigFile = ConfigFile.new()
 	
+	cfg_file.set_value("compatibility", "material_id", current_material_id)
+	cfg_file.set_value("compatibility", "material_type", current_material_type)
 	cfg_file.set_value("compatibility", "version", ProjectSettings.get_setting("application/config/version"))
 	cfg_file.set_value("material_settings", "data", serialised_data)
 	
@@ -49,11 +62,7 @@ func save_material(path : String, serialised_data : Array[Array]) -> void:
 		Logger.puts_error("Cannot save material to " + path)
 
 
-func load_material_settings(path : String) -> Array[Array]:
-	var cfg_file : ConfigFile = ConfigFile.new()
-	if cfg_file.load(path):
-		Logger.puts_error("Cannot find user settings at" + path)
-	
+func load_material_settings(cfg_file : ConfigFile) -> Array[Array]:
 	var material_settings : Array[Array] = cfg_file.get_value("material_settings", "data")
 	return material_settings
 
@@ -118,6 +127,7 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 			database.add_valid_property("mesh_format")
 		
 		DatabaseType.MATERIAL:
+			database.add_mandatory_property("meta", TYPE_ARRAY)
 			database.add_mandatory_property("ui_elements", TYPE_ARRAY)
 			database.add_mandatory_property("shader_data", TYPE_ARRAY)
 			

@@ -4,6 +4,7 @@ extends MenuButton
 @export var load_material_menu_scene : PackedScene
 @export var save_material_menu_scene : PackedScene
 @export var params_container : ParamSection
+@export var asset_manager : AssetsManager
 
 enum MenuOption {
 	NEW,
@@ -27,6 +28,7 @@ func _on_file_menu_button_pressed(button_id : int) -> void:
 	match button_id:
 		MenuOption.OPEN:
 			var load_material_menu : LoadMaterialMenu = load_material_menu_scene.instantiate()
+			load_material_menu.asset_manager = asset_manager
 			load_material_menu.params_container = params_container
 			add_child(load_material_menu)
 			load_material_menu.show()
@@ -36,10 +38,6 @@ func _on_file_menu_button_pressed(button_id : int) -> void:
 			save_material_menu.params_container = params_container
 			add_child(save_material_menu)
 			save_material_menu.show()
-			
-			#var test_path : String = "C:/Users/Harry/Desktop/Painter/ProcTileTest"
-			#var properties_state : Array[Array] = params_container.serialise_properties()
-			#DataManager.save_material_settings(test_path, properties_state)
 		
 		MenuOption.EXPORT:
 			var export_menu : Window = export_menu_scene.instantiate()

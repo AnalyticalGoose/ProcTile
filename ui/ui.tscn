@@ -90,7 +90,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_deoo3")
 layout_mode = 2
 theme = ExtResource("1_x425p")
 
-[node name="FileMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu" node_paths=PackedStringArray("params_container")]
+[node name="FileMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu" node_paths=PackedStringArray("params_container", "asset_manager")]
 layout_mode = 2
 theme = ExtResource("1_x425p")
 text = "File"
@@ -137,6 +137,7 @@ export_menu_scene = ExtResource("3_34tcw")
 load_material_menu_scene = ExtResource("6_ievu1")
 save_material_menu_scene = ExtResource("7_6kvh1")
 params_container = NodePath("../../../ParamsWindow/MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
+asset_manager = NodePath("../../../AssetsWindow")
 
 [node name="EditMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 layout_mode = 2

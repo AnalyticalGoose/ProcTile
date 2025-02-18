@@ -21,11 +21,15 @@ func _ready() -> void:
 		asset_selector_offets = DataManager.material_offets
 
 
-# Called when user double-clicks on an asset in the selection window.
-func _on_asset_selector_item_activated(index: int) -> void:
-	var material_index : int = index + asset_selector_offets[current_asset_selector_idx]
+func load_material(index : int, load_from_save : bool = false) -> void:
+	var material_index : int
+	if load_from_save:
+		material_index = index
+	else:
+		material_index = index + asset_selector_offets[current_asset_selector_idx]
 	
 	if current_asset_type != current_asset_selector_idx: # Different material shader needed
+		print("change shader")
 		current_asset_type = current_asset_selector_idx
 		renderer.change_mesh_shader(current_asset_type)
 	
@@ -42,15 +46,26 @@ func _on_asset_selector_item_activated(index: int) -> void:
 	var shader_data : Array = asset_data.shader_data
 	var ui_data : Array = asset_data.ui_elements
 	
+	DataManager.current_material_name = asset_data.name
+	DataManager.current_material_id = asset_data.id
+	
 	renderer.set_shader_material(shader_data, shader_path)
 	params_manager.build_params_ui(ui_data, compute_shader)
-	renderer.asset_name = asset_data.name
 
 
-func _on_assets_filter_item_selected(index: int) -> void:
+func change_asset_filter(index: int) -> void:
 	if current_asset_selector_idx == index:
 		return
 	else:
 		asset_selectors[index].show()
 		asset_selectors[current_asset_selector_idx].hide()
 		current_asset_selector_idx = index
+
+
+# Called when user double-clicks on an asset in the selection window.
+func _on_asset_selector_item_activated(index: int) -> void:
+	load_material(index)
+
+
+func _on_assets_filter_item_selected(index: int) -> void:
+	change_asset_filter(index)

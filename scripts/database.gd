@@ -1,5 +1,10 @@
-extends RefCounted
 class_name Database
+extends RefCounted
+
+## A class for loading and validating data.
+##
+## Adapted from KoBeWi's Godot-Text-Database addon. https://github.com/KoBeWi/Godot-Text-Database
+## It remains mostly the same, with unneeded functionality removed and id overriding.
 
 var id_name : String = "id"
 var entry_name : String = "name"
@@ -193,9 +198,13 @@ func __property_exists(property: String) -> bool:
 
 func __config_file_to_array(data : ConfigFile) -> Array[Dictionary]:
 	var array : Array[Dictionary]
+	var entry : Dictionary
 	
 	for section: String in data.get_sections():
-		var entry : Dictionary = {id_name: __last_id}
+		if data.has_section_key(section, "meta"):
+			entry = {id_name: data.get_value(section, "meta")[0]}
+		else:
+			entry = {id_name: __last_id}
 		
 		if not entry_name.is_empty():
 			entry[entry_name] = section

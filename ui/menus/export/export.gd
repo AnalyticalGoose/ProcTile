@@ -162,8 +162,8 @@ func _setup_export_ui() -> void:
 	normals_btn.select(normals_type)
 	export_mesh_btn.select(export_mesh)
 	mesh_format_btn.select(mesh_format)
-	filename_line_edit.text = renderer.asset_name
-	_on_line_edit_text_changed(renderer.asset_name)
+	filename_line_edit.text = DataManager.current_material_name
+	_on_line_edit_text_changed(DataManager.current_material_name)
 
 
 func _set_filename_labels_text() -> void:
