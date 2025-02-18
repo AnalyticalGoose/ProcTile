@@ -11,6 +11,8 @@ extends Node
 @export var shader_settings : PanelContainer
 @export var camera_settings : PanelContainer
 
+var open_menu : PanelContainer
+
 @onready var renderer : Renderer = $/root/ProcTile/Renderer
 
 
@@ -33,22 +35,37 @@ func _on_pause_renderer_button_toggled(toggled_on: bool) -> void:
 func _on_mesh_settings_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		mesh_settings.show()
+		if open_menu:
+			open_menu.hide()
+			(open_menu.get_parent() as Button).set_pressed_no_signal(false)
+		open_menu = mesh_settings
 	else:
 		mesh_settings.hide()
+		open_menu = null
 
 
 func _on_shader_settings_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		shader_settings.show()
+		if open_menu:
+			open_menu.hide()
+			(open_menu.get_parent() as Button).set_pressed_no_signal(false)
+		open_menu = shader_settings
 	else:
 		shader_settings.hide()
+		open_menu = null
 
 
 func _on_camera_settings_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		camera_settings.show()
+		if open_menu:
+			open_menu.hide()
+			(open_menu.get_parent() as Button).set_pressed_no_signal(false)
+		open_menu = camera_settings
 	else:
 		camera_settings.hide()
+		open_menu = null
 
 
 func _on_undo_btn_pressed() -> void:
