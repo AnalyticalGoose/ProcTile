@@ -52,6 +52,8 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	
 	renderer.set_shader_material(shader_data, shader_path)
 	params_manager.build_params_ui(ui_data, compute_shader)
+	
+	ActionsManager.clear_undo_actions() # prevent crashes from trying to access freed nodes.
 
 
 func change_asset_filter(index: int) -> void:

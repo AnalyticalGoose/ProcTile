@@ -377,6 +377,11 @@ static func redo_action() -> void:
 		redo_btn.disabled = true
 
 
+static func clear_undo_actions() -> void:
+	_undo_actions.clear()
+	undo_btn.disabled = true
+
+
 static func _add_undo_action(action : Array) -> void:
 	if _undo_actions.size() >= MAX_ACTIONS:
 		_undo_actions = _undo_actions.slice(1)

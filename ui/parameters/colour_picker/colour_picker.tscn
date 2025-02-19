@@ -23,7 +23,6 @@ can_add_swatches = false
 sampler_visible = false
 color_modes_visible = false
 sliders_visible = false
-hex_visible = false
 presets_visible = false
 
 [connection signal="color_changed" from="ColourPicker" to="." method="_on_colour_changed"]
