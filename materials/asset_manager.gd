@@ -4,6 +4,7 @@ extends PanelContainer
 @export var ui_manager : UIManager
 @export var params_manager : ParamsManager
 @export var menu_manager : HBoxContainer
+@export var assets_search : LineEdit
 @export var assets_filter : ItemList
 @export var asset_selectors : Array[AssetSelector]
 
@@ -63,8 +64,14 @@ func change_asset_filter(index: int) -> void:
 
 
 # Called when user types in the search bar
-func _on_assets_search_text_changed(_new_text: String) -> void:
-	pass
+# TODO: Fuzzy search & search tags 'metal', 'masonry' etc. Also greying / visually showing categories with no matches
+func _on_assets_search_text_changed(search_text: String) -> void:
+	for selector : AssetSelector in asset_selectors:
+		for asset : Button in selector.asset_btns:
+			if assets_search.text == "" or asset.text.containsn(search_text):
+				asset.show()
+			else:
+				asset.hide()
 
 
 # Called when user double-clicks on an asset in the selection window.

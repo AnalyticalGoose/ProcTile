@@ -409,7 +409,7 @@ theme_override_font_sizes/font_size = 12
 text = "Version: 0.1.1"
 horizontal_alignment = 2
 
-[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "params_manager", "menu_manager", "assets_filter", "asset_selectors")]
+[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "params_manager", "menu_manager", "assets_search", "assets_filter", "asset_selectors")]
 z_index = -2
 layout_mode = 2
 offset_left = 30.0
@@ -422,6 +422,7 @@ script = ExtResource("2_iuucp")
 ui_manager = NodePath("..")
 params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
+assets_search = NodePath("AssetsMargin/AssetsVBox/AssetsSearch")
 assets_filter = NodePath("AssetsMargin/AssetsVBox/AssetsFilter")
 asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D")]
 
