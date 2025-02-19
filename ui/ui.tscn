@@ -45,7 +45,7 @@ border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
 border_blend = true
 corner_detail = 1
 
-[node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn")]
+[node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn", "params_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -57,6 +57,7 @@ undo_btn = NodePath("RendererToolbar/LeftRendererToolbar/UndoBtn")
 redo_btn = NodePath("RendererToolbar/LeftRendererToolbar/RedoBtn")
 file_menu = NodePath("NavigationBar/NavigationMenu/FileMenuButton")
 pause_renderer_btn = NodePath("RendererToolbar/RightRendererToolbar/PauseRendererButton")
+params_container = NodePath("ParamsWindow/MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
 
 [node name="RendererWindow" type="Control" parent="."]
 layout_mode = 1
@@ -409,7 +410,7 @@ theme_override_font_sizes/font_size = 12
 text = "Version: 0.1.1"
 horizontal_alignment = 2
 
-[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "params_manager", "menu_manager", "assets_search", "assets_filter", "asset_selectors")]
+[node name="AssetsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("ui_manager", "file_menu", "params_manager", "menu_manager", "assets_search", "assets_filter", "asset_selectors")]
 z_index = -2
 layout_mode = 2
 offset_left = 30.0
@@ -420,6 +421,7 @@ theme = ExtResource("1_x425p")
 theme_type_variation = &"LPanelContainer"
 script = ExtResource("2_iuucp")
 ui_manager = NodePath("..")
+file_menu = NodePath("../NavigationBar/NavigationMenu/FileMenuButton")
 params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
 assets_search = NodePath("AssetsMargin/AssetsVBox/AssetsSearch")

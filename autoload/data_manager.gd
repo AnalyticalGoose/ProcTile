@@ -14,6 +14,7 @@ var shader_paths : Dictionary = {}
 var current_material_name : String
 var current_material_id : int
 var current_material_type : int = 0
+var current_save_path : String = ""
 
 const SETTINGS_PATH : String = "user://settings.cfg"
 const MATERIAL_DIRS : Array[String] = ["res://materials/3D/realistic/", "res://materials/2D/pixel/"]
@@ -60,6 +61,9 @@ func save_material(path : String, serialised_data : Array[Array]) -> void:
 	
 	if cfg_file.save(path):
 		Logger.puts_error("Cannot save material to " + path)
+	
+	current_save_path = path
+	Logger.show_snackbar_popup("Save successful!")
 
 
 func load_material_settings(cfg_file : ConfigFile) -> Array[Array]:

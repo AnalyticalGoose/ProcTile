@@ -1,11 +1,16 @@
 extends Node
 
-static var output_instance : Label
-var current_colour : int = 0
-
 ## This could be a single function but is seperated just for ease of use.
 ## It is more user-friendly to just call the type of logging by function name.
 ## Prevents needing to remember args for colour, and if an Error is being pushed.
+
+static var output_instance : Label
+static var ui_manager_instance : UIManager
+
+var current_colour : int = 0
+
+@onready var snackbar_scene : PackedScene = load("res://ui/bars/snackbar.tscn")
+
 
 func puts(output : String) -> void:
 	if current_colour != 0:
@@ -41,7 +46,13 @@ func stop_renderer(output: String) -> void:
 	if current_colour != 2:
 		_set_output_colour(2)
 	output_instance.text = output
-	
+
+
+func show_snackbar_popup(text : String) -> void:
+	var snackbar : SnackbarPopup = snackbar_scene.instantiate()
+	snackbar.label.text = text
+	ui_manager_instance.add_child(snackbar)
+
 
 func _set_output_colour(colour_idx : int) -> void:
 	match colour_idx:

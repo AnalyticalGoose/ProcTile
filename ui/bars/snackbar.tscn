@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://bekixe73l8vvm"]
+
+[ext_resource type="Script" path="res://ui/bars/snackbar.gd" id="1_m0tpc"]
+[ext_resource type="Texture2D" uid="uid://dupfn8pcevvvm" path="res://ui/icons/icon_close.png" id="1_no7xc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7d4rx"]
+content_margin_left = 20.0
+bg_color = Color(0.156863, 0.156863, 0.156863, 0.784314)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="Snackbar" type="PanelContainer" node_paths=PackedStringArray("label")]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -92.0
+offset_top = 94.0
+offset_right = 92.0
+offset_bottom = 134.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_7d4rx")
+script = ExtResource("1_m0tpc")
+label = NodePath("HBoxContainer/Label")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.783523, 0.783523, 0.783523, 1)
+
+[node name="TextureButton" type="TextureButton" parent="HBoxContainer"]
+modulate = Color(0.783523, 0.783523, 0.783523, 1)
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+texture_normal = ExtResource("1_no7xc")
+ignore_texture_size = true
+stretch_mode = 5
+
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
+[connection signal="pressed" from="HBoxContainer/TextureButton" to="." method="_on_texture_button_pressed"]
