@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5ogoumbcxvpp"]
+
+[ext_resource type="Script" path="res://ui/menus/asset_selector/asset_preview.gd" id="1_cicue"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_01yfd"]
+bg_color = Color(0.118581, 0.118581, 0.118581, 1)
+corner_detail = 1
+
+[node name="AssetPreview" type="PanelContainer" node_paths=PackedStringArray("preview_texture", "preview_label")]
+offset_left = 62.0
+offset_top = 100.0
+offset_right = 338.0
+offset_bottom = 423.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_01yfd")
+script = ExtResource("1_cicue")
+preview_texture = NodePath("PreviewVBoxContainer/PreviewTexture")
+preview_label = NodePath("PreviewVBoxContainer/PreviewNameLabel")
+
+[node name="PreviewVBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PreviewTexture" type="TextureRect" parent="PreviewVBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+expand_mode = 5
+stretch_mode = 5
+
+[node name="PreviewNameLabel" type="Label" parent="PreviewVBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.783523, 0.783523, 0.783523, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u38h71xrelqh"
-path="res://.godot/imported/pixel_brick_wall_thumb.png-c5de7ac2cf30a80f4514621115503004.ctex"
+uid="uid://yc88l1n61tf5"
+path="res://.godot/imported/checker_plate_preview.jpg-7c22bb70f8def6c792826a4f33d9ba61.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/2D/pixel/pixel_brick_wall/pixel_brick_wall_thumb.png"
-dest_files=["res://.godot/imported/pixel_brick_wall_thumb.png-c5de7ac2cf30a80f4514621115503004.ctex"]
+source_file="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg"
+dest_files=["res://.godot/imported/checker_plate_preview.jpg-7c22bb70f8def6c792826a4f33d9ba61.ctex"]
 
 [params]
 

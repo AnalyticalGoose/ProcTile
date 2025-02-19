@@ -5,12 +5,13 @@ extends PanelContainer
 @export var params_manager : ParamsManager
 @export var menu_manager : HBoxContainer
 @export var assets_filter : ItemList
-@export var asset_selectors : Array[ItemList]
+@export var asset_selectors : Array[AssetSelector]
 
 var compute_shader : ComputeShader
 var current_asset_selector_idx : int = 0
 var current_asset_type : int = 0
 var asset_selector_offets : Array[int]
+var selected_btn : Button
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer as Renderer
 
@@ -29,7 +30,6 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 		material_index = index + asset_selector_offets[current_asset_selector_idx]
 	
 	if current_asset_type != current_asset_selector_idx: # Different material shader needed
-		print("change shader")
 		current_asset_type = current_asset_selector_idx
 		renderer.change_mesh_shader(current_asset_type)
 	
@@ -62,8 +62,20 @@ func change_asset_filter(index: int) -> void:
 		current_asset_selector_idx = index
 
 
+# Called when user types in the search bar
+func _on_assets_search_text_changed(_new_text: String) -> void:
+	pass
+
+
 # Called when user double-clicks on an asset in the selection window.
-func _on_asset_selector_item_activated(index: int) -> void:
+func _on_asset_selector_item_activated(index: int, button: Button) -> void:
+	if selected_btn == button: # Keep the button selected if pressed again, but don't reload shader
+		selected_btn.set_pressed_no_signal(true)
+		return
+	elif selected_btn:
+		selected_btn.set_pressed_no_signal(false)
+	
+	selected_btn = button
 	load_material(index)
 
 

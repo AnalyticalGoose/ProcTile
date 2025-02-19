@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=35 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -28,14 +28,11 @@
 [ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
 [ext_resource type="Texture2D" uid="uid://bohvlsbw0u1io" path="res://ui/icons/icon_shader_settings.png" id="11_uj4vs"]
 [ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
-[ext_resource type="Texture2D" uid="uid://bvbw2lkgernm7" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="13_2aspn"]
 [ext_resource type="Texture2D" uid="uid://dvwro6r1w68qx" path="res://ui/icons/icon_camera_settings.png" id="15_netph"]
 [ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
-[ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="16_bboyx"]
 [ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
-[ext_resource type="Texture2D" uid="uid://c5ds7isye1occ" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.png" id="17_gh2kt"]
-[ext_resource type="Texture2D" uid="uid://btubkvyddqg7q" path="res://materials/3D/realistic/checker_plate/checker_plate_thumb.png" id="17_io8n0"]
-[ext_resource type="Texture2D" uid="uid://u38h71xrelqh" path="res://materials/2D/pixel/pixel_brick_wall/pixel_brick_wall_thumb.png" id="23_x42nr"]
+[ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D.tscn" id="23_t626t"]
+[ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D.tscn" id="24_l0ee1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -426,7 +423,7 @@ ui_manager = NodePath("..")
 params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
 assets_filter = NodePath("AssetsMargin/AssetsVBox/AssetsFilter")
-asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector3D"), NodePath("AssetsMargin/AssetsVBox/AssetSelector2D")]
+asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D")]
 
 [node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
 layout_mode = 2
@@ -448,7 +445,7 @@ text = "Assets"
 
 [node name="AssetsSearch" type="LineEdit" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 layout_mode = 2
-placeholder_text = "*Search Disabled*"
+placeholder_text = "Search..."
 clear_button_enabled = true
 
 [node name="AssetsFilter" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
@@ -464,40 +461,16 @@ fixed_icon_size = Vector2i(28, 28)
 item_0/icon = ExtResource("6_1sqbh")
 item_1/icon = ExtResource("16_hkc0u")
 
-[node name="AssetSelector3D" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+[node name="AssetSelector" type="Panel" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 custom_minimum_size = Vector2(0, 800)
-layout_direction = 1
 layout_mode = 2
-max_text_lines = 2
-item_count = 4
-max_columns = 4
-same_column_width = true
-fixed_column_width = 58
-icon_mode = 0
-fixed_icon_size = Vector2i(54, 54)
-item_0/text = "Bathroom  Tiles"
-item_0/icon = ExtResource("16_bboyx")
-item_1/text = "Brick Wall"
-item_1/icon = ExtResource("13_2aspn")
-item_2/text = "Checker     Plate"
-item_2/icon = ExtResource("17_io8n0")
-item_3/text = "Hardwood Floor"
-item_3/icon = ExtResource("17_gh2kt")
 
-[node name="AssetSelector2D" type="ItemList" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
+[node name="AssetSelector_3D" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("23_t626t")]
+layout_mode = 0
+
+[node name="AssetSelector_2D" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("24_l0ee1")]
 visible = false
-custom_minimum_size = Vector2(0, 800)
-layout_direction = 1
-layout_mode = 2
-max_text_lines = 2
-item_count = 1
-max_columns = 4
-same_column_width = true
-fixed_column_width = 58
-icon_mode = 0
-fixed_icon_size = Vector2i(54, 54)
-item_0/text = "Pixel Brick Wall"
-item_0/icon = ExtResource("23_x42nr")
+layout_mode = 0
 
 [node name="ParamsWindow" type="PanelContainer" parent="." node_paths=PackedStringArray("params_container")]
 z_index = -2
@@ -555,8 +528,9 @@ script = ExtResource("7_08hm7")
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton" to="RendererToolbar" method="_on_camera_settings_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitContainer/OrbitMeshCheckBox" to="RendererWindow" method="_on_orbit_mesh_check_box_toggled"]
 [connection signal="value_changed" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitSpeedContainer/OrbitSpeedHSlider" to="RendererWindow" method="_on_orbit_speed_h_slider_value_changed"]
+[connection signal="text_changed" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsSearch" to="AssetsWindow" method="_on_assets_search_text_changed"]
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
-[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
-[connection signal="item_activated" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]
