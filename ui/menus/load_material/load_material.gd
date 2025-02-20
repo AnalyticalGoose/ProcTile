@@ -18,7 +18,10 @@ func _on_file_selected(path: String) -> void:
 			asset_manager.change_asset_filter(material_type)
 			asset_manager.assets_filter.select(material_type)
 			asset_manager.load_material(index, true)
-			await get_tree().process_frame # ensures UI is setup and prevent crashes from trying to access null
+			
+			# Ensures UI is setup and prevent crashes from trying to access null
+			for i : int in 2:
+				await get_tree().process_frame 
 		
 		else:
 			Logger.puts_error("Invalid index in save file, cannot load")

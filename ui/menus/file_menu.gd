@@ -1,3 +1,4 @@
+class_name FileMenu
 extends MenuButton
 
 @export var export_menu_scene : PackedScene
@@ -24,6 +25,20 @@ func _ready() -> void:
 	get_popup().id_pressed.connect(_on_file_menu_button_pressed)
 
 
+# Can be called from other scripts 
+func save_as() -> void:
+	var save_material_menu : SaveMaterialMenu = save_material_menu_scene.instantiate()
+	save_material_menu.params_container = params_container
+	@warning_ignore("return_value_discarded")
+	save_material_menu.file_selected.connect(_on_file_save_path_set)
+	add_child(save_material_menu)
+	save_material_menu.show()
+
+
+func toggle_save_button(hide_btn : bool) -> void:
+	get_popup().set_item_disabled(4, hide_btn)
+
+
 func _on_file_menu_button_pressed(button_id : int) -> void:
 	match button_id:
 		MenuOption.OPEN:
@@ -40,12 +55,7 @@ func _on_file_menu_button_pressed(button_id : int) -> void:
 			DataManager.save_material(DataManager.current_save_path, properties_state)
 		
 		MenuOption.SAVE_AS:
-			var save_material_menu : SaveMaterialMenu = save_material_menu_scene.instantiate()
-			save_material_menu.params_container = params_container
-			@warning_ignore("return_value_discarded")
-			save_material_menu.file_selected.connect(_on_file_save_path_set)
-			add_child(save_material_menu)
-			save_material_menu.show()
+			save_as()
 		
 		MenuOption.EXPORT:
 			var export_menu : Window = export_menu_scene.instantiate()
@@ -57,4 +67,4 @@ func _on_file_menu_button_pressed(button_id : int) -> void:
 
 
 func _on_file_save_path_set(_path : String) -> void:
-	get_popup().set_item_disabled(4, false)
+	toggle_save_button(false)

@@ -3,7 +3,7 @@ extends Control
 
 @export var undo_btn : Button
 @export var redo_btn : Button
-@export var file_menu : MenuButton
+@export var file_menu : FileMenu
 @export var pause_renderer_btn : Button
 @export var params_container : ParamSection
 
@@ -18,7 +18,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			var properties_state : Array[Array] = params_container.serialise_properties()
 			DataManager.save_material(DataManager.current_save_path, properties_state)
 		else:
-			file_menu.get_popup().id_pressed.emit(4)
+			file_menu.save_as()
 	
 	elif event.is_action_pressed("undo"):
 		if !undo_btn.disabled:

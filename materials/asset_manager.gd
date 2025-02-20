@@ -2,7 +2,7 @@ class_name AssetsManager
 extends PanelContainer
 
 @export var ui_manager : UIManager
-@export var file_menu : MenuButton
+@export var file_menu : FileMenu
 @export var params_manager : ParamsManager
 @export var menu_manager : HBoxContainer
 @export var assets_search : LineEdit
@@ -31,7 +31,7 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	else:
 		material_index = index + asset_selector_offets[current_asset_selector_idx]
 		DataManager.current_save_path = ""
-		file_menu.get_popup().set_item_disabled(4, true)
+		file_menu.toggle_save_button(true)
 	
 	if current_asset_type != current_asset_selector_idx: # Different material shader needed
 		current_asset_type = current_asset_selector_idx
