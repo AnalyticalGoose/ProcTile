@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dcq3ymn0d0he4"]
+[gd_scene load_steps=13 format=3 uid="uid://dcq3ymn0d0he4"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_6ylha"]
 [ext_resource type="Script" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_0hasw"]
@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="6_8ojcc"]
 [ext_resource type="Texture2D" uid="uid://bfb8p005n6ho4" path="res://materials/3D/realistic/checker_plate/checker_plate_thumb.jpg" id="7_v4hpy"]
 [ext_resource type="Texture2D" uid="uid://dn0k4bykkc620" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.jpg" id="10_30u3j"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ys06j"]
 
 [node name="AssetSelector_3D" type="GridContainer"]
 offset_right = 264.0
@@ -43,6 +45,19 @@ text = "Brick Wall
 
 "
 icon = ExtResource("5_ls8yp")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="CastleWall" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Castle Wall
+
+"
+icon = SubResource("PlaceholderTexture2D_ys06j")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true

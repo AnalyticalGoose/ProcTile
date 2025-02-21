@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dhjnltojcbhqb"
+path="res://.godot/imported/castle_wall_compute.glsl-827dbf97098afef600df4a29e27be054.res"
+
+[deps]
+
+source_file="res://materials/3D/realistic/castle_wall/castle_wall_compute.glsl"
+dest_files=["res://.godot/imported/castle_wall_compute.glsl-827dbf97098afef600df4a29e27be054.res"]
+
+[params]
+
