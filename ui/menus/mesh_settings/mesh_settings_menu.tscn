@@ -2,10 +2,10 @@
 
 [ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh_settings/mesh_menu_theme.tres" id="1_0mu7x"]
 [ext_resource type="Script" path="res://ui/menus/mesh_settings/mesh_settings.gd" id="2_8udx8"]
-[ext_resource type="ArrayMesh" uid="uid://br3vow2bovkx0" path="res://meshes/tile/tile.obj" id="3_0csbf"]
-[ext_resource type="ArrayMesh" uid="uid://c41mp0hqr2wd7" path="res://meshes/tile/tile_back_bottom_cull.obj" id="4_om0wj"]
-[ext_resource type="ArrayMesh" uid="uid://cjstuqnwwcakd" path="res://meshes/tile/tile_back_cull.obj" id="5_lpa08"]
-[ext_resource type="ArrayMesh" uid="uid://c62xi1dgnpy63" path="res://meshes/tile/tile_bottom_cull.obj" id="6_g0klt"]
+[ext_resource type="ArrayMesh" uid="uid://cpgyb3ggvr0u" path="res://meshes/tile/tile.obj" id="3_3qc45"]
+[ext_resource type="ArrayMesh" uid="uid://q2ey5ibvfm1i" path="res://meshes/tile/tile_back_cull.obj" id="5_h5ago"]
+[ext_resource type="ArrayMesh" uid="uid://y57363ump66u" path="res://meshes/tile/tile_bottom_cull.obj" id="5_qvcva"]
+[ext_resource type="ArrayMesh" uid="uid://br6dgu8dy1rpw" path="res://meshes/tile/tile_back_bottom_cull.obj" id="6_p0ax1"]
 [ext_resource type="ArrayMesh" uid="uid://dvlccqssfgtla" path="res://meshes/cube/cube.obj" id="7_f23y1"]
 [ext_resource type="ArrayMesh" uid="uid://cajhs8akx4so1" path="res://meshes/cube/cube_bottom_cull.obj" id="8_gjaki"]
 [ext_resource type="ArrayMesh" uid="uid://b07kby7uucp66" path="res://meshes/cube/cube_back_cull.obj" id="9_58lah"]
@@ -49,7 +49,7 @@ grow_horizontal = 0
 grow_vertical = 0
 theme = ExtResource("1_0mu7x")
 script = ExtResource("2_8udx8")
-tile_meshes = Array[Mesh]([ExtResource("3_0csbf"), ExtResource("6_g0klt"), ExtResource("5_lpa08"), ExtResource("4_om0wj")])
+tile_meshes = Array[Mesh]([ExtResource("3_3qc45"), ExtResource("5_qvcva"), ExtResource("5_h5ago"), ExtResource("6_p0ax1")])
 cube_meshes = Array[Mesh]([ExtResource("7_f23y1"), ExtResource("8_gjaki"), ExtResource("9_58lah"), ExtResource("10_rm2gn")])
 plane_meshes = Array[Mesh]([ExtResource("11_r2x65")])
 mesh_options = NodePath("MarginContainer/VBoxContainer/MeshContainer/MeshOptionButton")

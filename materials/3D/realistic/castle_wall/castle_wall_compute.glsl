@@ -1,6 +1,9 @@
 #[compute]
 #version 450
 
+// #define M1 1597334677U     //1719413*929
+// #define M2 3812015801U     //140473*2467*11
+
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
@@ -13,7 +16,7 @@ layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
-	float seed;
+	float perlin_seed;
 } seed;
 
 layout(push_constant, std430) uniform restrict readonly Params {
@@ -23,7 +26,8 @@ layout(push_constant, std430) uniform restrict readonly Params {
 } params;
 
 // Normal map
-const float sobel_strength = 0.12;
+const float sobel_strength = 0.20;
+
 
 
 float rand(vec2 x) {
@@ -32,8 +36,16 @@ float rand(vec2 x) {
 
 vec2 rand2(vec2 x) {
     return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
+		dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
+
+
+// vec2 hash_2d(uvec2 q) {
+//     q *= uvec2(M1, M2); 
+//     uint n = (q.x ^ q.y) * M1;
+//     return vec2(n) * (1.0 / float(0xffffffffU));
+// }
+
 
 // Returns the intersection point of two lines (each encoded as a vec4)
 vec2 get_line_intersection(vec4 line1, vec4 line2) {
@@ -87,6 +99,8 @@ vec2 skewed_uneven_cut(vec2 x, vec2 size, float randomness) {
 }
 
 
+// A port of Material Maker's 'Skewed Uneven Bricks' node with some significant optimisations for brevity.
+// https://github.com/RodZill4/material-maker/blob/master/addons/material_maker/nodes/skewed_uneven_bricks.mmg
 float skewed_uneven_bricks(vec2 uv, vec2 size, float randomness, float mortar, float bevel, float rounding, float seed) {
     const float grid_size = 4096.0;
     vec2 cell_id = floor(uv * size);
@@ -168,6 +182,115 @@ float skewed_uneven_bricks(vec2 uv, vec2 size, float randomness, float mortar, f
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Voronoi distances by Inigo Quilez - https://www.shadertoy.com/view/ldl3W8, https://www.youtube.com/c/InigoQuilez, https://iquilezles.org/
+vec3 voronoi(vec2 x, vec2 size, float seed) {
+    vec2 ip = floor(x);
+    vec2 fp = fract(x);
+
+	vec2 mg, mr;
+    float md = 8.0;
+    for( int j=-1; j<=1; j++ )
+    for( int i=-1; i<=1; i++ )
+    {
+        vec2 g = vec2(float(i),float(j));
+        vec2 o = rand2(vec2(seed) + mod(ip + g + size, size));
+        vec2 r = g + o - fp;
+        float d = dot(r,r);
+
+        if( d<md )
+        {
+            md = d;
+            mr = r;
+            mg = g;
+        }
+    }
+
+    md = 8.0;
+    for( int j=-2; j<=2; j++ )
+    for( int i=-2; i<=2; i++ )
+    {
+        vec2 g = mg + vec2(float(i),float(j));
+        vec2 o = rand2(vec2(seed) + mod(ip + g + size, size));
+        vec2 r = g + o - fp;
+
+        if( dot(mr-r,mr-r)>0.00001 )
+        md = min( md, dot( 0.5*(mr+r), normalize(r-mr) ) );
+    }
+
+    return vec3( md, mr );
+}
+
+
+float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
+    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 f = fract(coord);
+
+    float a[4];
+    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+
+    vec2 v[4];
+    v[0] = vec2(cos(a[0]), sin(a[0]));
+    v[1] = vec2(cos(a[1]), sin(a[1]));
+    v[2] = vec2(cos(a[2]), sin(a[2]));
+    v[3] = vec2(cos(a[3]), sin(a[3]));
+    
+    float p[4];
+    p[0] = dot(v[0], f);
+    p[1] = dot(v[1], f - vec2(0.0, 1.0));
+    p[2] = dot(v[2], f - vec2(1.0, 0.0));
+    p[3] = dot(v[3], f - vec2(1.0, 1.0));
+    
+    vec2 t =  f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    
+    return 0.5 + mix(mix(p[0], p[2], t.x), mix(p[1], p[3], t.x), t.y);
+}
+
+float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, float offset, float seed) {
+	float normalize_factor = 0.0;
+	float value = 0.0;
+	float scale = 1.0;
+	for (int i = 0; i < iterations; i++) {
+		float noise = perlin_2d(coord * size, size, offset, seed);
+		value += noise * scale;
+		normalize_factor += scale;
+		size *= 2.0;
+		scale *= persistence;
+	}
+	return value / normalize_factor;
+}
+
+
+
+vec2 transform(vec2 uv, vec2 translate, float rotate) {
+ 	vec2 rv;
+	uv -= translate;
+	uv -= vec2(0.5);
+	rv.x = cos(rotate) * uv.x + sin(rotate) * uv.y;
+	rv.y = -sin(rotate) * uv.x + cos(rotate) * uv.y;
+	rv += vec2(0.5);
+	return rv;	
+}
+
+
+
+
+
 // Generate normals
 vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
@@ -191,13 +314,46 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
 }
 
 
+
+const vec2 cracks_voronoi_size = vec2(14.0);
+const float cracks_voronoi_seed = 0.0;
+const float cracks_tone_value = 0.01;
+const float cracks_tone_width = 0.01;
+
+const vec2 cracks_perlin_size = vec2(4.0);
+
+
 void main() {
 	vec2 pixel = gl_GlobalInvocationID.xy;
 	vec2 _texture_size = vec2(params.texture_size);
 	vec2 uv = pixel / _texture_size;
 
 	if (params.stage == 0.0) {
-		float pattern = skewed_uneven_bricks(uv, vec2(4, 10), 1.0, 0.05, 0.05, 0.12, 1.0);
-		imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(pattern), 1.0));
+        
+        
+        // float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, float offset, float seed)
+        float crack_warp_perlin = fbm_perlin_2d(uv, cracks_perlin_size, 8, 0.5, 0.0, seed.perlin_seed);
+
+
+        // TODO remove rotate
+        vec2 crack_warped_uv = transform(
+                uv, 
+                vec2(0.04 * (2.0 * crack_warp_perlin - 1.0), 0.04 * (2.0 * crack_warp_perlin - 1.0)),
+                0.0
+        );
+
+        vec3 cracks_voronoi = voronoi(cracks_voronoi_size.x * crack_warped_uv, cracks_voronoi_size, cracks_voronoi_seed);
+        float cracks = (cracks_voronoi.r - cracks_tone_value) / cracks_tone_width + 0.5;
+        imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(cracks), 1.0));
+
 	}
+
+    if (params.stage == 1.0) {
+
+    }
+    
+    if (params.stage == 2.0) {
+        // float pattern = skewed_uneven_bricks(uv, vec2(4, 10), 1.0, 0.05, 0.05, 0.12, 0.841487825);
+		// imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(pattern), 1.0));
+    }
 }
