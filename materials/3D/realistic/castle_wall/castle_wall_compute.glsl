@@ -18,7 +18,7 @@ layout(r16f, set = 1, binding = 0) uniform image2D sparse_perlin_buffer;
 layout(r16f, set = 1, binding = 1) uniform image2D mortar_perlin_buffer;
 layout(r16f, set = 1, binding = 2) uniform image2D brick_dmg_perlin_buffer;
 layout(r16f, set = 1, binding = 3) uniform image2D cracks_buffer;
-layout(rgba32f, set = 1, binding = 1) uniform image2D rgba32f_buffer;
+layout(rgba32f, set = 1, binding = 4) uniform image2D rgba32f_buffer;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
 	float perlin_seed;
@@ -57,13 +57,22 @@ const vec2 cracks_voronoi_size = vec2(14.0);
 const float cracks_voronoi_seed = 0.0;
 const float cracks_tone_value = 0.01;
 const float cracks_tone_width = 0.01;
+const float cracks_intensity = 0.4;
 
-// Stones
+// Stones & Mortar
 const vec2 stones_size = vec2(30, 40);
 const float stones_scale_variation = 0.3;
 const float stones_scale_x = 0.01;
 const float stones_scale_y = 0.01;
 const float stones_value_variation = 1.0;
+vec4 stones_col[3];
+float stones_offset[3];
+vec4 mortar_col[2];
+float mortar_offset[2];
+const float stones_opacity = 0.75;
+const float mortar_noise_opacity = 0.50;
+const float mortar_tone_value = 0.75;
+const float mortar_tone_width = 1.00;
 
 // Normal map
 const float sobel_strength = 0.50;
@@ -79,11 +88,26 @@ vec2 rand2(vec2 x) {
 		dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
 
+// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
+vec2 hash_ws2(vec2 x) {
+    vec3 x3 = fract(vec3(x.xyx) * vec3(0.1031, 0.1030, 0.0973));
+    x3 += dot(x3, x3.yzx + 19.19);
+    return fract(vec2((x3.x + x3.y)  *x3.z, (x3.x + x3.z) * x3.y));
+}
+
 vec3 rand3(vec2 x) {
     return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
 							  dot(x, vec2(3.4562, 17.398)),
                               dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
 }
+
+// vec2 hash_2d(vec2 x) {
+//     uvec2 q = uvec2(x * 100);
+//     q *= uvec2(M1, M2); 
+//     uint n = (q.x ^ q.y) * M1;
+//     return vec2(n) * (1.0 / float(0xffffffffU));
+// }
+
 
 // Blending
 vec3 normal(vec3 base, vec3 blend, float opacity) {
@@ -94,11 +118,28 @@ float clamped_difference(float base, float blend) {
     return clamp(blend - base, 0.0, 1.0);
 }
 
-// vec2 hash_2d(uvec2 q) {
-//     q *= uvec2(M1, M2); 
-//     uint n = (q.x ^ q.y) * M1;
-//     return vec2(n) * (1.0 / float(0xffffffffU));
-// }
+
+float blend_overlay(float base, float blend) {
+	return base < 0.5 ? (2.0 * base * blend) : (1.0 - 2.0 * (1.0 - base) * (1.0 - blend));
+}
+
+vec3 blend_overlay(vec3 base, vec3 blend) {
+	return vec3(blend_overlay(base.r, blend.r), blend_overlay(base.g, blend.g), blend_overlay(base.b, blend.b));
+}
+
+vec3 blend_overlay(vec3 base, vec3 blend, float opacity) {
+	return (blend_overlay(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+float add(float base, float blend, float opacity) {
+    return min(base + blend, 1.0) * opacity + base * (1.0 - opacity);
+}
+
+float lighten(float base, float blend) {
+	return max(blend, base);
+}
+
+
 
 
 // Returns the intersection point of two lines (each encoded as a vec4)
@@ -235,42 +276,43 @@ float skewed_uneven_bricks(vec2 uv, vec2 size, float randomness, float mortar, f
 }
 
 // Voronoi distances by Inigo Quilez - https://www.shadertoy.com/view/ldl3W8, https://www.youtube.com/c/InigoQuilez, https://iquilezles.org/
+// Faster Voronoi Edge Distance by Tomkh - https://www.shadertoy.com/view/llG3zy
 vec3 voronoi(vec2 x, vec2 size, float seed) {
-    vec2 ip = floor(x);
-    vec2 fp = fract(x);
+    vec2 n = floor(x);
+    vec2 f = fract(x);
 
-	vec2 mg, mr;
+	vec2 mr;
     float md = 8.0;
     for( int j=-1; j<=1; j++ )
     for( int i=-1; i<=1; i++ )
     {
         vec2 g = vec2(float(i),float(j));
-        vec2 o = rand2(vec2(seed) + mod(ip + g + size, size));
-        vec2 r = g + o - fp;
+		vec2 o = hash_ws2(vec2(seed) + mod(n + g + size, size));
+        vec2 r = g + o - f;
         float d = dot(r,r);
 
-        if( d<md )
-        {
+        if( d<md ) {
             md = d;
             mr = r;
-            mg = g;
         }
     }
 
+    vec2 mg = step(.5,f) - 1.;
     md = 8.0;
-    for( int j=-2; j<=2; j++ )
-    for( int i=-2; i<=2; i++ )
+    for( int j=-1; j<=2; j++ )
+    for( int i=-1; i<=2; i++ )
     {
         vec2 g = mg + vec2(float(i),float(j));
-        vec2 o = rand2(vec2(seed) + mod(ip + g + size, size));
-        vec2 r = g + o - fp;
+		vec2 o = hash_ws2(vec2(seed) + mod(n + g + size, size));
+		vec2 r = g + o - f;
 
-        if( dot(mr-r,mr-r)>0.00001 )
+        if( dot(mr-r,mr-r)> 0.00001 ) // skip the same cell
         md = min( md, dot( 0.5*(mr+r), normalize(r-mr) ) );
     }
 
     return vec3( md, mr );
 }
+
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
     vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
@@ -315,7 +357,7 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 
 float stone(vec2 uv, float seed) {
     // Pseudo cellular noise - adapted from 'One Tweet Cellular Pattern - Shane. https://www.shadertoy.com/view/MdKXDD
-    vec2 cell_px = gl_GlobalInvocationID.xy * 1.2;
+    vec2 cell_px = gl_GlobalInvocationID.xy * 1.4;
     mat2 m = mat2(5, -5, 5, 5) * 0.1;
     float _seed = seed;
     float d = min(min(f(cell_px, _seed), f(cell_px * m, -_seed)), f(cell_px * m * m, _seed * 2.0));
@@ -327,9 +369,9 @@ float stone(vec2 uv, float seed) {
     return clamped_difference(stones_cellular, circle);
 }
 
-vec4 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
+vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
     float max_contribution = 0.0;
-    vec3 final_colour = vec3(0.0);
+    float final_colour = 0.0;
     
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
@@ -338,14 +380,12 @@ vec4 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
             pos = fract((floor(mod(pos, tile)) + 0.5) / tile) - 0.5;
             
             vec2 rand_seed = rand2(pos + seed_offset);
-            vec3 rand_colour = rand3(rand_seed);
+            float rand_colour = rand(rand_seed);
             
             // Random offset variation & compute local UV relative to tile.
             pos = fract(pos + 1.0 * rand_seed / tile);
             vec2 pv = fract(uv - pos) - 0.5;
             
-            // Re-randomize for rotation & scaling.
-            rand_seed = rand2(rand_seed);
             float angle = (rand_seed.x * 2.0 - 1.0) * 3.14159;
             mat2 rot_mat = mat2(cos(angle), sin(angle), -sin(angle), cos(angle));
             pv = rot_mat * pv;
@@ -370,8 +410,53 @@ vec4 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
         }
     }
     
-    return vec4(final_colour, max_contribution);
+    return vec2(final_colour, max_contribution);
 }
+
+
+vec4 gradient_fct(float x, int gradient) {
+
+    if (gradient == 0) { // stones colour
+        int count = int(stones_col.length());
+        if (x < stones_offset[0]) {
+            return stones_col[0];
+        }
+        for (int i = 1; i < count; i++) {
+            if (x < stones_offset[i]) {
+                float range = stones_offset[i] - stones_offset[i - 1];
+                float factor = (x - stones_offset[i - 1]) / range;
+                return mix(stones_col[i - 1], stones_col[i], factor);
+            }
+        }
+        return stones_col[count - 1];
+    }
+
+    if (gradient == 1) { // mortar colour
+        int count = int(mortar_col.length());
+        if (x < mortar_offset[0]) {
+            return mortar_col[0];
+        }
+        for (int i = 1; i < count; i++) {
+            if (x < mortar_offset[i]) {
+                float range = mortar_offset[i] - mortar_offset[i - 1];
+                float factor = (x - mortar_offset[i - 1]) / range;
+                return mix(mortar_col[i - 1], mortar_col[i], factor);
+            }
+        }
+        return mortar_col[count - 1];
+    }
+}
+
+float map_bw_colours(float x, float limit) {
+    if (x < limit) {
+        return mix(1.0, 0.0, (x - limit) / -limit);
+    }
+    return 1.0;
+}
+
+
+
+
 
 // Generate normals
 vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
@@ -396,11 +481,12 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
 }
 
 
-
 void main() {
 	vec2 pixel = gl_GlobalInvocationID.xy;
 	vec2 _texture_size = vec2(params.texture_size);
 	vec2 uv = pixel / _texture_size;
+
+    vec2 crack_warped_uv;
 
     if (params.stage == 0.0) { // Generate noise
         // General use sparse perlin
@@ -417,39 +503,67 @@ void main() {
         imageStore(brick_dmg_perlin_buffer, ivec2(pixel), vec4(vec3(brick_damage_perlin), 1.0));
 
         // Cracks voronoi
-        vec2 crack_warped_uv = uv -= vec2(0.04 * (2.0 * sparse_perlin - 1.0), 0.04 * (2.0 * sparse_perlin - 1.0));
+        crack_warped_uv = uv -= vec2(0.04 * (2.0 * sparse_perlin - 1.0));
         vec3 cracks_voronoi = voronoi(cracks_voronoi_size.x * crack_warped_uv, cracks_voronoi_size, cracks_voronoi_seed);
         float cracks = clamp((cracks_voronoi.r - cracks_tone_value) / cracks_tone_width + 0.5, 0.0, 1.0);
         imageStore(cracks_buffer, ivec2(pixel), vec4(vec3(cracks), 1.0));
     }
 
     if (params.stage == 1.0) { // Mortar
-        vec4 stones = tile_stones(uv, vec2(30, 40), vec2(seed.stones_seed));
-        imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(stones.w), 1.0));
-    }    
-    
-    
-    // if (params.stage == 1.0) {
-    //     // BW Brick pattern, and random RGB fill col
-    //     vec4 brick_fill;
-    //     float brick_pattern = skewed_uneven_bricks(uv, vec2(columns, rows), brick_randomness, mortar, bevel, rounding, brick_pattern_seed, brick_fill);
-    //     vec3 random_brick_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((fill_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
+        stones_col[0] = vec4(0.56, 0.56, 0.56, 1.0);
+        stones_col[1] = vec4(0.97, 0.91, 0.68, 1.0);
+        stones_col[2] = vec4(1.00, 0.83, 0.64, 1.0);
+        stones_offset[0] = 0.0;
+        stones_offset[1] = 0.5;
+        stones_offset[2] = 1.0;
 
-    //     // Warped voronoi (cracks)
-    //     float crack_warp_perlin = fbm_perlin_2d(uv, sparse_perlin_size, 8, 0.5, 0.0, seed.perlin_seed);
-    //     vec2 crack_warped_uv = uv -= vec2(0.04 * (2.0 * crack_warp_perlin - 1.0), 0.04 * (2.0 * crack_warp_perlin - 1.0));
-    //     vec2 crack_brick_uv = crack_warped_uv -= vec2(0.5 * (2.0 * brick_fill.r - 1.0), 0.250 * (2.0, brick_fill.g - 1.0));
-    //     vec3 cracks_voronoi = voronoi(cracks_voronoi_size.x * crack_brick_uv, cracks_voronoi_size, cracks_voronoi_seed);
-    //     float cracks = clamp((cracks_voronoi.r - cracks_tone_value) / cracks_tone_width + 0.5, 0.0, 1.0);
+        // Generate stone pattern and colour
+        vec2 stones = tile_stones(uv, stones_size, vec2(seed.stones_seed));
+        vec4 stones_colour = gradient_fct(stones.x, 0);
+
+        mortar_col[0] = vec4(0.37, 0.37, 0.31, 1.0);
+        mortar_col[1] = vec4(0.54, 0.52, 0.47, 1.0);
+        mortar_offset[0] = 0.0;
+        mortar_offset[1] = 1.0;
+
+        // Colour mortar noise and blend with stones
+        float mortar_perlin = imageLoad(mortar_perlin_buffer, ivec2(pixel)).r;
+        vec4 mortar_colour = gradient_fct(mortar_perlin, 1);
+        float mortar_blend_opacity = stones.y * stones_opacity;
+        vec3 mortar_blend = blend_overlay(mortar_colour.rgb, stones_colour.rgb, mortar_blend_opacity);
         
+        // Generate mortar roughness
+        float sparse_perlin = imageLoad(sparse_perlin_buffer, ivec2(pixel)).r;
+        float mortar_roughness_blend = add(mortar_perlin, sparse_perlin, 1.0);
+        mortar_roughness_blend = clamp((mortar_roughness_blend - mortar_tone_value) / mortar_tone_width + 0.5, 0.0, 1.0);
+        float mortar_roughness = add(mortar_roughness_blend, stones.y, 0.5);
 
-    //     imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(cracks), 1.0));
-	// }
+        imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(mortar_roughness), 1.0));
+        imageStore(orm_buffer, ivec2(pixel), vec4(mortar_blend, 1.0));
+    }    
+        
+    if (params.stage == 2.0) { // can reuse morter_perlin_buffer
+        float brick_damage_perlin = imageLoad(brick_dmg_perlin_buffer, ivec2(pixel)).r;
 
-    // if (params.stage == 2.0) {
+        // Brick pattern
+        vec4 brick_fill;
+        vec2 brick_damage_uv = uv -= vec2(0.015 * (2.0 * brick_damage_perlin - 1.0));
+        float brick_pattern = skewed_uneven_bricks(brick_damage_uv, vec2(columns, rows), brick_randomness, mortar, bevel, rounding, brick_pattern_seed, brick_fill);
+        vec3 random_brick_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((fill_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
 
-    // }
-    
-    // if (params.stage == 3.0) {
-    // }
+        // Cracks pattern, loaded into brick pattern transformed UVs
+        vec2 crack_brick_offset = vec2(0.5 * (2.0 * brick_fill.r - 1.0), 0.250 * (2.0 * brick_fill.g - 1.0));
+        vec2 crack_brick_uv = fract(uv + crack_warped_uv - crack_brick_offset);
+        ivec2 transformed_pixel = ivec2(crack_brick_uv * _texture_size);
+        float cracks = imageLoad(cracks_buffer, transformed_pixel).r;
+
+        // Blended to make sparse cracks pattern
+        float cracks_mask = map_bw_colours(brick_damage_perlin, cracks_intensity);
+        float cracks_lightened = lighten(cracks_mask, cracks);
+
+
+
+        // imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(cracks_lightened), 1.0));
+        imageStore(albedo_buffer, ivec2(pixel), brick_fill);
+	}
 }
