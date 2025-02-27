@@ -248,7 +248,7 @@ float sample_bilinear(ivec2 base_coord, vec2 offset) {
 float gaussian_blur(ivec2 pixel_coords, float sigma, int quality) {
     float samples = sigma * 4.0;
     
-    // Optionally use a LOD factor to step by more than 1 pixel. Mimics using a lower resolution mip level.
+    // LOD factor to step by more than 1 pixel. Mimics using a lower resolution mip level.
     int LOD = max(0, int(log2(samples)) - quality - 2);
     int sLOD = 1 << LOD;  // step size
     // Number of samples per dimension.
