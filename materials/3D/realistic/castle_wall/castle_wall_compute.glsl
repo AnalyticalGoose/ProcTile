@@ -12,19 +12,50 @@ layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(r16f, set = 1, binding = 0) uniform image2D sparse_perlin_buffer;
+layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_0;
 layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1; // mortar perlin, brick pattern
-layout(r16f, set = 1, binding = 2) uniform image2D brick_dmg_perlin_buffer;
+layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_2;
 layout(r16f, set = 1, binding = 3) uniform image2D r16f_buffer_3; // cracks, stone surface
 layout(rgba32f, set = 1, binding = 4) uniform image2D rgba32f_buffer; 
 layout(rgba32f, set = 1, binding = 5) uniform image2D rgba32f_buffer_2;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
-	float perlin_seed;
+	float brick_pattern_seed;
+    float perlin_seed;
     float stones_seed;
 } seed;
 
 layout(push_constant, std430) uniform restrict readonly Params {
+	float rows;
+	float columns;
+    float brick_randomness;
+    float mortar;
+	float bevel;
+	float rounding;
+
+    float stone_edge_slope_sigma;
+    float stone_surf_slope_sigma;
+    float stone_surface_intensity;
+    float stone_cracks_intensity;
+
+    float cracks_voronoi_size;
+    float cracks_coverage;
+
+    float mortar_perlin_x;
+    float mortar_perlin_y;
+    float mortar_noise_opacity; // depth
+
+    float aggregate_opacity; // col opacity?
+    float aggregate_height;
+    float aggregate_quantity;
+    float aggregate_scale_x;
+    float aggregate_scale_y;
+    float aggregate_scale_variation;
+    float aggregate_opactiy_variation;
+
+    float sobel_strength;
+    float occlusion_strength;
+
     float normals_format;
 	float texture_size;
 	float stage;
@@ -36,57 +67,59 @@ const vec2 sparse_perlin_size = vec2(4.0);
 const int sparse_perlin_iterations = 8;
 const float sparse_perlin_persistence = 0.5;
 
-const vec2 mortar_perlin_size = vec2(8.0, 32.0);
+// const vec2 mortar_perlin_size = vec2(8.0, 32.0);
 const int mortar_perlin_iterations = 10;
 const float mortar_perlin_persistence = 1.0;
 const float mortar_perlin_seed = 0.0;
 
 // Brick pattern
 const float fill_colour_seed = 0.0;
-const float rows = 10.0;
-const float columns = 4.0;
-const float brick_randomness = 1.0;
-const float mortar = 0.05;
-const float bevel = 0.05;
-const float rounding = 0.12;
-const float brick_pattern_seed =  0.841487825;
+// const float rows = 10.0;
+// const float columns = 4.0;
+// const float brick_randomness = 1.0;
+// const float mortar = 0.05;
+// const float bevel = 0.05;
+// const float rounding = 0.12;
+// const float brick_pattern_seed =  0.841487825;
 const vec4 brick_base_col = vec4(vec3(0.53), 1.0);
 
-const float stone_edge_slope_sigma = 3.0; // rename brick
-const float stone_surf_slope_sigma = 20.0;
-const float stone_surface_intensity = 0.4;
-const float stone_cracks_intensity = 0.3;
+// const float stone_edge_slope_sigma = 3.0; // rename brick
+// const float stone_surf_slope_sigma = 20.0;
+// const float stone_surface_intensity = 0.4;
+// const float stone_cracks_intensity = 0.3;
 
 vec4 bricks_col[4];
 float bricks_offset[4];
 
 
 // Cracks
-const vec2 cracks_voronoi_size = vec2(14.0);
+// const vec2 cracks_voronoi_size = vec2(14.0);
 const float cracks_voronoi_seed = 0.0;
 const float cracks_tone_value = 0.01;
 const float cracks_tone_width = 0.01;
-const float cracks_intensity = 0.4;
+// const float cracks_intensity = 0.4;
 
-// Stones & Mortar
-const vec2 stones_size = vec2(30, 40);
-const float stones_scale_variation = 0.3;
-const float stones_scale_x = 0.01;
-const float stones_scale_y = 0.01;
-const float stones_value_variation = 1.0;
+// Aggregate & Mortar
+// const vec2 stones_size = vec2(30, 40);
+// const float stones_scale_variation = 0.3;
+// const float stones_scale_x = 0.01;
+// const float stones_scale_y = 0.01;
+// const float stones_value_variation = 1.0;
+
 vec4 stones_col[3];
 float stones_offset[3];
 vec4 mortar_col[2];
 float mortar_offset[2];
-const float stones_opacity = 0.75;
-const float mortar_noise_opacity = 0.50;
-const float mortar_tone_value = 0.75;
+
+// const float stones_opacity = 1.0;
+// const float mortar_noise_opacity = 0.50;
+const float mortar_tone_value = 0.5;
 const float mortar_tone_width = 1.00;
 
 
 // ORM & Normal
-const float sobel_strength = 0.20;
-const float occlusion_strength = 40.0;
+// const float sobel_strength = 0.50;
+// const float occlusion_strength = 40.0;
 const float roughness_tone_value = 1.0;
 const float roughness_tone_width = 0.5;
 
@@ -291,7 +324,8 @@ float skewed_uneven_bricks(vec2 uv, vec2 size, float randomness, float mortar, f
 
 // Voronoi distances by Inigo Quilez - https://www.shadertoy.com/view/ldl3W8, https://www.youtube.com/c/InigoQuilez, https://iquilezles.org/
 // Faster Voronoi Edge Distance by Tomkh - https://www.shadertoy.com/view/llG3zy
-vec3 voronoi(vec2 x, vec2 size, float seed) {
+vec3 voronoi(vec2 x, float size, float seed) {
+    vec2 _size = vec2(size);
     vec2 n = floor(x);
     vec2 f = fract(x);
 
@@ -301,7 +335,7 @@ vec3 voronoi(vec2 x, vec2 size, float seed) {
     for( int i=-1; i<=1; i++ )
     {
         vec2 g = vec2(float(i),float(j));
-		vec2 o = hash_ws2(vec2(seed) + mod(n + g + size, size));
+		vec2 o = hash_ws2(vec2(seed) + mod(n + g + _size, _size));
         vec2 r = g + o - f;
         float d = dot(r,r);
 
@@ -317,7 +351,7 @@ vec3 voronoi(vec2 x, vec2 size, float seed) {
     for( int i=-1; i<=2; i++ )
     {
         vec2 g = mg + vec2(float(i),float(j));
-		vec2 o = hash_ws2(vec2(seed) + mod(n + g + size, size));
+		vec2 o = hash_ws2(vec2(seed) + mod(n + g + _size, _size));
 		vec2 r = g + o - f;
 
         if( dot(mr-r,mr-r)> 0.00001 ) // skip the same cell
@@ -371,7 +405,7 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 
 float stone(vec2 uv, float seed) {
     // Pseudo cellular noise - adapted from 'One Tweet Cellular Pattern - Shane. https://www.shadertoy.com/view/MdKXDD
-    vec2 cell_px = gl_GlobalInvocationID.xy * 1.4;
+    vec2 cell_px = gl_GlobalInvocationID.xy * 1.4 / dot(params.aggregate_scale_x, params.aggregate_scale_y);
     mat2 m = mat2(5, -5, 5, 5) * 0.1;
     float _seed = seed;
     float d = min(min(f(cell_px, _seed), f(cell_px * m, -_seed)), f(cell_px * m * m, _seed * 2.0));
@@ -386,6 +420,7 @@ float stone(vec2 uv, float seed) {
 vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
     float max_contribution = 0.0;
     float final_colour = 0.0;
+    float _scale_variation = params.aggregate_scale_variation / 2;
     
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
@@ -403,8 +438,8 @@ vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
             float angle = (rand_seed.x * 2.0 - 1.0) * 3.14159;
             mat2 rot_mat = mat2(cos(angle), sin(angle), -sin(angle), cos(angle));
             pv = rot_mat * pv;
-            pv *= (rand_seed.y - 0.5) * 2.0 * stones_scale_variation + 1.0;
-            pv /= vec2(stones_scale_x, stones_scale_y);
+            pv *= (rand_seed.y - 0.5) * 2.0 * _scale_variation + 1.0;
+            pv /= (vec2(params.aggregate_scale_x, params.aggregate_scale_y) / 100);
             pv += 0.5;
             
             // Skip if coord is out of bounds.
@@ -414,7 +449,7 @@ vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
             pv = clamp(pv, vec2(0.0), vec2(1.0));
             
             // Evaluate the stone pattern at this instance.
-            float tile_value = stone(pv, rand_seed.x) * (1.0 - stones_value_variation * rand_seed.x);
+            float tile_value = stone(pv, rand_seed.x) * (1.0 - params.aggregate_opactiy_variation * rand_seed.x);
             
             // Keep the instance if its contribution is highest so far.
             if (tile_value > max_contribution) {
@@ -490,13 +525,13 @@ vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) {
     ivec2 pixel_coords = ivec2(scaled_uv);
 
     // Fetch precomputed heightmap value
-    float v = imageLoad(sparse_perlin_buffer, pixel_coords).r;
+    float v = imageLoad(r16f_buffer_0, pixel_coords).r;
 
     // Compute slope using precomputed heightmap
     float dx = 1.0 / 1024;
     vec2 slope = vec2(
-        imageLoad(sparse_perlin_buffer, pixel_coords + ivec2(1, 0)).r - v,
-        imageLoad(sparse_perlin_buffer, pixel_coords + ivec2(0, 1)).r - v
+        imageLoad(r16f_buffer_0, pixel_coords + ivec2(1, 0)).r - v,
+        imageLoad(r16f_buffer_0, pixel_coords + ivec2(0, 1)).r - v
     );
 
     // Normalize slope
@@ -521,7 +556,7 @@ vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) {
             mask_value = imageLoad(r16f_buffer_1, offset_pixel).r;
         }
         if (idx == 1) {
-            mask_value = imageLoad(brick_dmg_perlin_buffer, offset_pixel).r;
+            mask_value = imageLoad(r16f_buffer_2, offset_pixel).r;
         }
 
         // Accumulate weighted mask
@@ -610,27 +645,29 @@ void main() {
 	vec2 _texture_size = vec2(params.texture_size);
 	vec2 uv = pixel / _texture_size;
 
+    float test_pattern;
+
     vec2 crack_warped_uv;
 
     if (params.stage == 0.0) { // Generate noise
         // General use sparse perlin
         float sparse_perlin = fbm_perlin_2d(uv, sparse_perlin_size, sparse_perlin_iterations, sparse_perlin_persistence, 0.0, seed.perlin_seed);
-        imageStore(sparse_perlin_buffer, ivec2(pixel), vec4(vec3(sparse_perlin), 1.0));
+        imageStore(r16f_buffer_0, ivec2(pixel), vec4(vec3(sparse_perlin), 1.0));
 
         // Mortar texture perlin
-        float mortar_perlin = fbm_perlin_2d(uv, mortar_perlin_size, mortar_perlin_iterations, mortar_perlin_persistence, 0.0, mortar_perlin_seed);
+        float mortar_perlin = fbm_perlin_2d(uv, vec2(params.mortar_perlin_x, params.mortar_perlin_y), mortar_perlin_iterations, mortar_perlin_persistence, 0.0, mortar_perlin_seed);
         mortar_perlin = clamp((mortar_perlin - 0.95) / 1.0 + 0.5, 0.0, 1.0);
         imageStore(r16f_buffer_1, ivec2(pixel), vec4(vec3(mortar_perlin), 1.0));
         
         // Brick shape perlin 
         float brick_damage_perlin = fbm_perlin_2d(uv, vec2(6.0, 20.0), 4, 0.5, 0.0, 0.0);
-        imageStore(brick_dmg_perlin_buffer, ivec2(pixel), vec4(vec3(brick_damage_perlin), 1.0));
+        imageStore(r16f_buffer_2, ivec2(pixel), vec4(vec3(brick_damage_perlin), 1.0));
 
         // Cracks voronoi
         crack_warped_uv = uv -= vec2(0.04 * (2.0 * sparse_perlin - 1.0));
-        vec3 cracks_voronoi = voronoi(cracks_voronoi_size.x * crack_warped_uv, cracks_voronoi_size, cracks_voronoi_seed);
+        vec3 cracks_voronoi = voronoi(params.cracks_voronoi_size * crack_warped_uv, 100.0, cracks_voronoi_seed);
         float cracks = clamp((cracks_voronoi.r - cracks_tone_value) / cracks_tone_width + 0.5, 0.0, 1.0);
-        
+
         imageStore(r16f_buffer_3, ivec2(pixel), vec4(vec3(cracks), 1.0));
         imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(0.0), 1.0));
     }
@@ -644,7 +681,7 @@ void main() {
         stones_offset[2] = 1.0;
 
         // Generate stone pattern and colour
-        vec2 stones = tile_stones(uv, stones_size, vec2(seed.stones_seed));
+        vec2 stones = tile_stones(uv, vec2(params.aggregate_quantity), vec2(seed.stones_seed));
         vec4 stones_colour = gradient_fct(stones.x, 0);
 
         mortar_col[0] = vec4(0.37, 0.37, 0.31, 1.0);
@@ -655,26 +692,26 @@ void main() {
         // Colour mortar noise and blend with stones
         float mortar_perlin = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
         vec4 mortar_colour = gradient_fct(mortar_perlin, 1);
-        float mortar_blend_opacity = stones.y * stones_opacity;
+        float mortar_blend_opacity = stones.y * params.aggregate_opacity;
         vec3 mortar_albedo = overlay(mortar_colour.rgb, stones_colour.rgb, mortar_blend_opacity);
         
         // Generate mortar roughness
-        float sparse_perlin = imageLoad(sparse_perlin_buffer, ivec2(pixel)).r;
-        float mortar_roughness_blend = add(mortar_perlin, sparse_perlin, 1.0);
+        float sparse_perlin = imageLoad(r16f_buffer_0, ivec2(pixel)).r;
+        float mortar_roughness_blend = add(mortar_perlin, sparse_perlin, params.mortar_noise_opacity);
         mortar_roughness_blend = clamp((mortar_roughness_blend - mortar_tone_value) / mortar_tone_width + 0.5, 0.0, 1.0);
-        float mortar_roughness = add(mortar_roughness_blend, stones.y, 0.5);
+        float mortar_roughness = add(mortar_roughness_blend, stones.y, params.aggregate_height);
 
         imageStore(orm_buffer, ivec2(pixel), vec4(vec3(mortar_roughness), 1.0));
         imageStore(rgba32f_buffer, ivec2(pixel), vec4(mortar_albedo, 1.0));
     }    
         
-    if (params.stage == 2.0) {
-        float brick_damage_perlin = imageLoad(brick_dmg_perlin_buffer, ivec2(pixel)).r;
+    if (params.stage == 2.0) { // TODO SORT PC ROLLBACKS
+        float brick_damage_perlin = imageLoad(r16f_buffer_2, ivec2(pixel)).r;
 
         // Brick pattern
         vec4 brick_fill;
         vec2 brick_damage_uv = uv -= vec2(0.015 * (2.0 * brick_damage_perlin - 1.0));
-        float brick_pattern = skewed_uneven_bricks(brick_damage_uv, vec2(columns, rows), brick_randomness, mortar, bevel, rounding, brick_pattern_seed, brick_fill);
+        float brick_pattern = skewed_uneven_bricks(brick_damage_uv, vec2(params.columns, params.rows), params.brick_randomness, params.mortar, params.bevel, params.rounding, seed.brick_pattern_seed, brick_fill);
         vec3 random_brick_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((fill_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
 
         // Cracks pattern, loaded into brick pattern transformed UVs
@@ -684,7 +721,7 @@ void main() {
         float cracks = imageLoad(r16f_buffer_3, transformed_pixel).r;
 
         // Blended to make sparse cracks pattern
-        float cracks_mask = map_bw_colours(brick_damage_perlin, cracks_intensity);
+        float cracks_mask = map_bw_colours(brick_damage_perlin, params.cracks_coverage);
         float cracks_lightened = lighten(cracks_mask, cracks);
         
         // Blend final mortar colour with base brick colour
@@ -698,14 +735,14 @@ void main() {
     if (params.stage == 3.0) {
         float pattern = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
 
-        vec4 stone_edge_blur = slope_blur(uv, stone_edge_slope_sigma, max(stone_edge_slope_sigma, 25.0), 0);
+        vec4 stone_edge_blur = slope_blur(uv, params.stone_edge_slope_sigma, max(params.stone_edge_slope_sigma, 25.0), 0);
         float stone_edge_wear = darken(stone_edge_blur.r, pattern);
 
-        vec4 stone_surf_blur = slope_blur(uv, stone_surf_slope_sigma, 50, 1);
-        float stone_surface_base = multiply(stone_surf_blur.r, stone_edge_wear, stone_surface_intensity);
+        vec4 stone_surf_blur = slope_blur(uv, params.stone_surf_slope_sigma, 50, 1);
+        float stone_surface_base = multiply(stone_surf_blur.r, stone_edge_wear, params.stone_surface_intensity);
 
         float cracks = imageLoad(rgba32f_buffer_2, ivec2(pixel)).a;
-        float stone_cracked_surface = multiply(cracks, stone_surface_base, stone_cracks_intensity);
+        float stone_cracked_surface = multiply(cracks, stone_surface_base, params.stone_cracks_intensity);
 
         float mortar_roughness = imageLoad(orm_buffer, ivec2(pixel)).r;
         float base_texture = normal(stone_cracked_surface, mortar_roughness, pattern); // base texture that normals, roughness and occlusion are created from
@@ -716,7 +753,7 @@ void main() {
 
     if (params.stage == 4.0) { // ORM
         float base_texture = imageLoad(rgba32f_buffer, ivec2(pixel)).r;
-        float blur = gaussian_blur(ivec2(pixel), occlusion_strength, 1);
+        float blur = gaussian_blur(ivec2(pixel), params.occlusion_strength, 1);
         float occlusion = 1.0 - clamped_difference(base_texture, blur);
         float roughness = 1.0 - clamp((base_texture - roughness_tone_value) / roughness_tone_width + 0.5, 0.0, 1.0);
 
@@ -726,7 +763,7 @@ void main() {
     }
 
     if (params.stage == 5.0) {
-        vec3 normals = sobel_filter(ivec2(pixel), sobel_strength, params.texture_size);
+        vec3 normals = sobel_filter(ivec2(pixel), (params.sobel_strength / 100), params.texture_size);
         
         if (params.normals_format == 0.0) {
             vec3 opengl_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
@@ -751,6 +788,7 @@ void main() {
         vec4 brick_base_mortar_albedo = imageLoad(rgba32f_buffer_2, ivec2(pixel));
         float brick_pattern = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
         vec3 albedo = normal(col.rgb, brick_base_mortar_albedo.rgb, brick_pattern * 0.5);
+
         imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
     }
 }
