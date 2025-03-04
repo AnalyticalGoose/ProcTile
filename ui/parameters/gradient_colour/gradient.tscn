@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://d18ju7bnukh46"]
 
-[ext_resource type="Script" path="res://ui/parameters/gradient_colour/gradient.gd" id="1_dbge8"]
+[ext_resource type="Script" uid="uid://dulio6wek5y30" path="res://ui/parameters/gradient_colour/gradient.gd" id="1_dbge8"]
 [ext_resource type="PackedScene" uid="uid://dd3ut6vm1aacl" path="res://ui/parameters/gradient_colour/gradient_control.tscn" id="2_66s8d"]
 [ext_resource type="PackedScene" uid="uid://coaqjyug65xd4" path="res://ui/parameters/colour_picker/colour_picker.tscn" id="3_o4ekc"]
 [ext_resource type="Texture2D" uid="uid://cxq0kdddlm40n" path="res://ui/icons/icon_hide.png" id="4_r4uxe"]

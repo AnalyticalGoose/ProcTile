@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://cgiow31lvkawx"]
 
 [ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh_settings/mesh_menu_theme.tres" id="1_u53sa"]
-[ext_resource type="Script" path="res://ui/menus/mesh_settings/mesh_settings.gd" id="2_4q6f7"]
+[ext_resource type="Script" uid="uid://2c4bi7nfb22f" path="res://ui/menus/mesh_settings/mesh_settings.gd" id="2_4q6f7"]
 [ext_resource type="ArrayMesh" uid="uid://cpgyb3ggvr0u" path="res://meshes/tile/tile.obj" id="3_me3wk"]
 [ext_resource type="ArrayMesh" uid="uid://y57363ump66u" path="res://meshes/tile/tile_bottom_cull.obj" id="5_ej1vp"]
 [ext_resource type="ArrayMesh" uid="uid://q2ey5ibvfm1i" path="res://meshes/tile/tile_back_cull.obj" id="5_mvhrn"]

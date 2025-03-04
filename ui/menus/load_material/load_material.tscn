@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://1grqiac6heen"]
 
-[ext_resource type="Script" path="res://ui/menus/load_material/load_material.gd" id="1_do0bf"]
+[ext_resource type="Script" uid="uid://dvtbs1p8chlhg" path="res://ui/menus/load_material/load_material.gd" id="1_do0bf"]
 
 [node name="LoadMaterial" type="FileDialog"]
 title = "Open a File"

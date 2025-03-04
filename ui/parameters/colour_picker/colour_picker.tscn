@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://coaqjyug65xd4"]
 
-[ext_resource type="Script" path="res://ui/parameters/colour_picker/colour_picker.gd" id="1_jq2d1"]
+[ext_resource type="Script" uid="uid://d3ir17574v5mf" path="res://ui/parameters/colour_picker/colour_picker.gd" id="1_jq2d1"]
 
 [node name="ColourPickerContainer" type="MarginContainer" node_paths=PackedStringArray("picker")]
 offset_right = 261.0

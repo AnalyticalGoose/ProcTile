@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dt85qd3mt5dxd"]
 
-[ext_resource type="Script" path="res://ui/menus/save_material/save_material.gd" id="1_ghnej"]
+[ext_resource type="Script" uid="uid://cjej808m8vscm" path="res://ui/menus/save_material/save_material.gd" id="1_ghnej"]
 
 [node name="SaveMaterial" type="FileDialog"]
 title = "Save Material"
