@@ -56,7 +56,6 @@ func setup_properties(
 		mesh_settings_instance = _mesh_settings_instance
 
 
-@warning_ignore("return_value_discarded")
 func export(export_template_data : Array[Array], type : TextureType, path: String) -> void:
 	basetextures = compute_shader.base_textures_rds
 	rd = compute_shader.rd
@@ -67,16 +66,19 @@ func export(export_template_data : Array[Array], type : TextureType, path: Strin
 
 	for task : Array in export_template_data:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_texture_export.bind(
 				task[0], task[1], path + "/" + texture_name + task[2], thread))
 	
 	if export_mesh:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_mesh_export.bind(path + "/" + texture_name, thread))
 
 
 func _threaded_texture_export(texture_index: int, format: Image.Format, path_name: String, thread : Thread) -> void:
 	var texture_data: PackedByteArray = rd.texture_get_data(basetextures[texture_index], 0)
+	
 	var texture: Image = Image.create_from_data(shader_resolution, shader_resolution, false, format, texture_data)
 	
 	if interpolate_export:
