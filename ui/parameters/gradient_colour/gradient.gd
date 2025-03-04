@@ -356,6 +356,12 @@ func _connect_control_signals(control : ParamGradientControl) -> void:
 
 
 func _setup_gradient() -> void:
+	# Prevent multiple instances from sharing texture
+	var gradient_texture : GradientTexture2D = GradientTexture2D.new()
+	gradient_texture.set_width(250)
+	gradient_texture.set_height(20)
+	gradient_texture_rect.set_texture(gradient_texture)
+	
 	_gradient.set_offsets(_position_data)
 	_gradient.set_colors(colour_data)
 	_gradient_texture = gradient_texture_rect.texture

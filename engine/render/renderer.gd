@@ -59,7 +59,7 @@ func set_shader_material(shader_data : Array, shader_path : String) -> void:
 	compute_shader.normal = shader_material.get_shader_parameter("normal_input")
 	
 	RenderingServer.call_on_render_thread(compute_shader.set_texture_rids)
-	
+#	
 	set_process(true)
 
 
