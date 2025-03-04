@@ -43,11 +43,6 @@ var _group_size : int # x & y local_size groups of shader
 var _max_stage : float
 
 
-#var _base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
-#var buffer_sets : Array[RID]
-
-
-@warning_ignore("return_value_discarded")
 func init_compute(init_data : Array, texture_size : int, shader_path : String) -> void:
 	rd = RenderingServer.get_rendering_device()
 	_max_stage = init_data[0][0]
@@ -92,9 +87,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var num_image_buffers : int = image_buffer_textures.size() 
 	
 	_buffer_rds.resize(num_image_buffers)
-	#buffer_sets.resize(num_image_buffers)
 	_buffer_rds.fill(RID())
-	#buffer_sets.fill(RID())
 	
 	for i : int in num_image_buffers:
 		var buffer_tf : RDTextureFormat
