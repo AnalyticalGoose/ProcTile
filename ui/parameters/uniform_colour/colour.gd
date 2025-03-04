@@ -17,10 +17,10 @@ var buffer_set : int
 var undo_redo_colour : Color
 
 
-@warning_ignore("unsafe_call_argument")
 func setup_properties(data : Array) -> void:
 	label.text = data[1]
 	var colour_data : Array = data[2]
+	@warning_ignore("unsafe_call_argument")
 	var colour : Color = Color(colour_data[0], colour_data[1], colour_data[2])
 	undo_redo_colour = colour
 	colour_preview.color = colour

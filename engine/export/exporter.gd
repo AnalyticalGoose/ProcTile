@@ -31,6 +31,15 @@ var export_progress : int = 0:
 		export_progress = val
 		export_window.progress_update(export_progress)
 
+var texture_data : Array[PackedByteArray] = [
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([])
+											]
+
 
 func setup_properties(
 		_compute_shader : ComputeShader, 
@@ -56,7 +65,6 @@ func setup_properties(
 		mesh_settings_instance = _mesh_settings_instance
 
 
-@warning_ignore("return_value_discarded")
 func export(export_template_data : Array[Array], type : TextureType, path: String) -> void:
 	basetextures = compute_shader.base_textures_rds
 	rd = compute_shader.rd
@@ -67,17 +75,28 @@ func export(export_template_data : Array[Array], type : TextureType, path: Strin
 
 	for task : Array in export_template_data:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_texture_export.bind(
 				task[0], task[1], path + "/" + texture_name + task[2], thread))
 	
 	if export_mesh:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_mesh_export.bind(path + "/" + texture_name, thread))
 
 
 func _threaded_texture_export(texture_index: int, format: Image.Format, path_name: String, thread : Thread) -> void:
-	var texture_data: PackedByteArray = rd.texture_get_data(basetextures[texture_index], 0)
-	var texture: Image = Image.create_from_data(shader_resolution, shader_resolution, false, format, texture_data)
+	#var texture_data: PackedByteArray = rd.texture_get_data(basetextures[texture_index], 0)
+	
+	#RenderingServer.call_on_render_thread(
+		#rd.texture_get_data_async.bind(basetextures[texture_index], 0, _texture_get_data_callback.bind(texture_index))
+	#)
+	RenderingServer.call_on_render_thread(_get_texture_data.bind(basetextures[texture_index], texture_index))
+	
+	while texture_data[texture_index].size() != 134217728:
+		pass
+	
+	var texture: Image = Image.create_from_data(shader_resolution, shader_resolution, false, format, texture_data[texture_index])
 	
 	if interpolate_export:
 		texture.resize(export_resolution, export_resolution, interpolation_type)
@@ -105,3 +124,11 @@ func _threaded_mesh_export(path_name: String, thread : Thread) -> void:
 func _on_thread_completed(thread : Thread) -> void:
 	thread.wait_to_finish()
 	export_progress += progress_tick_val
+
+
+#func _texture_get_data_callback(array : PackedByteArray, texture_index : int) -> void:
+	#print(texture_index, array.size())
+	#texture_data[texture_index] = array
+
+func _get_texture_data(texture : RID, index : int) -> void:
+	texture_data[index] = rd.texture_get_data(texture, 0)

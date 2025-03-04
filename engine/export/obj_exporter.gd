@@ -85,5 +85,7 @@ static func export_obj(surface_array: Array, file_path: String) -> void:
 	if not dest_file:
 		Logger.call_deferred("puts_error", "Failed to create destination file: %s" % dest_path)
 		return
+
+	@warning_ignore("return_value_discarded")
 	dest_file.store_string(output)
 	dest_file.close()

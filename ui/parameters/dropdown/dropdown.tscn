@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://coiefeptq306s"]
 
-[ext_resource type="Script" path="res://ui/parameters/dropdown/dropdown.gd" id="1_irlgr"]
+[ext_resource type="Script" uid="uid://cblhi5cj6ngdf" path="res://ui/parameters/dropdown/dropdown.gd" id="1_irlgr"]
 
 [node name="Dropdown" type="VBoxContainer" node_paths=PackedStringArray("label", "option_button")]
 offset_right = 40.0

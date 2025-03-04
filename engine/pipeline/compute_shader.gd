@@ -42,12 +42,7 @@ var _push_constant_stage_index : int # idx of 'stage' var in pc, changes per sha
 var _group_size : int # x & y local_size groups of shader
 var _max_stage : float
 
-
-#var _base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
-#var buffer_sets : Array[RID]
-
-
-@warning_ignore("return_value_discarded")
+@warning_ignore_start("return_value_discarded")
 func init_compute(init_data : Array, texture_size : int, shader_path : String) -> void:
 	rd = RenderingServer.get_rendering_device()
 	_max_stage = init_data[0][0]
@@ -92,9 +87,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var num_image_buffers : int = image_buffer_textures.size() 
 	
 	_buffer_rds.resize(num_image_buffers)
-	#buffer_sets.resize(num_image_buffers)
 	_buffer_rds.fill(RID())
-	#buffer_sets.fill(RID())
 	
 	for i : int in num_image_buffers:
 		var buffer_tf : RDTextureFormat
@@ -135,7 +128,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 			storage_type.VEC4:
 				var colour_data : Array = []
 				for rgb : Array in buffer_data:
-					@warning_ignore("unsafe_call_argument", "return_value_discarded")
+					@warning_ignore("unsafe_call_argument")
 					var colour : Color = Color(rgb[0], rgb[1], rgb[2])
 					colour_data.append(colour)
 				packed_data = PackedColorArray(colour_data).to_byte_array()
@@ -175,7 +168,6 @@ func rebuild_storage_buffer(index : int, u_set : int, data : Array) -> void:
 	_uniform_sets[index] = rd.uniform_set_create([uniform_block], shader, u_set)
 
 
-@warning_ignore("return_value_discarded")
 func _create_push_constant(push_constant_data : Array, texture_size : int) -> PackedFloat32Array:
 	var _push_constant : PackedFloat32Array = PackedFloat32Array(push_constant_data)
 	_push_constant.push_back(0.0) # normals type, always needs to start as OpenGL for Godot, only changes on export
@@ -194,7 +186,6 @@ func _create_push_constant(push_constant_data : Array, texture_size : int) -> Pa
 	return _push_constant
 
 
-@warning_ignore("return_value_discarded")
 func _render_process() -> void:
 	push_constant.set(_push_constant_stage_index, stage)
 
@@ -215,3 +206,5 @@ func _render_process() -> void:
 
 	rd.compute_list_dispatch(compute_list, _group_size, _group_size, 1)
 	rd.compute_list_end()
+
+@warning_ignore_restore("return_value_discarded")

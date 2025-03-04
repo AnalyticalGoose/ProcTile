@@ -117,7 +117,7 @@ func change_colour(col : Color) -> void:
 	compute_shader.stage = dependant_stage
 
 
-@warning_ignore("return_value_discarded")
+@warning_ignore_start("return_value_discarded")
 func create_control(px_position : float, create_with_col : bool = false, col : Color = Color(0.0, 0.0, 0.0)) -> void:
 	var new_control : ParamGradientControl = _gradient_control_scene.instantiate() as ParamGradientControl
 	var normalised_position : float = px_position / container_width
@@ -334,7 +334,6 @@ func _on_offset_changed(index : int, pos : float) -> void:
 func _create_colour_picker() -> void:
 	colour_picker = _colour_picker_scene.instantiate() as ParamColourPicker
 	colour_picker.set_colour(preview_colour)
-	@warning_ignore("return_value_discarded")
 	colour_picker.col_picked.connect(_on_colour_picked)
 	colour_preview.add_sibling(colour_picker) # add node between preview & spacer
 	_unblock_hue_slider_filter()
@@ -347,7 +346,6 @@ func _unblock_hue_slider_filter() -> void:
 	(node.get_child(2, true) as Control).mouse_filter = MOUSE_FILTER_PASS
 
 
-@warning_ignore("return_value_discarded")
 func _connect_control_signals(control : ParamGradientControl) -> void:
 	control.selected.connect(_on_control_selected.bind(control))
 	control.deleted.connect(_on_control_deleted.bind(control))
@@ -378,8 +376,10 @@ func _recalculate_control_indexes() -> void:
 
 func _convert_to_colours(raw_colour_data : Array) -> Array:
 	for rgb : Array in raw_colour_data:
-		@warning_ignore("unsafe_call_argument", "return_value_discarded")
+		@warning_ignore("unsafe_call_argument")
 		var colour : Color = Color(rgb[0], rgb[1], rgb[2])
 		colour_data.append(colour)
 	return colour_data
 #endregion
+
+@warning_ignore_restore("return_value_discarded")

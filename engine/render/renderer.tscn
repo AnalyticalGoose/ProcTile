@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=3 uid="uid://5heo5h26pf75"]
 
-[ext_resource type="Script" path="res://engine/render/renderer.gd" id="1_11juy"]
-[ext_resource type="Shader" path="res://engine/pipeline/material_shader.gdshader" id="2_frhbj"]
+[ext_resource type="Script" uid="uid://cahip7lb0or6m" path="res://engine/render/renderer.gd" id="1_11juy"]
+[ext_resource type="Shader" uid="uid://b6lqbd4hn8ob5" path="res://engine/pipeline/material_shader.gdshader" id="2_frhbj"]
 [ext_resource type="ArrayMesh" uid="uid://cpgyb3ggvr0u" path="res://meshes/tile/tile.obj" id="3_8fw8p"]
 [ext_resource type="Texture2D" uid="uid://nr8rjtj3cian" path="res://engine/render/hdri/portland_landing_pad_1k.hdr" id="4_ykixy"]
 
@@ -19,12 +19,13 @@
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_frhbj")
-shader_parameter/texture_3D = true
 shader_parameter/albedo_input = SubResource("Texture2DRD_h5fst")
 shader_parameter/occlusion_input = SubResource("Texture2DRD_u8qvg")
 shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
 shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
 shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
+shader_parameter/placeholder_texture = true
+shader_parameter/texture_3D = true
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_p2h4v"]
 panorama = ExtResource("4_ykixy")
