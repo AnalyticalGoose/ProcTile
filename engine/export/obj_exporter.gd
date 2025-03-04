@@ -86,9 +86,6 @@ static func export_obj(surface_array: Array, file_path: String) -> void:
 		Logger.call_deferred("puts_error", "Failed to create destination file: %s" % dest_path)
 		return
 
-	var test : bool = dest_file.store_string(output)
-	print(test)
-	if test:
-		Logger.puts_error("Stored string empty, OBJ saving failed.")
-		
+	@warning_ignore("return_value_discarded")
+	dest_file.store_string(output)
 	dest_file.close()
