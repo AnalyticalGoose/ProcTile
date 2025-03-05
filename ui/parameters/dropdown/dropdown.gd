@@ -17,9 +17,11 @@ func setup_properties(data : Array) -> void:
 	
 	var popup_menu : PopupMenu = option_button.get_popup()
 	var dropdown_items : Array = data[2]
-	for i : int in dropdown_items.size():
-		option_button.add_item(dropdown_items[i])
+	var i : int = 0
+	for item : String in dropdown_items:
+		option_button.add_item(item)
 		popup_menu.set_item_as_radio_checkable(i, false)
+		i += 1
 
 
 func set_dropdown_option(index : int) -> void:

@@ -43,11 +43,6 @@ var _group_size : int # x & y local_size groups of shader
 var _max_stage : float
 
 
-#var _base_texture_sets : Array[RID] = [RID(), RID(), RID(), RID(), RID()]
-#var buffer_sets : Array[RID]
-
-
-@warning_ignore("return_value_discarded")
 func init_compute(init_data : Array, texture_size : int, shader_path : String) -> void:
 	rd = RenderingServer.get_rendering_device()
 	_max_stage = init_data[0][0]
@@ -91,10 +86,9 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	var image_buffer_textures : Array = init_data[2]
 	var num_image_buffers : int = image_buffer_textures.size() 
 	
+	@warning_ignore_start("return_value_discarded")
 	_buffer_rds.resize(num_image_buffers)
-	#buffer_sets.resize(num_image_buffers)
 	_buffer_rds.fill(RID())
-	#buffer_sets.fill(RID())
 	
 	for i : int in num_image_buffers:
 		var buffer_tf : RDTextureFormat
@@ -120,6 +114,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 	
 	_uniform_rds.resize(num_storage_buffers)
 	_uniform_sets.resize(num_storage_buffers)
+	@warning_ignore_restore("return_value_discarded")
 	_uniform_rds.fill(RID())
 	_uniform_sets.fill(RID())
 	
@@ -135,7 +130,7 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 			storage_type.VEC4:
 				var colour_data : Array = []
 				for rgb : Array in buffer_data:
-					@warning_ignore("unsafe_call_argument", "return_value_discarded")
+					@warning_ignore("unsafe_call_argument")
 					var colour : Color = Color(rgb[0], rgb[1], rgb[2])
 					colour_data.append(colour)
 				packed_data = PackedColorArray(colour_data).to_byte_array()
@@ -175,9 +170,10 @@ func rebuild_storage_buffer(index : int, u_set : int, data : Array) -> void:
 	_uniform_sets[index] = rd.uniform_set_create([uniform_block], shader, u_set)
 
 
-@warning_ignore("return_value_discarded")
+
 func _create_push_constant(push_constant_data : Array, texture_size : int) -> PackedFloat32Array:
 	var _push_constant : PackedFloat32Array = PackedFloat32Array(push_constant_data)
+	@warning_ignore_start("return_value_discarded")
 	_push_constant.push_back(0.0) # normals type, always needs to start as OpenGL for Godot, only changes on export
 	_push_constant.push_back(texture_size)
 	_push_constant.push_back(stage)
@@ -189,12 +185,12 @@ func _create_push_constant(push_constant_data : Array, texture_size : int) -> Pa
 		var bytes_needed : int = (16 - (push_constant_size * 4 % 16))
 		for i : int in (bytes_needed / 4.0):
 			_push_constant.push_back(0.0)
+			@warning_ignore_restore("return_value_discarded")
 			push_constant_padding += 1
 			
 	return _push_constant
 
 
-@warning_ignore("return_value_discarded")
 func _render_process() -> void:
 	push_constant.set(_push_constant_stage_index, stage)
 

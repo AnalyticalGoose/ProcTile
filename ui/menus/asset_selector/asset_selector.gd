@@ -14,11 +14,11 @@ var asset_preview : AssetPreview
 var preview_open : bool = false
 
 
-@warning_ignore("return_value_discarded")
 func _ready() -> void:
 	asset_btns = get_children()
 	for i : int in asset_btns.size():
 		var button : Button = asset_btns[i]
+		@warning_ignore_start("return_value_discarded")
 		button.pressed.connect(_on_asset_selected.bind(i, button))
 		button.mouse_entered.connect(_on_mouse_entered.bind(i))
 		button.mouse_exited.connect(_on_mouse_exited)
@@ -33,6 +33,7 @@ func _ready() -> void:
 	close_preview_timer.wait_time = 0.3
 	close_preview_timer.set_one_shot(true)
 	close_preview_timer.timeout.connect(_on_close_preview_timer_timeout)
+	@warning_ignore_restore("return_value_discarded")
 	add_child(close_preview_timer)
 	
 	asset_preview = asset_preview_scene.instantiate()

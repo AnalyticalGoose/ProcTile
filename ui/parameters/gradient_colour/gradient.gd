@@ -117,7 +117,6 @@ func change_colour(col : Color) -> void:
 	compute_shader.stage = dependant_stage
 
 
-@warning_ignore("return_value_discarded")
 func create_control(px_position : float, create_with_col : bool = false, col : Color = Color(0.0, 0.0, 0.0)) -> void:
 	var new_control : ParamGradientControl = _gradient_control_scene.instantiate() as ParamGradientControl
 	var normalised_position : float = px_position / container_width
@@ -138,9 +137,11 @@ func create_control(px_position : float, create_with_col : bool = false, col : C
 	
 	# Insert the new data into the storage arrays
 	_gradient.add_point(normalised_position, sampled_col)
+	@warning_ignore_start("return_value_discarded")
 	colour_data.insert(index, sampled_col)
 	_position_data.insert(index, normalised_position)
 	control_nodes.insert(index, new_control)
+	@warning_ignore_restore("return_value_discarded")
 	
 	_recalculate_control_indexes()
 	
@@ -339,6 +340,7 @@ func _create_colour_picker() -> void:
 	colour_preview.add_sibling(colour_picker) # add node between preview & spacer
 	_unblock_hue_slider_filter()
 
+
 # By default, the native ColorPicker node's inbuilt hue slider has its mouse filter set to block
 func _unblock_hue_slider_filter() -> void:
 	var node : Control = colour_picker
@@ -347,12 +349,13 @@ func _unblock_hue_slider_filter() -> void:
 	(node.get_child(2, true) as Control).mouse_filter = MOUSE_FILTER_PASS
 
 
-@warning_ignore("return_value_discarded")
 func _connect_control_signals(control : ParamGradientControl) -> void:
+	@warning_ignore_start("return_value_discarded")
 	control.selected.connect(_on_control_selected.bind(control))
 	control.deleted.connect(_on_control_deleted.bind(control))
 	control.offset_changed.connect(_on_offset_changed)
 	control.bounds_changed.connect(_on_bounds_changed)
+	@warning_ignore_restore("return_value_discarded")
 
 
 func _setup_gradient() -> void:
@@ -378,7 +381,7 @@ func _recalculate_control_indexes() -> void:
 
 func _convert_to_colours(raw_colour_data : Array) -> Array:
 	for rgb : Array in raw_colour_data:
-		@warning_ignore("unsafe_call_argument", "return_value_discarded")
+		@warning_ignore("unsafe_call_argument")
 		var colour : Color = Color(rgb[0], rgb[1], rgb[2])
 		colour_data.append(colour)
 	return colour_data

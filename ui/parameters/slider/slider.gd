@@ -14,15 +14,16 @@ var dependant_stage : int
 var slider_val : float
 
 
-@warning_ignore("unsafe_call_argument")
 func setup_properties(data : Array) -> void:
 	slider_label.set_text(str(data[1]))
+	@warning_ignore_start("unsafe_call_argument")
 	slider.set_min(data[2])
 	slider.set_max(data[3])
 	slider.set_step(data[4])
 	slider.set_value_no_signal(data[5])
 	slider_val = data[5]
 	slider.set_use_rounded_values(data[6])
+	@warning_ignore_restore("unsafe_call_argument")
 	slider_value.set_text(str(data[5]))
 	dependant_stage = data[7]
 	push_constant_index = data[8]
