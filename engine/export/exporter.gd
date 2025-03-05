@@ -31,6 +31,15 @@ var export_progress : int = 0:
 		export_progress = val
 		export_window.progress_update(export_progress)
 
+var texture_data : Array[PackedByteArray] = [
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([]), 
+												PackedByteArray([])
+											]
+
 
 func setup_properties(
 		_compute_shader : ComputeShader, 
@@ -67,11 +76,13 @@ func export(export_template_data : Array[Array], type : TextureType, path: Strin
 
 	for task : Array in export_template_data:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_texture_export.bind(
 				task[0], task[1], path + "/" + texture_name + task[2], thread))
 	
 	if export_mesh:
 		var thread : Thread = Thread.new()
+		@warning_ignore("return_value_discarded")
 		thread.start(_threaded_mesh_export.bind(path + "/" + texture_name, thread))
 
 
