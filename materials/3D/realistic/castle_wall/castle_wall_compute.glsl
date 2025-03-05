@@ -12,18 +12,51 @@ layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
+// Reusing buffers was giving me Ebola, so... fuck it, everyone gets their own buffer.
+// Condensing these is a problem for future me.
 layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_0;
-layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1; // mortar perlin, brick pattern
+layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1;
 layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_2;
-layout(r16f, set = 1, binding = 3) uniform image2D r16f_buffer_3; // cracks, stone surface
-layout(rgba32f, set = 1, binding = 4) uniform image2D rgba32f_buffer; 
-layout(rgba32f, set = 1, binding = 5) uniform image2D rgba32f_buffer_2;
+layout(r16f, set = 1, binding = 3) uniform image2D r16f_buffer_3;
+layout(r16f, set = 1, binding = 4) uniform image2D r16f_buffer_4;
+layout(r16f, set = 1, binding = 5) uniform image2D r16f_buffer_5;
+layout(r16f, set = 1, binding = 6) uniform image2D r16f_buffer_6;
+layout(r16f, set = 1, binding = 7) uniform image2D r16f_buffer_7;
+layout(rgba32f, set = 1, binding = 8) uniform image2D rgba32f_buffer; 
+layout(rgba32f, set = 1, binding = 9) uniform image2D rgba32f_buffer_2;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
 	float brick_pattern_seed;
     float perlin_seed;
     float stones_seed;
+    float mortar_perlin_seed;
+    float cracks_voronoi_seed;
+
 } seed;
+
+layout(set = 3, binding = 0, std430) buffer readonly StoneOffsets {
+    float stone_offsets[];
+};
+
+layout(set = 4, binding = 0, std430) buffer readonly StoneColours {
+    vec4 stone_col[];
+};
+
+layout(set = 5, binding = 0, std430) buffer readonly AggregateOffsets {
+    float aggregate_offsets[];
+};
+
+layout(set = 6, binding = 0, std430) buffer readonly AggregateColours {
+    vec4 aggregate_col[];
+};
+
+layout(set = 7, binding = 0, std430) buffer readonly MortarOffsets {
+    float mortar_offsets[];
+};
+
+layout(set = 8, binding = 0, std430) buffer readonly MortarColours {
+    vec4 mortar_col[];
+};
 
 layout(push_constant, std430) uniform restrict readonly Params {
 	float rows;
@@ -32,19 +65,15 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float mortar;
 	float bevel;
 	float rounding;
-
     float stone_edge_slope_sigma;
     float stone_surf_slope_sigma;
     float stone_surface_intensity;
     float stone_cracks_intensity;
-
     float cracks_voronoi_size;
     float cracks_coverage;
-
     float mortar_perlin_x;
     float mortar_perlin_y;
     float mortar_noise_opacity; // depth
-
     float aggregate_opacity; // col opacity?
     float aggregate_height;
     float aggregate_quantity;
@@ -52,10 +81,8 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float aggregate_scale_y;
     float aggregate_scale_variation;
     float aggregate_opactiy_variation;
-
     float sobel_strength;
     float occlusion_strength;
-
     float normals_format;
 	float texture_size;
 	float stage;
@@ -67,59 +94,24 @@ const vec2 sparse_perlin_size = vec2(4.0);
 const int sparse_perlin_iterations = 8;
 const float sparse_perlin_persistence = 0.5;
 
-// const vec2 mortar_perlin_size = vec2(8.0, 32.0);
 const int mortar_perlin_iterations = 10;
 const float mortar_perlin_persistence = 1.0;
-const float mortar_perlin_seed = 0.0;
+// const float mortar_perlin_seed = 0.0;
 
 // Brick pattern
-const float fill_colour_seed = 0.0;
-// const float rows = 10.0;
-// const float columns = 4.0;
-// const float brick_randomness = 1.0;
-// const float mortar = 0.05;
-// const float bevel = 0.05;
-// const float rounding = 0.12;
-// const float brick_pattern_seed =  0.841487825;
+// const float fill_colour_seed = 0.0;
 const vec4 brick_base_col = vec4(vec3(0.53), 1.0);
 
-// const float stone_edge_slope_sigma = 3.0; // rename brick
-// const float stone_surf_slope_sigma = 20.0;
-// const float stone_surface_intensity = 0.4;
-// const float stone_cracks_intensity = 0.3;
-
-vec4 bricks_col[4];
-float bricks_offset[4];
-
-
 // Cracks
-// const vec2 cracks_voronoi_size = vec2(14.0);
-const float cracks_voronoi_seed = 0.0;
+// const float cracks_voronoi_seed = 0.0;
 const float cracks_tone_value = 0.01;
 const float cracks_tone_width = 0.01;
-// const float cracks_intensity = 0.4;
 
-// Aggregate & Mortar
-// const vec2 stones_size = vec2(30, 40);
-// const float stones_scale_variation = 0.3;
-// const float stones_scale_x = 0.01;
-// const float stones_scale_y = 0.01;
-// const float stones_value_variation = 1.0;
-
-vec4 stones_col[3];
-float stones_offset[3];
-vec4 mortar_col[2];
-float mortar_offset[2];
-
-// const float stones_opacity = 1.0;
-// const float mortar_noise_opacity = 0.50;
+// Aggregate
 const float mortar_tone_value = 0.5;
 const float mortar_tone_width = 1.00;
 
-
 // ORM & Normal
-// const float sobel_strength = 0.50;
-// const float occlusion_strength = 40.0;
 const float roughness_tone_value = 1.0;
 const float roughness_tone_width = 0.5;
 
@@ -465,30 +457,30 @@ vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
 
 vec4 gradient_fct(float x, int gradient) {
 
-    if (gradient == 0) { // stones colour
-        int count = int(stones_col.length());
-        if (x < stones_offset[0]) {
-            return stones_col[0];
+    if (gradient == 0) { // aggregate colour
+        int count = int(aggregate_col.length());
+        if (x < aggregate_offsets[0]) {
+            return aggregate_col[0];
         }
         for (int i = 1; i < count; i++) {
-            if (x < stones_offset[i]) {
-                float range = stones_offset[i] - stones_offset[i - 1];
-                float factor = (x - stones_offset[i - 1]) / range;
-                return mix(stones_col[i - 1], stones_col[i], factor);
+            if (x < aggregate_offsets[i]) {
+                float range = aggregate_offsets[i] - aggregate_offsets[i - 1];
+                float factor = (x - aggregate_offsets[i - 1]) / range;
+                return mix(aggregate_col[i - 1], aggregate_col[i], factor);
             }
         }
-        return stones_col[count - 1];
+        return aggregate_col[count - 1];
     }
 
     if (gradient == 1) { // mortar colour
         int count = int(mortar_col.length());
-        if (x < mortar_offset[0]) {
+        if (x < mortar_offsets[0]) {
             return mortar_col[0];
         }
         for (int i = 1; i < count; i++) {
-            if (x < mortar_offset[i]) {
-                float range = mortar_offset[i] - mortar_offset[i - 1];
-                float factor = (x - mortar_offset[i - 1]) / range;
+            if (x < mortar_offsets[i]) {
+                float range = mortar_offsets[i] - mortar_offsets[i - 1];
+                float factor = (x - mortar_offsets[i - 1]) / range;
                 return mix(mortar_col[i - 1], mortar_col[i], factor);
             }
         }
@@ -496,18 +488,18 @@ vec4 gradient_fct(float x, int gradient) {
     }
 
     if (gradient == 2) { // Brick colour
-        int count = int(bricks_col.length());
-        if (x < bricks_offset[0]) {
-            return bricks_col[0];
+        int count = int(stone_col.length());
+        if (x < stone_offsets[0]) {
+            return stone_col[0];
         }
         for (int i = 1; i < count; i++) {
-            if (x < bricks_offset[i]) {
-                float range = bricks_offset[i] - bricks_offset[i - 1];
-                float factor = (x - bricks_offset[i - 1]) / range;
-                return mix(bricks_col[i - 1], bricks_col[i], factor);
+            if (x < stone_offsets[i]) {
+                float range = stone_offsets[i] - stone_offsets[i - 1];
+                float factor = (x - stone_offsets[i - 1]) / range;
+                return mix(stone_col[i - 1], stone_col[i], factor);
             }
         }
-        return bricks_col[count - 1];
+        return stone_col[count - 1];
     }
 }
 
@@ -553,7 +545,7 @@ vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) {
 
         float mask_value;
         if (idx == 0) {
-            mask_value = imageLoad(r16f_buffer_1, offset_pixel).r;
+            mask_value = imageLoad(r16f_buffer_5, offset_pixel).r;
         }
         if (idx == 1) {
             mask_value = imageLoad(r16f_buffer_2, offset_pixel).r;
@@ -575,14 +567,14 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     vec2 rv = vec2(0.0);
 
     // Apply Sobel-like filter to compute gradient
-    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, e.y)).r;
-    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, e.y)).r;
-    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, -e.y)).r;
-    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, -e.y)).r;
-    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(2, 0)).r;
-    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(2, 0)).r;
-    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(0, 2)).r;
-    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(0, 2)).r;
+    rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_7, pixel_coords + ivec2(e.x, e.y)).r;
+    rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_7, pixel_coords - ivec2(e.x, e.y)).r;
+    rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_7, pixel_coords + ivec2(e.x, -e.y)).r;
+    rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_7, pixel_coords - ivec2(e.x, -e.y)).r;
+    rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_7, pixel_coords + ivec2(2, 0)).r;
+    rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_7, pixel_coords - ivec2(2, 0)).r;
+    rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_7, pixel_coords + ivec2(0, 2)).r;
+    rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_7, pixel_coords - ivec2(0, 2)).r;
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -597,10 +589,10 @@ float sample_bilinear(ivec2 base_coord, vec2 offset) {
     ivec2 ip = ivec2(floor(p));
     vec2 f = fract(p);
     // Load the four neighboring pixels.
-    float a = imageLoad(rgba32f_buffer, ip).r;
-    float b = imageLoad(rgba32f_buffer, ip + ivec2(1, 0)).r;
-    float c = imageLoad(rgba32f_buffer, ip + ivec2(0, 1)).r;
-    float d = imageLoad(rgba32f_buffer, ip + ivec2(1, 1)).r;
+    float a = imageLoad(r16f_buffer_7, ip).r;
+    float b = imageLoad(r16f_buffer_7, ip + ivec2(1, 0)).r;
+    float c = imageLoad(r16f_buffer_7, ip + ivec2(0, 1)).r;
+    float d = imageLoad(r16f_buffer_7, ip + ivec2(1, 1)).r;
     // Bilinear mix.
     float lerp1 = mix(a, b, f.x);
     float lerp2 = mix(c, d, f.x);
@@ -644,9 +636,6 @@ void main() {
 	vec2 pixel = gl_GlobalInvocationID.xy;
 	vec2 _texture_size = vec2(params.texture_size);
 	vec2 uv = pixel / _texture_size;
-
-    float test_pattern;
-
     vec2 crack_warped_uv;
 
     if (params.stage == 0.0) { // Generate noise
@@ -655,7 +644,7 @@ void main() {
         imageStore(r16f_buffer_0, ivec2(pixel), vec4(vec3(sparse_perlin), 1.0));
 
         // Mortar texture perlin
-        float mortar_perlin = fbm_perlin_2d(uv, vec2(params.mortar_perlin_x, params.mortar_perlin_y), mortar_perlin_iterations, mortar_perlin_persistence, 0.0, mortar_perlin_seed);
+        float mortar_perlin = fbm_perlin_2d(uv, vec2(params.mortar_perlin_x, params.mortar_perlin_y), mortar_perlin_iterations, mortar_perlin_persistence, 0.0, seed.mortar_perlin_seed);
         mortar_perlin = clamp((mortar_perlin - 0.95) / 1.0 + 0.5, 0.0, 1.0);
         imageStore(r16f_buffer_1, ivec2(pixel), vec4(vec3(mortar_perlin), 1.0));
         
@@ -665,7 +654,7 @@ void main() {
 
         // Cracks voronoi
         crack_warped_uv = uv -= vec2(0.04 * (2.0 * sparse_perlin - 1.0));
-        vec3 cracks_voronoi = voronoi(params.cracks_voronoi_size * crack_warped_uv, 100.0, cracks_voronoi_seed);
+        vec3 cracks_voronoi = voronoi(params.cracks_voronoi_size * crack_warped_uv, 100.0, seed.cracks_voronoi_seed);
         float cracks = clamp((cracks_voronoi.r - cracks_tone_value) / cracks_tone_width + 0.5, 0.0, 1.0);
 
         imageStore(r16f_buffer_3, ivec2(pixel), vec4(vec3(cracks), 1.0));
@@ -673,21 +662,9 @@ void main() {
     }
 
     if (params.stage == 1.0) { // Mortar
-        stones_col[0] = vec4(0.56, 0.56, 0.56, 1.0);
-        stones_col[1] = vec4(0.97, 0.91, 0.68, 1.0);
-        stones_col[2] = vec4(1.00, 0.83, 0.64, 1.0);
-        stones_offset[0] = 0.0;
-        stones_offset[1] = 0.5;
-        stones_offset[2] = 1.0;
-
         // Generate stone pattern and colour
         vec2 stones = tile_stones(uv, vec2(params.aggregate_quantity), vec2(seed.stones_seed));
         vec4 stones_colour = gradient_fct(stones.x, 0);
-
-        mortar_col[0] = vec4(0.37, 0.37, 0.31, 1.0);
-        mortar_col[1] = vec4(0.54, 0.52, 0.47, 1.0);
-        mortar_offset[0] = 0.0;
-        mortar_offset[1] = 1.0;
 
         // Colour mortar noise and blend with stones
         float mortar_perlin = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
@@ -701,18 +678,17 @@ void main() {
         mortar_roughness_blend = clamp((mortar_roughness_blend - mortar_tone_value) / mortar_tone_width + 0.5, 0.0, 1.0);
         float mortar_roughness = add(mortar_roughness_blend, stones.y, params.aggregate_height);
 
-        imageStore(orm_buffer, ivec2(pixel), vec4(vec3(mortar_roughness), 1.0));
+        imageStore(r16f_buffer_4, ivec2(pixel), vec4(vec3(mortar_roughness), 1.0));
         imageStore(rgba32f_buffer, ivec2(pixel), vec4(mortar_albedo, 1.0));
     }    
         
-    if (params.stage == 2.0) { // TODO SORT PC ROLLBACKS
+    if (params.stage == 2.0) {
         float brick_damage_perlin = imageLoad(r16f_buffer_2, ivec2(pixel)).r;
 
         // Brick pattern
         vec4 brick_fill;
         vec2 brick_damage_uv = uv -= vec2(0.015 * (2.0 * brick_damage_perlin - 1.0));
         float brick_pattern = skewed_uneven_bricks(brick_damage_uv, vec2(params.columns, params.rows), params.brick_randomness, params.mortar, params.bevel, params.rounding, seed.brick_pattern_seed, brick_fill);
-        vec3 random_brick_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((fill_colour_seed)), rand(vec2(rand(brick_fill.xy), rand(brick_fill.zw))))), step(0.0000001, dot(brick_fill.zw, vec2(1.0))));
 
         // Cracks pattern, loaded into brick pattern transformed UVs
         vec2 crack_brick_offset = vec2(0.5 * (2.0 * brick_fill.r - 1.0), 0.250 * (2.0 * brick_fill.g - 1.0));
@@ -729,11 +705,11 @@ void main() {
         vec3 brick_base_mortar_albedo = normal(brick_base_col.rgb, mortar_albedo.rgb, brick_pattern * 1.0);
         
         imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(brick_base_mortar_albedo, cracks_lightened)); // temp storage between stages
-        imageStore(r16f_buffer_1, ivec2(pixel), vec4(vec3(brick_pattern), 1.0));
+        imageStore(r16f_buffer_5, ivec2(pixel), vec4(vec3(brick_pattern), 1.0));
 	}
 
     if (params.stage == 3.0) {
-        float pattern = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
+        float pattern = imageLoad(r16f_buffer_5, ivec2(pixel)).r;
 
         vec4 stone_edge_blur = slope_blur(uv, params.stone_edge_slope_sigma, max(params.stone_edge_slope_sigma, 25.0), 0);
         float stone_edge_wear = darken(stone_edge_blur.r, pattern);
@@ -744,15 +720,15 @@ void main() {
         float cracks = imageLoad(rgba32f_buffer_2, ivec2(pixel)).a;
         float stone_cracked_surface = multiply(cracks, stone_surface_base, params.stone_cracks_intensity);
 
-        float mortar_roughness = imageLoad(orm_buffer, ivec2(pixel)).r;
+        float mortar_roughness = imageLoad(r16f_buffer_4, ivec2(pixel)).r;
         float base_texture = normal(stone_cracked_surface, mortar_roughness, pattern); // base texture that normals, roughness and occlusion are created from
 
-        imageStore(r16f_buffer_3, ivec2(pixel), vec4(vec3(stone_cracked_surface), 1.0));
-        imageStore(rgba32f_buffer, ivec2(pixel), vec4(vec3(base_texture), 1.0));
+        imageStore(r16f_buffer_6, ivec2(pixel), vec4(vec3(stone_cracked_surface), 1.0));
+        imageStore(r16f_buffer_7, ivec2(pixel), vec4(vec3(base_texture), 1.0));
     }
 
     if (params.stage == 4.0) { // ORM
-        float base_texture = imageLoad(rgba32f_buffer, ivec2(pixel)).r;
+        float base_texture = imageLoad(r16f_buffer_7, ivec2(pixel)).r;
         float blur = gaussian_blur(ivec2(pixel), params.occlusion_strength, 1);
         float occlusion = 1.0 - clamped_difference(base_texture, blur);
         float roughness = 1.0 - clamp((base_texture - roughness_tone_value) / roughness_tone_width + 0.5, 0.0, 1.0);
@@ -774,21 +750,11 @@ void main() {
             imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
         }
 
-        bricks_col[0] = vec4(0.17, 0.17, 0.17, 1.0);
-        bricks_col[1] = vec4(0.45, 0.45, 0.48, 1.0);
-        bricks_col[2] = vec4(0.78, 0.78, 0.69, 1.0);
-        bricks_col[3] = vec4(0.80, 0.80, 0.80, 1.0);
-        bricks_offset[0] = 0.00;
-        bricks_offset[1] = 0.45;
-        bricks_offset[2] = 0.90;
-        bricks_offset[3] = 1.00;
-
-        float base_bw_bricks = imageLoad(r16f_buffer_3, ivec2(pixel)).r;
+        float base_bw_bricks = imageLoad(r16f_buffer_6, ivec2(pixel)).r;
         vec4 col = gradient_fct(base_bw_bricks, 2);
         vec4 brick_base_mortar_albedo = imageLoad(rgba32f_buffer_2, ivec2(pixel));
-        float brick_pattern = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
+        float brick_pattern = imageLoad(r16f_buffer_5, ivec2(pixel)).r;
         vec3 albedo = normal(col.rgb, brick_base_mortar_albedo.rgb, brick_pattern * 0.5);
-
         imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
     }
 }
