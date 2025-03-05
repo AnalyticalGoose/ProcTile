@@ -76,8 +76,13 @@ func export(export_template_data : Array[Array], type : TextureType, path: Strin
 
 
 func _threaded_texture_export(texture_index: int, format: Image.Format, path_name: String, thread : Thread) -> void:
-	var texture_data: PackedByteArray = rd.texture_get_data(basetextures[texture_index], 0)
-	var texture: Image = Image.create_from_data(shader_resolution, shader_resolution, false, format, texture_data)
+
+	RenderingServer.call_on_render_thread(_get_texture_data.bind(basetextures[texture_index], texture_index))
+	
+	while texture_data[texture_index].size() != 134217728:
+		pass
+	
+	var texture: Image = Image.create_from_data(shader_resolution, shader_resolution, false, format, texture_data[texture_index])
 	
 	if interpolate_export:
 		texture.resize(export_resolution, export_resolution, interpolation_type)
@@ -105,3 +110,7 @@ func _threaded_mesh_export(path_name: String, thread : Thread) -> void:
 func _on_thread_completed(thread : Thread) -> void:
 	thread.wait_to_finish()
 	export_progress += progress_tick_val
+
+
+func _get_texture_data(texture : RID, index : int) -> void:
+	texture_data[index] = rd.texture_get_data(texture, 0)
