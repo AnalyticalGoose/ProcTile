@@ -11,9 +11,6 @@ var material_type : MaterialType = MaterialType.PBR_3D
 var texture_size : int
 var paused : bool = false
 
-#var asset_name : String
-#var asset_id : int
-
 @onready var shader_material : ShaderMaterial = (
 		$/root/ProcTile/Renderer/MeshPivot/Mesh as MeshInstance3D
 		).material_override as ShaderMaterial
@@ -71,3 +68,7 @@ func change_mesh_shader(type: int) -> void:
 	
 	material_type = type as MaterialType
 	DataManager.current_material_type = material_type
+
+
+func remove_placeholder_material() -> void:
+	shader_material.set_shader_parameter("placeholder_texture", false)

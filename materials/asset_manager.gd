@@ -13,6 +13,7 @@ var compute_shader : ComputeShader
 var current_asset_selector_idx : int = 0
 var current_asset_type : int = 0
 var asset_selector_offets : Array[int]
+var placeholder_material : bool = true
 var selected_btn : Button
 
 @onready var renderer : Renderer = $/root/ProcTile/Renderer as Renderer
@@ -35,7 +36,11 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	
 	if current_asset_type != current_asset_selector_idx: # Different material shader needed
 		current_asset_type = current_asset_selector_idx
-		renderer.change_mesh_shader(current_asset_type)
+		renderer.change_mesh_shader(current_asset_type)#
+	
+	if placeholder_material:
+		renderer.remove_placeholder_material()
+		placeholder_material = false
 	
 	if compute_shader:
 		renderer.free_compute_resources()

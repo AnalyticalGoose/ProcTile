@@ -25,6 +25,7 @@ shader_parameter/roughness_input = SubResource("Texture2DRD_vt7xn")
 shader_parameter/metallic_input = SubResource("Texture2DRD_ak5p6")
 shader_parameter/normal_input = SubResource("Texture2DRD_blo77")
 shader_parameter/texture_3D = true
+shader_parameter/placeholder_texture = true
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_p2h4v"]
 panorama = ExtResource("4_ykixy")
