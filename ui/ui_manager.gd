@@ -10,6 +10,7 @@ extends Control
 
 func  _ready() -> void:
 	Logger.ui_manager_instance = self
+	print_orphan_nodes()
 
 
 func _unhandled_key_input(event: InputEvent) -> void:

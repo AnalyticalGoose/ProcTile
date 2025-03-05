@@ -174,20 +174,21 @@ func _modify_uvs(direction : Face) -> void:
 	match direction:
 		Face.BACK:
 			for i : int in normals.size():
-				print(normals)
 				var normal_dir : float = normals[i].dot(Vector3(0, 0, 1))
 				if normal_dir == -1.0:
 					uvs[i] = Vector2(0, 0)
+			
 		Face.SIDES:
 			for i : int in normals.size():
 				var normal_dir : float = normals[i].dot(Vector3(0, 0, 1))
 				if normal_dir != 1.0 and normal_dir != -1.0:
 					uvs[i] = Vector2(0, 0)
-		
+	
+	
 	surface_array[Mesh.ARRAY_TEX_UV] = uvs
-	array_mesh.clear_surfaces()
-	array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_array)
-	mesh_instance.mesh = array_mesh
+	var new_mesh : ArrayMesh = ArrayMesh.new()
+	new_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_array)
+	mesh_instance.mesh = new_mesh
 
 
 func _on_mesh_option_button_item_selected(index: int) -> void:
