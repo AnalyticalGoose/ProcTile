@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dcq3ymn0d0he4"]
+[gd_scene load_steps=13 format=3 uid="uid://dcq3ymn0d0he4"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_6ylha"]
 [ext_resource type="Script" uid="uid://dipb1eonok4rp" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_0hasw"]
@@ -9,10 +9,10 @@
 [ext_resource type="Texture2D" uid="uid://b20x6qqfho2y" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="5_ls8yp"]
 [ext_resource type="Texture2D" uid="uid://yc88l1n61tf5" path="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg" id="5_se0ns"]
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="6_8ojcc"]
-[ext_resource type="Texture2D" uid="uid://bswnyx2puee3h" path="res://materials/3D/realistic/castle_wall/castle_wall_preview.jpg" id="6_d04yi"]
 [ext_resource type="Texture2D" uid="uid://bfb8p005n6ho4" path="res://materials/3D/realistic/checker_plate/checker_plate_thumb.jpg" id="7_v4hpy"]
 [ext_resource type="Texture2D" uid="uid://dn0k4bykkc620" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.jpg" id="10_30u3j"]
-[ext_resource type="Texture2D" uid="uid://38eoejnafcen" path="res://materials/3D/realistic/castle_wall/castle_wall_thumb.jpg" id="11_op0s8"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ys06j"]
 
 [node name="AssetSelector_3D" type="GridContainer"]
 offset_right = 264.0
@@ -23,7 +23,7 @@ theme = ExtResource("1_6ylha")
 columns = 4
 script = ExtResource("2_0hasw")
 asset_preview_scene = ExtResource("3_uoe7d")
-preview_images = Array[CompressedTexture2D]([ExtResource("3_udois"), ExtResource("4_e7nfv"), ExtResource("6_d04yi"), ExtResource("5_se0ns"), ExtResource("6_8ojcc")])
+preview_images = Array[CompressedTexture2D]([ExtResource("3_udois"), ExtResource("4_e7nfv"), ExtResource("5_se0ns"), ExtResource("6_8ojcc")])
 
 [node name="BathroomTilesBtn" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
@@ -57,7 +57,7 @@ toggle_mode = true
 text = "Castle Wall
 
 "
-icon = ExtResource("11_op0s8")
+icon = SubResource("PlaceholderTexture2D_ys06j")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
