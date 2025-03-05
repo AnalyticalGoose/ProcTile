@@ -1,24 +1,24 @@
 [gd_scene load_steps=35 format=3 uid="uid://sjoei1q5m1ma"]
 
-[ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
-[ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
+[ext_resource type="Script" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
+[ext_resource type="Script" path="res://ui/ui_manager.gd" id="1_cnay4"]
 [ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
-[ext_resource type="Script" uid="uid://c8xumo24kus30" path="res://materials/asset_manager.gd" id="2_iuucp"]
-[ext_resource type="Script" uid="uid://de5bwi55mryfi" path="res://ui/bars/data_bar.gd" id="2_pqncx"]
-[ext_resource type="Script" uid="uid://cmlrcvh4uhiin" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
+[ext_resource type="Script" path="res://materials/asset_manager.gd" id="2_iuucp"]
+[ext_resource type="Script" path="res://ui/bars/data_bar.gd" id="2_pqncx"]
+[ext_resource type="Script" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
 [ext_resource type="PackedScene" uid="uid://ci4s2srdlp13f" path="res://ui/menus/export/export.tscn" id="3_34tcw"]
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
 [ext_resource type="PackedScene" uid="uid://1grqiac6heen" path="res://ui/menus/load_material/load_material.tscn" id="6_ievu1"]
-[ext_resource type="Script" uid="uid://slarikbtnlgw" path="res://ui/bars/renderer_toolbar.gd" id="6_s0trs"]
+[ext_resource type="Script" path="res://ui/bars/renderer_toolbar.gd" id="6_s0trs"]
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
 [ext_resource type="Texture2D" uid="uid://cx42hbrly0fvi" path="res://ui/icons/icon_pause.png" id="6_wvlpy"]
 [ext_resource type="PackedScene" uid="uid://d18ju7bnukh46" path="res://ui/parameters/gradient_colour/gradient.tscn" id="6_yy2h4"]
 [ext_resource type="PackedScene" uid="uid://dt85qd3mt5dxd" path="res://ui/menus/save_material/save_material.tscn" id="7_6kvh1"]
-[ext_resource type="Script" uid="uid://d0x6ih6m1ytb7" path="res://ui/parameters/section/section.gd" id="7_08hm7"]
+[ext_resource type="Script" path="res://ui/parameters/section/section.gd" id="7_08hm7"]
 [ext_resource type="PackedScene" uid="uid://coiefeptq306s" path="res://ui/parameters/dropdown/dropdown.tscn" id="7_ggaj0"]
-[ext_resource type="Script" uid="uid://c2imv73k122i3" path="res://ui/parameters/params_manager.gd" id="7_xyjtw"]
+[ext_resource type="Script" path="res://ui/parameters/params_manager.gd" id="7_xyjtw"]
 [ext_resource type="Texture2D" uid="uid://dsw2dmlnyq433" path="res://ui/icons/icon_play.png" id="8_fa1dh"]
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="Texture2D" uid="uid://n33sjanx45ou" path="res://ui/icons/icon_undo.png" id="9_7vcxs"]
@@ -96,7 +96,6 @@ flat = false
 switch_on_hover = true
 item_count = 13
 popup/item_0/text = "     New..."
-popup/item_0/id = 0
 popup/item_0/disabled = true
 popup/item_1/text = "     Open..."
 popup/item_1/id = 1
@@ -146,7 +145,6 @@ text = "Edit"
 switch_on_hover = true
 item_count = 13
 popup/item_0/text = "     New..."
-popup/item_0/id = 0
 popup/item_0/disabled = true
 popup/item_1/text = "     Open..."
 popup/item_1/id = 1
@@ -192,7 +190,6 @@ text = "Help"
 switch_on_hover = true
 item_count = 13
 popup/item_0/text = "     New..."
-popup/item_0/id = 0
 popup/item_0/disabled = true
 popup/item_1/text = "     Open..."
 popup/item_1/id = 1

@@ -5,11 +5,11 @@ extends VBoxContainer
 @export var option_button : OptionButton
 
 var compute_shader : ComputeShader
-var push_constant_index : int
+var push_constant_index : float
 var dependant_stage : float
 var option_index : int = 0
 
-
+@warning_ignore("unsafe_call_argument")
 func setup_properties(data : Array) -> void:
 	label.set_text(str(data[1]))
 	dependant_stage = data[3]
@@ -17,15 +17,14 @@ func setup_properties(data : Array) -> void:
 	
 	var popup_menu : PopupMenu = option_button.get_popup()
 	var dropdown_items : Array = data[2]
-	var i : int = 0
-	for item : String in dropdown_items:
-		option_button.add_item(item)
+	for i : int in dropdown_items.size():
+		option_button.add_item(dropdown_items[i])
 		popup_menu.set_item_as_radio_checkable(i, false)
-		i += 1
 
 
 func set_dropdown_option(index : int) -> void:
-	compute_shader.push_constant.set(push_constant_index, index)
+	@warning_ignore("narrowing_conversion")
+	compute_shader.push_constant.set(push_constant_index, float(index))
 	compute_shader.stage = dependant_stage
 	option_index = index
 

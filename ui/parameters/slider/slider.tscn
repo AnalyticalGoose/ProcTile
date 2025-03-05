@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c01quywq314dv"]
 
-[ext_resource type="Script" uid="uid://kgnu17sgiwku" path="res://ui/parameters/slider/slider.gd" id="1_won5e"]
+[ext_resource type="Script" path="res://ui/parameters/slider/slider.gd" id="1_won5e"]
 
 [node name="Slider" type="VBoxContainer" node_paths=PackedStringArray("slider_label", "slider", "slider_value")]
 offset_right = 68.0

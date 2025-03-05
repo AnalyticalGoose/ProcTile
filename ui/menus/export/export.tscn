@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ci4s2srdlp13f"]
 
-[ext_resource type="Script" uid="uid://du8w7xnpuogjo" path="res://ui/menus/export/export.gd" id="1_2taha"]
+[ext_resource type="Script" path="res://ui/menus/export/export.gd" id="1_2taha"]
 [ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
 
 [node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options_3D", "template_options_2D", "resolution_btn_3D", "resolution_btn_2D", "format_btn", "interp_label", "interp_btn", "normals_btn", "export_mesh_btn", "mesh_format_btn", "filename_line_edit", "filename_labels_container", "mesh_label", "button_container", "progress_bar")]
