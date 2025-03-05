@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://mapw8rs5g7b8"]
 
-[ext_resource type="Script" uid="uid://ktvy2ul5widj" path="res://ui/parameters/seed/seed_line.gd" id="1_msm11"]
+[ext_resource type="Script" path="res://ui/parameters/seed/seed_line.gd" id="1_msm11"]
 [ext_resource type="Texture2D" uid="uid://ckqkknlwwipc6" path="res://ui/icons/icon_refresh.png" id="2_qxd4j"]
 
 [node name="Seed" type="HBoxContainer" node_paths=PackedStringArray("seed_value")]

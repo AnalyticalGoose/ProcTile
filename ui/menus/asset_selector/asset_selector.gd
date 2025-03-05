@@ -14,7 +14,7 @@ var asset_preview : AssetPreview
 var preview_open : bool = false
 
 
-@warning_ignore_start("return_value_discarded")
+@warning_ignore("return_value_discarded")
 func _ready() -> void:
 	asset_btns = get_children()
 	for i : int in asset_btns.size():
@@ -36,7 +36,6 @@ func _ready() -> void:
 	add_child(close_preview_timer)
 	
 	asset_preview = asset_preview_scene.instantiate()
-@warning_ignore_restore("return_value_discarded")
 
 
 func _on_asset_selected(index : int, button : Button) -> void:

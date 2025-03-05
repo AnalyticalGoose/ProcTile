@@ -71,7 +71,3 @@ func change_mesh_shader(type: int) -> void:
 	
 	material_type = type as MaterialType
 	DataManager.current_material_type = material_type
-
-
-func remove_placeholder_material() -> void:
-	shader_material.set_shader_parameter("placeholder_texture", false)
