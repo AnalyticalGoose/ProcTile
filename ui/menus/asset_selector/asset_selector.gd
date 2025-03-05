@@ -36,7 +36,7 @@ func _ready() -> void:
 	@warning_ignore_restore("return_value_discarded")
 	add_child(close_preview_timer)
 	
-	asset_preview = asset_preview_scene.instantiate()
+	#asset_preview = asset_preview_scene.instantiate()
 
 
 func _on_asset_selected(index : int, button : Button) -> void:
@@ -63,10 +63,12 @@ func _on_mouse_exited() -> void:
 
 func _on_hover_timer_timeout() -> void:
 	preview_open = true
+	asset_preview = asset_preview_scene.instantiate()
 	asset_preview.set_properties(preview_images[hover_index], (asset_btns[hover_index] as Button).text)
 	asset_btns[hover_index].add_child(asset_preview)
 
 
 func _on_close_preview_timer_timeout() -> void:
+	asset_preview.queue_free()
 	preview_open = false
 	asset_btns[hover_index].remove_child(asset_preview)
