@@ -174,6 +174,7 @@ func _modify_uvs(direction : Face) -> void:
 	match direction:
 		Face.BACK:
 			for i : int in normals.size():
+				print(normals)
 				var normal_dir : float = normals[i].dot(Vector3(0, 0, 1))
 				if normal_dir == -1.0:
 					uvs[i] = Vector2(0, 0)
