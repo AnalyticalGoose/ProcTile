@@ -49,7 +49,7 @@ icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
 
-[node name="CastleWall" type="Button" parent="."]
+[node name="CastleWallBtn" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
@@ -70,6 +70,19 @@ toggle_mode = true
 text = "Checker
 Plate"
 icon = ExtResource("7_v4hpy")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="GrassLawnBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Grass Lawn
+
+"
+icon = ExtResource("5_ls8yp")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
