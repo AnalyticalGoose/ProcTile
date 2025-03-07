@@ -10,14 +10,25 @@ layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer;
-layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_0;
-layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_1;
-layout(r16f, set = 1, binding = 3) uniform image2D clover_buffer;
-layout(r16f, set = 1, binding = 4) uniform image2D soil_perlin_buffer;
+layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_0;
+layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 2) uniform image2D clover_buffer;
+layout(r16f, set = 1, binding = 3) uniform image2D soil_perlin_buffer;
 
 
 layout(push_constant, std430) uniform restrict readonly Params {
+    float blades_spacing;
+    float lookup_dist;
+    float blade_width;
+    float direction_bias_x;
+    float direction_bias_y;
+    float patchiness; // TODO
+
+    float clover_quantity;
+    float clover_scale;
+    float clover_scale_variation;
+    float clover_opacity_variation;
+
     float normals_format;
 	float texture_size;
 	float stage;
@@ -27,26 +38,49 @@ layout(set = 2, binding = 0, std430) buffer readonly Seeds {
     float grass_seed;
 } seed;
 
+// layout(set = 3, binding = 0, std430) buffer readonly GrassOffsets {
+//     float grass_offsets[];
+// };
+
+// layout(set = 4, binding = 0, std430) buffer readonly GrassColours {
+//     vec4 grass_col[];
+// };
+
+// layout(set = 5, binding = 0, std430) buffer readonly SoilOffsets {
+//     float soil_offsets[];
+// };
+
+// layout(set = 6, binding = 0, std430) buffer readonly SoilColours {
+//     vec4 soil_col[];
+// };
+
+// layout(set = 7, binding = 0, std430) buffer readonly CloverOffsets {
+//     float clover_offsets[];
+// };
+
+// layout(set = 8, binding = 0, std430) buffer readonly CloverColours {
+//     vec4 clover_col[];
+// };
+
+
+// const float blade_width = 0.0008;
 
 const vec2 soil_perlin_scale = vec2(10.0);
 const int soil_perlin_iterations = 10;
 const float soil_perlin_persistence = 1.0;
 const float soil_perlin_seed = 0.0;
 
+const float clover_seed = 0.909292817;
 
 float[3] soil_offsets;
 vec4[3] soil_col;
 
-const float blade_width = 0.0008;
+
 float[3] grass_offsets;
 vec4[3] grass_col;
 
 float[3] clover_offsets;
 vec4[3] clover_col;
-
-
-// Normal map
-const float sobel_strength = 0.12;
 
 
 const float roughness_tone_value = 0.95;
@@ -55,29 +89,21 @@ const float ao_tone_value = 0.90;
 const float ao_tone_width = 1.0;
 
 
-#define BLADES_SPACING 0.004
-#define JITTER_MAX 0.004
-#define LOOKUP_DIST 4
-
-
 float rand(vec2 p) {
     return fract(cos(mod(dot(p, vec2(13.9898, 8.141)), 3.14)) * 43758.5);
 }
 
-vec3 rand3(vec2 p)
-{
+vec3 rand3(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
     p3 += dot(p3, p3.yxz+19.19);
     return fract((p3.xxy+p3.yzz) * p3.zyx);
 }
 
-vec2 rand2(vec2 p)
-{
+vec2 rand2(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
     p3 += dot(p3, p3.yzx+19.19);
     return fract((p3.xx+p3.yz) * p3.zy);
 }
-
 
 vec3 normal(vec3 base, vec3 blend, float opacity) {
     return opacity * base + (1.0 - opacity) * blend;
@@ -94,12 +120,6 @@ vec3 add(vec3 base, vec3 blend, float opacity ) {
 float multiply(float base, float blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
 }
-
-
-
-
-
-
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
@@ -144,14 +164,6 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 }
 
 
-
-
-
-
-
-
-
-
 float make_tileable(vec2 uv, float blend_width) {
     // Sample at original UV & wrapped offsets
     float sample_A = imageLoad(r16f_buffer_1, ivec2(uv * params.texture_size)).r;
@@ -176,17 +188,17 @@ float make_tileable(vec2 uv, float blend_width) {
 }
 
 
-
 // Adapated from Bycob / BynaryCobweb - https://github.com/Bycob/world - World generation tool
 // https://github.com/Bycob/world/blob/develop/projects/vkworld/shaders/terrains/texture-grass.frag
 float get_grass_blade(vec2 position, vec2 grass_pos) {
     // Random blade vector in [-1.0, 1.0]. Scale and bias z component [0.0, 0.4]
-    vec3 rand_blade = rand3(grass_pos * 123512.41) * 2.0 - vec3(1.0);
+    vec3 rand_blade = rand3(grass_pos * 123512.41) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
     rand_blade.z = rand_blade.z * 0.2 + 0.2;
     
     // Direction, length and relative position to pixel
     vec2 blade_dir = normalize(rand_blade.xy);
-    float blade_length = rand(grass_pos * 102348.7) * 0.01 + 0.012;
+    float length_bias = max((params.lookup_dist / 100) - 0.06, 0.01);
+    float blade_length = rand(grass_pos * 102348.7) * length_bias + 0.012;
     vec2 rel_pos = position - grass_pos;
     
     // Project onto blade direction, compute perpendicular distance and normalise
@@ -196,7 +208,7 @@ float get_grass_blade(vec2 position, vec2 grass_pos) {
     float t = proj / blade_length;
     
     // Check if the pixel lies within the blade region.
-    if(t >= 0.0 && t <= 1.0 && abs(perp_dist) <= blade_width * (1.0 - t * t)) {
+    if(t >= 0.0 && t <= 1.0 && abs(perp_dist) <= (params.blade_width / 10000) * (1.0 - t * t)) {
         return rand_blade.z * t;
     } else {
         return -1.0;
@@ -205,17 +217,20 @@ float get_grass_blade(vec2 position, vec2 grass_pos) {
 
 
 float tile_grass(vec2 position) {
-   	int x_count = int(1.0 / BLADES_SPACING);
-    int y_count = int(1.0 / BLADES_SPACING);
+    float _blades_spacing = params.blades_spacing / 1000;
+    int _lookup_dist = int(min(params.lookup_dist, 6.0));
+
+   	int x_count = int(1.0 / _blades_spacing);
+    int y_count = int(1.0 / _blades_spacing);
     int ox = int(position.x * float(x_count));
     int oy = int(position.y * float(y_count));
 
     float max_z = 0.0;
 
-    for (int i = -LOOKUP_DIST; i < LOOKUP_DIST; ++i) {
-        for (int j = -LOOKUP_DIST; j < LOOKUP_DIST; ++j) {
+    for (int i = -_lookup_dist; i < _lookup_dist; ++i) {
+        for (int j = -_lookup_dist; j < _lookup_dist; ++j) {
             vec2 u_pos = vec2(ox + i, oy + j);
-            vec2 grass_pos = (u_pos * BLADES_SPACING + rand2(u_pos) * JITTER_MAX);
+            vec2 grass_pos = (u_pos * _blades_spacing + rand2(u_pos) * 0.004);
 
             float z = get_grass_blade(position, grass_pos);
 
@@ -226,16 +241,6 @@ float tile_grass(vec2 position) {
     }
     return max_z;
 }
-
-
-
-const vec2 clover_scale = vec2(1.0);
-const float clover_scale_variation = 0.3;
-const float clover_opacity_variation = 1.0;
-const float clover_height = 0.25;
-
-
-
 
 
 float clover() {
@@ -251,7 +256,7 @@ float clover() {
     float f = smoothstep( 0.95, 1.0, h );
     
     float blend = 1.0 - normal(h, f, 0.5);
-    float clover_base = blend * clover_height;
+    float clover_base = blend * 0.25;
 
     return clover_base;
 }
@@ -259,7 +264,7 @@ float clover() {
 vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
     float max_contribution = 0.0;
     float final_colour = 0.0;
-    float _scale_variation = clover_scale_variation / 2;
+    float _scale_variation = params.clover_scale_variation / 2;
     
     for (int dx = -2; dx <= 2; ++dx) {
         for (int dy = -2; dy <= 2; ++dy) {
@@ -268,15 +273,14 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
 			float col = rand(seed);
 			pos = fract(pos + vec2(0.0 / tile.x, 0.0) * floor(mod(pos.y * tile.y, 2.0)) + 1.0 * seed / tile);
 
-
 			vec2 pv = fract(uv - pos)-vec2(0.5);
 			seed = rand2(seed);
 			float angle = (seed.x * 2.0 - 1.0) * 180.0 * 0.01745329251;
 			float ca = cos(angle);
 			float sa = sin(angle);
 			pv = vec2(ca*pv.x+sa*pv.y, -sa*pv.x+ca*pv.y);
-			pv *= (seed.y-0.5) * 2.0 * 0.3 + 1.0;
-			pv /= (clover_scale / 100);
+			pv *= (seed.y-0.5) * 2.0 * _scale_variation + 1.0;
+			pv /= (vec2(params.clover_scale) / 100);
 			pv += vec2(0.5);
 			seed = rand2(seed);
 			vec2 clamped_pv = clamp(pv, vec2(0.0), vec2(1.0));
@@ -286,7 +290,7 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
             pv = clamp(pv, vec2(0.0), vec2(1.0));
             
             // Evaluate the stone pattern at this instance.
-            float tile_value = imageLoad(clover_buffer, ivec2(pv * params.texture_size)).r * (1.0 - clover_opacity_variation * seed.x);
+            float tile_value = imageLoad(clover_buffer, ivec2(pv * params.texture_size)).r * (1.0 - params.clover_opacity_variation * seed.x);
             
             // Keep the instance if its contribution is highest so far.
             if (tile_value > max_contribution) {
@@ -295,7 +299,6 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
             }
         }
     }
-
     return vec2(final_colour, max_contribution);
 }
 
@@ -423,7 +426,7 @@ void main() {
     }
 
     if (params.stage == 1.0) {
-        float clover_base = tile_clover(uv, vec2(30.0), vec2(0.909292817)).y;
+        float clover_base = tile_clover(uv, vec2(params.clover_quantity), vec2(clover_seed)).y;
         imageStore(r16f_buffer_0, ivec2(pixel), vec4(vec3(clover_base), 1.0));
     }
 
@@ -475,11 +478,11 @@ void main() {
     if (params.stage == 4.0) {
         float clover_mask = step(imageLoad(r16f_buffer_0, ivec2(pixel)).r, (dot(imageLoad(r16f_buffer_1, ivec2(pixel)).r, 1.0) / 3.0));
 
-        vec3 soil_normals = sobel_filter(ivec2(pixel), 0.2, params.texture_size, 0);
+        vec3 soil_normals = sobel_filter(ivec2(pixel), 0.5, params.texture_size, 0);
         vec3 grass_normals = sobel_filter(ivec2(pixel), 1.0, params.texture_size, 1);
         vec3 clover_normals = sobel_filter(ivec2(pixel), 2.0, params.texture_size, 2);
-        
-        vec3 grass_soil_rnm = normal_rnm_blend(soil_normals, grass_normals, 0.4);
+
+        vec3 grass_soil_rnm = normal_rnm_blend(soil_normals, grass_normals, 0.5);
         vec3 normals = normal_rnm_blend(grass_soil_rnm, clover_normals, clover_mask);
 
         if (params.normals_format == 0.0) {
