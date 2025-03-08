@@ -58,6 +58,11 @@ layout(set = 8, binding = 0, std430) buffer readonly MortarColours {
     vec4 mortar_col[];
 };
 
+layout(set = 9, binding = 0, std430) buffer readonly StoneBaseColour {
+    vec4 stone_base_col;
+};
+
+
 layout(push_constant, std430) uniform restrict readonly Params {
 	float rows;
 	float columns;
@@ -74,7 +79,7 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float mortar_perlin_x;
     float mortar_perlin_y;
     float mortar_noise_opacity; // depth
-    float aggregate_opacity; // col opacity?
+    float aggregate_opacity; // col opacity
     float aggregate_height;
     float aggregate_quantity;
     float aggregate_scale_x;
@@ -96,14 +101,8 @@ const float sparse_perlin_persistence = 0.5;
 
 const int mortar_perlin_iterations = 10;
 const float mortar_perlin_persistence = 1.0;
-// const float mortar_perlin_seed = 0.0;
-
-// Brick pattern
-// const float fill_colour_seed = 0.0;
-const vec4 brick_base_col = vec4(vec3(0.53), 1.0);
 
 // Cracks
-// const float cracks_voronoi_seed = 0.0;
 const float cracks_tone_value = 0.01;
 const float cracks_tone_width = 0.01;
 
@@ -702,9 +701,9 @@ void main() {
         
         // Blend final mortar colour with base brick colour
         vec4 mortar_albedo = imageLoad(rgba32f_buffer, ivec2(pixel));
-        vec3 brick_base_mortar_albedo = normal(brick_base_col.rgb, mortar_albedo.rgb, brick_pattern * 1.0);
+        vec3 stone_base_mortar_albedo = normal(stone_base_col.rgb, mortar_albedo.rgb, brick_pattern * 1.0);
         
-        imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(brick_base_mortar_albedo, cracks_lightened)); // temp storage between stages
+        imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(stone_base_mortar_albedo, cracks_lightened)); // temp storage between stages
         imageStore(r16f_buffer_5, ivec2(pixel), vec4(vec3(brick_pattern), 1.0));
 	}
 
