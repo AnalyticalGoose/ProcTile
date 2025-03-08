@@ -15,20 +15,16 @@ layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1;
 layout(r16f, set = 1, binding = 2) uniform image2D clover_buffer;
 layout(r16f, set = 1, binding = 3) uniform image2D soil_perlin_buffer;
 
-
 layout(push_constant, std430) uniform restrict readonly Params {
     float blades_spacing;
     float lookup_dist;
     float blade_width;
     float direction_bias_x;
     float direction_bias_y;
-    float patchiness; // TODO
-
     float clover_quantity;
     float clover_scale;
     float clover_scale_variation;
     float clover_opacity_variation;
-
     float normals_format;
 	float texture_size;
 	float stage;
@@ -36,58 +32,41 @@ layout(push_constant, std430) uniform restrict readonly Params {
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
     float grass_seed;
+    float clover_seed;
+    float soil_perlin_seed;
 } seed;
 
-// layout(set = 3, binding = 0, std430) buffer readonly GrassOffsets {
-//     float grass_offsets[];
-// };
+layout(set = 3, binding = 0, std430) buffer readonly GrassOffsets {
+    float grass_offsets[];
+};
 
-// layout(set = 4, binding = 0, std430) buffer readonly GrassColours {
-//     vec4 grass_col[];
-// };
+layout(set = 4, binding = 0, std430) buffer readonly GrassColours {
+    vec4 grass_col[];
+};
 
-// layout(set = 5, binding = 0, std430) buffer readonly SoilOffsets {
-//     float soil_offsets[];
-// };
+layout(set = 5, binding = 0, std430) buffer readonly SoilOffsets {
+    float soil_offsets[];
+};
 
-// layout(set = 6, binding = 0, std430) buffer readonly SoilColours {
-//     vec4 soil_col[];
-// };
+layout(set = 6, binding = 0, std430) buffer readonly SoilColours {
+    vec4 soil_col[];
+};
 
-// layout(set = 7, binding = 0, std430) buffer readonly CloverOffsets {
-//     float clover_offsets[];
-// };
+layout(set = 7, binding = 0, std430) buffer readonly CloverOffsets {
+    float clover_offsets[];
+};
 
-// layout(set = 8, binding = 0, std430) buffer readonly CloverColours {
-//     vec4 clover_col[];
-// };
-
-
-// const float blade_width = 0.0008;
+layout(set = 8, binding = 0, std430) buffer readonly CloverColours {
+    vec4 clover_col[];
+};
 
 const vec2 soil_perlin_scale = vec2(10.0);
 const int soil_perlin_iterations = 10;
 const float soil_perlin_persistence = 1.0;
-const float soil_perlin_seed = 0.0;
-
-const float clover_seed = 0.909292817;
-
-float[3] soil_offsets;
-vec4[3] soil_col;
-
-
-float[3] grass_offsets;
-vec4[3] grass_col;
-
-float[3] clover_offsets;
-vec4[3] clover_col;
-
-
 const float roughness_tone_value = 0.95;
 const float roughness_tone_width = 0.25;
 const float ao_tone_value = 0.90;
 const float ao_tone_width = 1.0;
-
 
 float rand(vec2 p) {
     return fract(cos(mod(dot(p, vec2(13.9898, 8.141)), 3.14)) * 43758.5);
@@ -149,6 +128,7 @@ float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
     return 0.5 + mix(mix(p[0], p[2], t.x), mix(p[1], p[3], t.x), t.y);
 }
 
+
 float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, float offset, float seed) {
 	float normalize_factor = 0.0;
 	float value = 0.0;
@@ -192,7 +172,7 @@ float make_tileable(vec2 uv, float blend_width) {
 // https://github.com/Bycob/world/blob/develop/projects/vkworld/shaders/terrains/texture-grass.frag
 float get_grass_blade(vec2 position, vec2 grass_pos) {
     // Random blade vector in [-1.0, 1.0]. Scale and bias z component [0.0, 0.4]
-    vec3 rand_blade = rand3(grass_pos * 123512.41) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
+    vec3 rand_blade = rand3(grass_pos * 123512.41 * seed.grass_seed) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
     rand_blade.z = rand_blade.z * 0.2 + 0.2;
     
     // Direction, length and relative position to pixel
@@ -260,6 +240,7 @@ float clover() {
 
     return clover_base;
 }
+
 
 vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
     float max_contribution = 0.0;
@@ -417,7 +398,7 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
-        float soil_perlin = fbm_perlin_2d(uv, soil_perlin_scale, soil_perlin_iterations, soil_perlin_persistence, 0.0, soil_perlin_seed);
+        float soil_perlin = fbm_perlin_2d(uv, soil_perlin_scale, soil_perlin_iterations, soil_perlin_persistence, 0.0, seed.soil_perlin_seed);
         imageStore(soil_perlin_buffer, ivec2(pixel), vec4(vec3(soil_perlin), 1.0));
 
         float clover = clover();
@@ -426,7 +407,7 @@ void main() {
     }
 
     if (params.stage == 1.0) {
-        float clover_base = tile_clover(uv, vec2(params.clover_quantity), vec2(clover_seed)).y;
+        float clover_base = tile_clover(uv, vec2(params.clover_quantity), vec2(seed.clover_seed)).y;
         imageStore(r16f_buffer_0, ivec2(pixel), vec4(vec3(clover_base), 1.0));
     }
 
@@ -436,27 +417,6 @@ void main() {
     }
 
     if (params.stage == 3.0) {
-        soil_offsets[0] = 0.0;
-        soil_offsets[1] = 0.5;
-        soil_offsets[2] = 1.0;
-        soil_col[0] = vec4(0.14, 0.07, 0.0, 1.0);
-        soil_col[1] = vec4(0.18, 0.11, 0.05, 1.0);
-        soil_col[2] = vec4(0.43, 0.33, 0.24, 1.0);
-
-        grass_offsets[0] = 0.0;
-        grass_offsets[1] = 0.2;
-        grass_offsets[2] = 0.45;
-        grass_col[0] = vec4(0.02, 0.02, 0.0, 1.0);
-        grass_col[1] = vec4(0.04, 0.35, 0.0, 1.0);
-        grass_col[2] = vec4(0.68, 1.00, 0.11, 1.0);
-
-        clover_offsets[0] = 0.0;
-        clover_offsets[1] = 0.1;
-        clover_offsets[2] = 0.2;
-        clover_col[0] = vec4(0.08, 0.19, 0.02, 1.0);
-        clover_col[1] = vec4(0.28, 0.49, 0.16, 1.0);
-        clover_col[2] = vec4(0.86, 0.95, 0.82, 1.0);
-
         float soil_perlin = imageLoad(soil_perlin_buffer, ivec2(pixel)).r;
         float clover_base = imageLoad(r16f_buffer_0, ivec2(pixel)).r;
         float grass_base = imageLoad(r16f_buffer_1, ivec2(pixel)).r;
@@ -473,7 +433,6 @@ void main() {
 
         imageStore(albedo_buffer, ivec2(pixel), vec4(albedo, 1.0));
     }
-
 
     if (params.stage == 4.0) {
         float clover_mask = step(imageLoad(r16f_buffer_0, ivec2(pixel)).r, (dot(imageLoad(r16f_buffer_1, ivec2(pixel)).r, 1.0) / 3.0));
