@@ -7,6 +7,7 @@ bg_color = Color(0.118581, 0.118581, 0.118581, 1)
 corner_detail = 1
 
 [node name="AssetPreview" type="PanelContainer" node_paths=PackedStringArray("preview_texture", "preview_label")]
+z_index = 1
 offset_left = 62.0
 offset_top = 100.0
 offset_right = 338.0
