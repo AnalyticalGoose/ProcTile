@@ -60,6 +60,7 @@ func build_params_ui(ui_data : Array, presets_data : Array, shader : ComputeShad
 				slider.setup_properties(element_data)
 				current_container.add_child(slider)
 				current_container.children.append(slider)
+				
 			
 			ui_element.DROPDOWN:
 				var dropdown : ParamDropdown = dropdown_scene.instantiate() as ParamDropdown

@@ -20,8 +20,4 @@ text = "Presets"
 [node name="OptionButton" type="OptionButton" parent="."]
 layout_mode = 2
 
-[node name="Spacer" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_bottom = 10
-
 [connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]

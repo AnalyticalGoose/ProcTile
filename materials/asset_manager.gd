@@ -21,7 +21,7 @@ var selected_btn : Button
 
 func _ready() -> void:
 		assets_filter.set_item_tooltip(0, "3D PBR")
-		assets_filter.set_item_tooltip(1, "2D Pixel")
+		assets_filter.set_item_tooltip(1, "2D Pixel (EXPERIMENTAL)")
 		asset_selector_offets = DataManager.material_offets
 
 

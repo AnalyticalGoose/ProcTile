@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://qs8g653e8e0b"]
+[gd_scene load_steps=8 format=3 uid="uid://qs8g653e8e0b"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_hn53t"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_61vkc"]
 [ext_resource type="Texture2D" uid="uid://be20evtklf1fk" path="res://materials/2D/pixel/pixel_brick_wall/pixel_brick_wall_thumb.jpg" id="3_qwbr1"]
 [ext_resource type="Texture2D" uid="uid://bmkiostrjv1xb" path="res://materials/2D/pixel/pixel_brick_wall/pixel_brick_wall_preview.jpg" id="3_xcbjs"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_yqtfe"]
+[ext_resource type="Texture2D" uid="uid://bm40h3qk5cxtb" path="res://materials/2D/pixel/pixel_uneven_wall/pixel_uneven_wall_preview.jpg" id="5_3pcye"]
+[ext_resource type="Texture2D" uid="uid://cdrxwfdkdgp0e" path="res://materials/2D/pixel/pixel_uneven_wall/pixel_uneven_wall_thumb.jpg" id="6_5df0m"]
 
 [node name="AssetSelector_2D" type="GridContainer"]
 offset_right = 264.0
@@ -15,7 +17,7 @@ theme = ExtResource("1_hn53t")
 columns = 4
 script = ExtResource("2_61vkc")
 asset_preview_scene = ExtResource("3_yqtfe")
-preview_images = Array[CompressedTexture2D]([ExtResource("3_xcbjs")])
+preview_images = Array[CompressedTexture2D]([ExtResource("3_xcbjs"), ExtResource("5_3pcye")])
 
 [node name="PixelBrickWallBtn" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
@@ -26,6 +28,19 @@ text = "Pixel Brick
 Wall
 "
 icon = ExtResource("3_qwbr1")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="PixelUnevenWallBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Pixel Uneven
+Wall
+"
+icon = ExtResource("6_5df0m")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
