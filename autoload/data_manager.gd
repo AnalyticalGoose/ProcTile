@@ -134,6 +134,7 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 			database.add_mandatory_property("meta", TYPE_ARRAY)
 			database.add_mandatory_property("ui_elements", TYPE_ARRAY)
 			database.add_mandatory_property("shader_data", TYPE_ARRAY)
+			database.add_valid_property("presets", TYPE_ARRAY)
 			
 		DatabaseType.MESH:
 			database.add_valid_property("mesh_type")

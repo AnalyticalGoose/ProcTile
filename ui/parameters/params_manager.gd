@@ -12,6 +12,7 @@ enum ui_element {
 
 @export var params_container : ParamSection
 @export var section_scene : PackedScene
+@export var presets_scene : PackedScene
 @export var slider_scene : PackedScene
 @export var dropdown_scene : PackedScene
 @export var gradient_scene : PackedScene
@@ -27,13 +28,25 @@ func free_params_ui() -> void:
 		child.queue_free()
 
 
-func build_params_ui(ui_data : Array, shader : ComputeShader) -> void:
+func build_params_ui(ui_data : Array, presets_data : Array, shader : ComputeShader) -> void:
 	compute_shader = shader
-	current_container = params_container
+	current_container = params_container # if a section is not added first, prevents issues.
+	
+	if not presets_data.is_empty():
+		var section : ParamSection = section_scene.instantiate() as ParamSection
+		section.section_label.text = "Material Presets"
+		current_container = section
+		params_container.add_child(current_container)
+		var presets : ParamPresets = presets_scene.instantiate() as ParamPresets
+		presets.setup_properties(presets_data)
+		presets.params_container = params_container
+		current_container.add_child(presets)
+		current_container.children.append(presets)
+	
 	
 	for i : int in len(ui_data):
 		var element_data : Array = ui_data[i]
-
+		
 		match element_data[0]:
 			ui_element.SECTION:
 				var section : ParamSection = section_scene.instantiate() as ParamSection

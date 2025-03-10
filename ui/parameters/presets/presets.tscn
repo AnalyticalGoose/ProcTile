@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cf557mf4s6koj"]
+
+[ext_resource type="Script" uid="uid://ddop5hkk6dslo" path="res://ui/parameters/presets/presets.gd" id="1_jpmub"]
+
+[node name="Presets" type="VBoxContainer" node_paths=PackedStringArray("option_button")]
+offset_right = 30.0
+offset_bottom = 12.0
+theme_override_constants/separation = 3
+script = ExtResource("1_jpmub")
+option_button = NodePath("OptionButton")
+
+[node name="Heading" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Heading"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Presets"
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+
+[node name="Spacer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_bottom = 10
+
+[connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]

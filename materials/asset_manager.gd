@@ -54,12 +54,17 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	var shader_path : String = DataManager.shader_paths[material_index][0]
 	var shader_data : Array = asset_data.shader_data
 	var ui_data : Array = asset_data.ui_elements
+	var presets_data : Array
+	if asset_data.has("presets"):
+		presets_data = asset_data.presets
+	else:
+		presets_data = []
 	
 	DataManager.current_material_name = asset_data.name
 	DataManager.current_material_id = asset_data.id
 	
 	renderer.set_shader_material(shader_data, shader_path)
-	params_manager.build_params_ui(ui_data, compute_shader)
+	params_manager.build_params_ui(ui_data, presets_data, compute_shader)
 	
 	ActionsManager.clear_undo_actions() # prevent crashes from trying to access freed nodes.
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=36 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -33,6 +33,7 @@
 [ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
 [ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D.tscn" id="23_t626t"]
 [ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D.tscn" id="24_l0ee1"]
+[ext_resource type="PackedScene" uid="uid://cf557mf4s6koj" path="res://ui/parameters/presets/presets.tscn" id="27_p762i"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -494,6 +495,7 @@ theme_type_variation = &"LPanelContainer"
 script = ExtResource("7_xyjtw")
 params_container = NodePath("MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
 section_scene = ExtResource("6_87c7t")
+presets_scene = ExtResource("27_p762i")
 slider_scene = ExtResource("6_tarje")
 dropdown_scene = ExtResource("7_ggaj0")
 gradient_scene = ExtResource("6_yy2h4")

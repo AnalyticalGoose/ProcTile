@@ -32,6 +32,8 @@ func serialise_properties() -> Array[Array]:
 				section_data.append([i, 3, (node as ParamColour).colour_preview.color])
 			elif node is ParamSeeds:
 				section_data.append([i, 4, (node as ParamSeeds).seed_values])
+			elif node is ParamPresets:
+				section_data.append([i, 5, (node as ParamPresets).option_button.selected])
 		
 		properties.append(section_data)
 	
@@ -66,6 +68,10 @@ func load_serialised_properties(data : Array[Array]) -> void:
 					var seeds : ParamSeeds = section.get_child(child_index)
 					var seed_values : Array = param[2]
 					seeds.set_seeds_values(seed_values)
+				5:
+					var presets : ParamPresets = section.get_child(child_index)
+					var index : int = param[2]
+					presets.option_button.select(index)
 
 
 func set_section_visibility(visibility : bool) -> void:
