@@ -17,7 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - Castle Wall [GH-a6c6bd4](https://github.com/AnalyticalGoose/ProcTile/commit/a6c6bd4c5b74642acad7e0fa228899e553a926cc)
     - Grass Lawn [GH-ca64e20](https://github.com/AnalyticalGoose/ProcTile/commit/ca64e20654e82872868e5d6087de6f7a972f6aa1)
     - Pixel Uneven Wall [GH-503ec5d](https://github.com/AnalyticalGoose/ProcTile/commit/503ec5d7797b9ac0d2da7bf93ac0f8ab01b35d6a)
- 
+    - Pixel Wooden Floor [GH-e4fc37c](https://github.com/AnalyticalGoose/ProcTile/commit/e4fc37c0fa5c6e5c4b673ac64ed4fcef0efbd708)
+
 ### Changed
 - Migrate ProcTile to Godot 4.4 [GH-6cf65fa](https://github.com/AnalyticalGoose/ProcTile/commit/6cf65fac14d2ec063a3a27a007d29ca50083b416)
 - Improve camera controller consistency prevent snapping on Y-axis [GH-550ca26](https://github.com/AnalyticalGoose/ProcTile/issues/8)
