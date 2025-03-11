@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://qs8g653e8e0b"]
+[gd_scene load_steps=10 format=3 uid="uid://qs8g653e8e0b"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_hn53t"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_61vkc"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_yqtfe"]
 [ext_resource type="Texture2D" uid="uid://bm40h3qk5cxtb" path="res://materials/2D/pixel/pixel_uneven_wall/pixel_uneven_wall_preview.jpg" id="5_3pcye"]
 [ext_resource type="Texture2D" uid="uid://cdrxwfdkdgp0e" path="res://materials/2D/pixel/pixel_uneven_wall/pixel_uneven_wall_thumb.jpg" id="6_5df0m"]
+[ext_resource type="Texture2D" uid="uid://dectje1rgk2fi" path="res://materials/2D/pixel/pixel_wooden_floor/pixel_wooden_floor_preview.jpg" id="6_gnb8n"]
+[ext_resource type="Texture2D" uid="uid://b4r2gor7pwfjw" path="res://materials/2D/pixel/pixel_wooden_floor/pixel_wooden_floor_thumb.jpg" id="8_j8hmt"]
 
 [node name="AssetSelector_2D" type="GridContainer"]
 offset_right = 264.0
@@ -17,14 +19,14 @@ theme = ExtResource("1_hn53t")
 columns = 4
 script = ExtResource("2_61vkc")
 asset_preview_scene = ExtResource("3_yqtfe")
-preview_images = Array[CompressedTexture2D]([ExtResource("3_xcbjs"), ExtResource("5_3pcye")])
+preview_images = Array[CompressedTexture2D]([ExtResource("3_xcbjs"), ExtResource("5_3pcye"), ExtResource("6_gnb8n")])
 
 [node name="PixelBrickWallBtn" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 toggle_mode = true
-text = "Pixel Brick 
+text = "Brick 
 Wall
 "
 icon = ExtResource("3_qwbr1")
@@ -37,10 +39,23 @@ custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 toggle_mode = true
-text = "Pixel Uneven
+text = "Uneven
 Wall
 "
 icon = ExtResource("6_5df0m")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="PixelWoodenFloorBtn" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Wooden
+Floor
+"
+icon = ExtResource("8_j8hmt")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true

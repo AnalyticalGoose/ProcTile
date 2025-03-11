@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bowvgoh0k6n0k"
+path="res://.godot/imported/pixel_wooden_floor_compute.glsl-468098b36dc8c234141f4a76be810f65.res"
+
+[deps]
+
+source_file="res://materials/2D/pixel/pixel_wooden_floor/pixel_wooden_floor_compute.glsl"
+dest_files=["res://.godot/imported/pixel_wooden_floor_compute.glsl-468098b36dc8c234141f4a76be810f65.res"]
+
+[params]
+

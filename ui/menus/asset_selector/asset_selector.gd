@@ -35,8 +35,6 @@ func _ready() -> void:
 	close_preview_timer.timeout.connect(_on_close_preview_timer_timeout)
 	@warning_ignore_restore("return_value_discarded")
 	add_child(close_preview_timer)
-	
-	#asset_preview = asset_preview_scene.instantiate()
 
 
 func _on_asset_selected(index : int, button : Button) -> void:
