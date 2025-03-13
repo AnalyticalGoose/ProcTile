@@ -61,11 +61,16 @@ func setup_properties(data : Array) -> void:
 
 # Alternative to setup_properties, for loading save data
 func load_properties(save_data : Array) -> void:
+	# Rebuild control nodes to ensure state is not saved between versions of the same shader.
+	control_nodes.clear()
+	for control_node : ParamGradientControl in gradient_controls_container.get_children():
+		control_node.queue_free()
+	controls_created = false
+	hide_gradient_texture()
+	
 	_position_data = save_data[0]
 	colour_data = save_data[1]
-	
 	_setup_gradient()
-	
 	compute_shader.rebuild_storage_buffer(buffer_indexes[0], buffer_sets[0], _position_data.to_byte_array())
 	compute_shader.rebuild_storage_buffer(buffer_indexes[1], buffer_sets[1], PackedColorArray(colour_data).to_byte_array())
 
@@ -223,7 +228,6 @@ func _on_controls_container_gui_input(event: InputEvent) -> void:
 		if gradient_expanded:
 			var mouse_pos_x : float = (get_global_mouse_position() - gradient_controls_container.global_position).x
 			create_control(mouse_pos_x)
-			#var created_control_index : int = 
 			ActionsManager.new_undo_action = [3, self, 6, (gradient_controls_container.get_child(-1) as ParamGradientControl).index, mouse_pos_x]
 		else:
 			show_gradient_texture()
