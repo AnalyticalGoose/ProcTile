@@ -140,6 +140,7 @@ params_container = NodePath("../../../ParamsWindow/MarginContainer/ScrollContain
 asset_manager = NodePath("../../../AssetsWindow")
 
 [node name="EditMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
+visible = false
 layout_mode = 2
 theme = ExtResource("1_x425p")
 disabled = true
@@ -186,6 +187,7 @@ popup/item_12/text = "     Quit"
 popup/item_12/id = 8
 
 [node name="HelpMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
+visible = false
 layout_mode = 2
 theme = ExtResource("1_x425p")
 disabled = true
