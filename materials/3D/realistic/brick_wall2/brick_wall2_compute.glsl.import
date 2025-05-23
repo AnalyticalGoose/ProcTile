@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bhac464qjv3qg"
+path="res://.godot/imported/brick_wall2_compute.glsl-9a7c6b43246321007d55427ebbfa3e9c.res"
+
+[deps]
+
+source_file="res://materials/3D/realistic/brick_wall2/brick_wall2_compute.glsl"
+dest_files=["res://.godot/imported/brick_wall2_compute.glsl-9a7c6b43246321007d55427ebbfa3e9c.res"]
+
+[params]
+
