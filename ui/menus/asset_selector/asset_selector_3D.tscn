@@ -14,11 +14,10 @@
 [ext_resource type="Texture2D" uid="uid://f2rscwgloa7s" path="res://materials/3D/realistic/grass_lawn/grass_lawn_preview.jpg" id="8_0vw2s"]
 [ext_resource type="Texture2D" uid="uid://dn0k4bykkc620" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.jpg" id="10_30u3j"]
 [ext_resource type="Texture2D" uid="uid://38eoejnafcen" path="res://materials/3D/realistic/castle_wall/castle_wall_thumb.jpg" id="11_op0s8"]
+[ext_resource type="Texture2D" uid="uid://c5p3d5p18x5yw" path="res://materials/3D/realistic/brick_wall2/brick_wall_thumb.jpg" id="12_3a0xj"]
 [ext_resource type="Texture2D" uid="uid://4gwoqhhams0l" path="res://materials/3D/realistic/grass_lawn/grass_lawn_thumb.jpg" id="13_cg41i"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0vw2s"]
-
-[sub_resource type="Texture2DRD" id="Texture2DRD_0vw2s"]
 
 [node name="AssetSelector_3D" type="GridContainer"]
 offset_right = 264.0
@@ -63,7 +62,7 @@ toggle_mode = true
 text = "Brick Wall2
 
 "
-icon = SubResource("Texture2DRD_0vw2s")
+icon = ExtResource("12_3a0xj")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true

@@ -11,6 +11,7 @@ func _on_file_selected(path: String) -> void:
 		Logger.puts_error("Cannot find user settings at" + path)
 	
 	var id : int = cfg_file.get_value("compatibility", "material_id")
+	
 	if DataManager.current_material_id != id:
 		var index : int = DataManager.get_material_index_from_id(id)
 		if index:
