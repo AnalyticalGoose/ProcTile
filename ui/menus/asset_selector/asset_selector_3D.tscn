@@ -1,12 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://dcq3ymn0d0he4"]
+[gd_scene load_steps=17 format=3 uid="uid://dcq3ymn0d0he4"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_6ylha"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_0hasw"]
 [ext_resource type="Texture2D" uid="uid://1aivf0sbe7cd" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_thumb.jpg" id="3_l6j51"]
 [ext_resource type="Texture2D" uid="uid://b7nlbxvya41to" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_preview.jpg" id="3_udois"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_uoe7d"]
-[ext_resource type="Texture2D" uid="uid://cgo2e65dlmgk3" path="res://materials/3D/realistic/brick_wall/brick_wall_preview.jpg" id="4_e7nfv"]
-[ext_resource type="Texture2D" uid="uid://b20x6qqfho2y" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="5_ls8yp"]
+[ext_resource type="Texture2D" uid="uid://cq7fq88hfmut5" path="res://materials/3D/realistic/brick_wall/brick_wall_preview.jpg" id="4_e7nfv"]
+[ext_resource type="Texture2D" uid="uid://c5p3d5p18x5yw" path="res://materials/3D/realistic/brick_wall/brick_wall_thumb.jpg" id="5_ls8yp"]
 [ext_resource type="Texture2D" uid="uid://yc88l1n61tf5" path="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg" id="5_se0ns"]
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="6_8ojcc"]
 [ext_resource type="Texture2D" uid="uid://bswnyx2puee3h" path="res://materials/3D/realistic/castle_wall/castle_wall_preview.jpg" id="6_d04yi"]
@@ -14,7 +14,6 @@
 [ext_resource type="Texture2D" uid="uid://f2rscwgloa7s" path="res://materials/3D/realistic/grass_lawn/grass_lawn_preview.jpg" id="8_0vw2s"]
 [ext_resource type="Texture2D" uid="uid://dn0k4bykkc620" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_thumb.jpg" id="10_30u3j"]
 [ext_resource type="Texture2D" uid="uid://38eoejnafcen" path="res://materials/3D/realistic/castle_wall/castle_wall_thumb.jpg" id="11_op0s8"]
-[ext_resource type="Texture2D" uid="uid://c5p3d5p18x5yw" path="res://materials/3D/realistic/brick_wall2/brick_wall_thumb.jpg" id="12_3a0xj"]
 [ext_resource type="Texture2D" uid="uid://4gwoqhhams0l" path="res://materials/3D/realistic/grass_lawn/grass_lawn_thumb.jpg" id="13_cg41i"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0vw2s"]
@@ -50,19 +49,6 @@ text = "Brick Wall
 
 "
 icon = ExtResource("5_ls8yp")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
-[node name="BrickWallBtn2" type="Button" parent="."]
-custom_minimum_size = Vector2(66, 100)
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-toggle_mode = true
-text = "Brick Wall2
-
-"
-icon = ExtResource("12_3a0xj")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
