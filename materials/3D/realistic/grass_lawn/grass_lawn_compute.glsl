@@ -144,49 +144,46 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 }
 
 
-float make_tileable(vec2 uv, float blend_width) {
-    // Sample at original UV & wrapped offsets
-    float sample_A = imageLoad(r16f_buffer_1, ivec2(uv * params.texture_size)).r;
-    float sample_B = imageLoad(r16f_buffer_1, ivec2(fract(uv + vec2(0.5)) * params.texture_size)).r;
-    float sample_C = imageLoad(r16f_buffer_1, ivec2(fract(uv + vec2(0.25)) * params.texture_size)).r;
-
-    // Compute a blend coefficient based on distance from the center (0.5, 0.5).
-    float dist_from_centre = length(uv - vec2(0.5));
-    float coef_AB = sin(1.57079632679 * clamp((dist_from_centre - 0.5 + blend_width) / blend_width, 0.0, 1.0));
-    
-    // Compute another blend coefficient based on the distance from the middle of the edges.
-    float d_left   = length(uv - vec2(0.0, 0.5));
-    float d_bottom = length(uv - vec2(0.5, 0.0));
-    float d_right  = length(uv - vec2(1.0, 0.5));
-    float d_top    = length(uv - vec2(0.5, 1.0));
-    float min_edge_dist = min(min(d_left, d_bottom), min(d_right, d_top));
-    float coef_ABC = sin(1.57079632679 * clamp((min_edge_dist - blend_width) / blend_width, 0.0, 1.0));
-    
-    // Blend the first two samples using coef_AB, then blend with the third sample using coef_ABC.
-    float mix_AB = mix(sample_A, sample_B, coef_AB);
-    return mix(sample_C, mix_AB, coef_ABC);
-}
-
-
 // Adapated from Bycob / BynaryCobweb - https://github.com/Bycob/world - World generation tool
 // https://github.com/Bycob/world/blob/develop/projects/vkworld/shaders/terrains/texture-grass.frag
 float get_grass_blade(vec2 position, vec2 grass_pos) {
     // Random blade vector in [-1.0, 1.0]. Scale and bias z component [0.0, 0.4]
     vec3 rand_blade = rand3(grass_pos * 123512.41 * seed.grass_seed) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
     rand_blade.z = rand_blade.z * 0.2 + 0.2;
-    
+   
     // Direction, length and relative position to pixel
     vec2 blade_dir = normalize(rand_blade.xy);
     float length_bias = max((params.lookup_dist / 100) - 0.06, 0.01);
     float blade_length = rand(grass_pos * 102348.7) * length_bias + 0.012;
+   
+    // Calculate relative position with proper wrapping
     vec2 rel_pos = position - grass_pos;
+    
+    // NOTE - I'm unsure how needed all this is - however it's the only way I've managed to get completely reliable wrapping without edge cases.
+    // Handle wrapping by checking all possible wrapped positions
+    float min_dist_sq = 1e6;
+    vec2 best_rel_pos = rel_pos; 
+    // Check the 9 possible positions (original + 8 wrapped neighbors)
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            vec2 test_rel_pos = rel_pos + vec2(float(dx), float(dy));
+            float dist_sq = dot(test_rel_pos, test_rel_pos);
+            if (dist_sq < min_dist_sq) {
+                min_dist_sq = dist_sq;
+                best_rel_pos = test_rel_pos;
+            }
+        }
+    }
+    
+    // Use the shortest wrapped relative position
+    rel_pos = best_rel_pos;
     
     // Project onto blade direction, compute perpendicular distance and normalise
     float proj = dot(blade_dir, rel_pos);
     vec2 perp = vec2(-blade_dir.y, blade_dir.x);
     float perp_dist = dot(perp, rel_pos);
     float t = proj / blade_length;
-    
+   
     // Check if the pixel lies within the blade region.
     if(t >= 0.0 && t <= 1.0 && abs(perp_dist) <= (params.blade_width / 10000) * (1.0 - t * t)) {
         return rand_blade.z * t;
@@ -197,23 +194,28 @@ float get_grass_blade(vec2 position, vec2 grass_pos) {
 
 
 float tile_grass(vec2 position) {
-    float _blades_spacing = params.blades_spacing / 1000;
-    int _lookup_dist = int(min(params.lookup_dist, 6.0));
-
-   	int x_count = int(1.0 / _blades_spacing);
-    int y_count = int(1.0 / _blades_spacing);
-    int ox = int(position.x * float(x_count));
-    int oy = int(position.y * float(y_count));
-
+    float blades_spacing = params.blades_spacing / 1000;
+    int lookup_dist = int(min(params.lookup_dist, 6.0));
+    int x_count = int(1.0 / blades_spacing);
+    int y_count = int(1.0 / blades_spacing);
+    
+    // Wrap the input position to [0,1] range
+    vec2 wrapped_position = mod(position, 1.0);
+    
+    int ox = int(wrapped_position.x * float(x_count));
+    int oy = int(wrapped_position.y * float(y_count));
+   
     float max_z = 0.0;
-
-    for (int i = -_lookup_dist; i < _lookup_dist; ++i) {
-        for (int j = -_lookup_dist; j < _lookup_dist; ++j) {
-            vec2 u_pos = vec2(ox + i, oy + j);
-            vec2 grass_pos = (u_pos * _blades_spacing + rand2(u_pos) * 0.004);
-
-            float z = get_grass_blade(position, grass_pos);
-
+    for (int i = -lookup_dist; i < lookup_dist; ++i) {
+        for (int j = -lookup_dist; j < lookup_dist; ++j) {
+            // Wrap the grid indices to handle boundary conditions
+            int wrapped_x = (ox + i + x_count * 100) % x_count; // Add large offset to handle negative values
+            int wrapped_y = (oy + j + y_count * 100) % y_count;
+            
+            vec2 u_pos = vec2(wrapped_x, wrapped_y);
+            vec2 grass_pos = mod((u_pos * blades_spacing + rand2(u_pos) * 0.004), 1.0);
+            
+            float z = get_grass_blade(wrapped_position, grass_pos);
             if (z > max_z) {
                 max_z = z;
             }
@@ -249,17 +251,18 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
     
     for (int dx = -2; dx <= 2; ++dx) {
         for (int dy = -2; dy <= 2; ++dy) {
-            vec2 pos = uv*tile+vec2(float(dx), float(dy)); pos = fract((floor(mod(pos, tile))+vec2(0.5))/tile)-vec2(0.5);
+            vec2 pos = uv * tile + vec2(float(dx), float(dy)); 
+            pos = fract((floor(mod(pos, tile)) + vec2(0.5)) / tile) - vec2(0.5);
 			vec2 seed = rand2(pos+seed_offset);
 			float col = rand(seed);
 			pos = fract(pos + vec2(0.0 / tile.x, 0.0) * floor(mod(pos.y * tile.y, 2.0)) + 1.0 * seed / tile);
 
-			vec2 pv = fract(uv - pos)-vec2(0.5);
+			vec2 pv = fract(uv - pos) - vec2(0.5);
 			seed = rand2(seed);
 			float angle = (seed.x * 2.0 - 1.0) * 180.0 * 0.01745329251;
 			float ca = cos(angle);
 			float sa = sin(angle);
-			pv = vec2(ca*pv.x+sa*pv.y, -sa*pv.x+ca*pv.y);
+			pv = vec2(ca * pv.x + sa * pv.y, -sa * pv.x + ca * pv.y);
 			pv *= (seed.y-0.5) * 2.0 * _scale_variation + 1.0;
 			pv /= (vec2(params.clover_scale) / 100);
 			pv += vec2(0.5);
