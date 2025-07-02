@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
+
+## [0.1.2] - UNRELEASED
+
+### Added
+
+### Changed
+- Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
+- Improve Grass Lawn Material to by adding seamless tiling [GH-2fa0c63](https://github.com/AnalyticalGoose/ProcTile/commit/2fa0c63593d12aa1d77310c417ab7ad6d7de0b13)
+
+### Fixed
+
+
 ## [0.1.1] - 2025-03-17
  
 ### Added
