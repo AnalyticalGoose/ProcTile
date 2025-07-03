@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.1.2] - UNRELEASED
 
 ### Added
+- Add UI rotation gizmo to view and reset camera position [GH-0681889](https://github.com/AnalyticalGoose/ProcTile/commit/0681889d27c2d53c528e9beaba9128eaee4275aa)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
