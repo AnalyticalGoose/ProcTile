@@ -16,8 +16,9 @@ layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer_1;
-layout(rgba32f, set = 1, binding = 1) uniform image2D rgba32f_buffer_2;
+layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_2;
+layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_3;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
     float grain_seed_x;
@@ -54,6 +55,7 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float blend_right;
     float lines_scale_factor;
     float lines_opacity;
+    float blend_strength;
     float normals_format;
 	float texture_size;
 	float stage;
@@ -270,6 +272,7 @@ float fbm_distorted_2d(vec2 coord) {
     return fbm_2d(coord, 8, 0.5);
 }
 
+
 float fbm_musgrave_2d(vec2 coord, int iterations, float dimension, float size, float seed) {
     float noise_sum  = 0.0;
     float amplitude = 1.0;
@@ -293,6 +296,7 @@ vec2 fbm_wave_x_2d(vec2 coord) {
     return vec2(sin(wave_phase) * 0.5 + 0.5, coord.y);
 }
 // END OF CC BY-NC-SA 3.0 //
+
 
 
 vec4 gradient_fct(float x) {
@@ -320,6 +324,30 @@ vec3 map_bw_colours(float x, vec3 col_white, vec3 col_black) {
 }
 
 
+float make_tileable(vec2 uv, float blend_width) {
+    // Sample at original UV & wrapped offsets
+    float sample_A = imageLoad(r16f_buffer_1, ivec2(uv * params.texture_size)).r;
+    float sample_B = imageLoad(r16f_buffer_1, ivec2(fract(uv + vec2(0.5)) * params.texture_size)).r;
+    float sample_C = imageLoad(r16f_buffer_1, ivec2(fract(uv + vec2(0.25)) * params.texture_size)).r;
+
+    // Compute a blend coefficient based on distance from the center (0.5, 0.5).
+    float dist_from_centre = length(uv - vec2(0.5));
+    float coef_AB = sin(1.57079632679 * clamp((dist_from_centre - 0.5 + blend_width) / blend_width, 0.0, 1.0));
+    
+    // Compute another blend coefficient based on the distance from the middle of the edges.
+    float d_left   = length(uv - vec2(0.0, 0.5));
+    float d_bottom = length(uv - vec2(0.5, 0.0));
+    float d_right  = length(uv - vec2(1.0, 0.5));
+    float d_top    = length(uv - vec2(0.5, 1.0));
+    float min_edge_dist = min(min(d_left, d_bottom), min(d_right, d_top));
+    float coef_ABC = sin(1.57079632679 * clamp((min_edge_dist - blend_width) / blend_width, 0.0, 1.0));
+    
+    // Blend the first two samples using coef_AB, then blend with the third sample using coef_ABC.
+    float mix_AB = mix(sample_A, sample_B, coef_AB);
+    return mix(sample_C, mix_AB, coef_ABC);
+}
+
+
 // Generate normals
 vec3 sobel_filter(ivec2 pixel_coords, float amount, float size, bool noise) {
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
@@ -327,26 +355,25 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size, bool noise) {
 
     if (noise == true) {
         // Apply Sobel-like filter to compute gradient
-        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_2, pixel_coords + ivec2(e.x, e.y)).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_2, pixel_coords - ivec2(e.x, e.y)).r;
+        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_2, pixel_coords + ivec2(e.x, -e.y)).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_2, pixel_coords - ivec2(e.x, -e.y)).r;
+        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_2, pixel_coords + ivec2(2, 0)).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_2, pixel_coords - ivec2(2, 0)).r;
+        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_2, pixel_coords + ivec2(0, 2)).r;
+        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_2, pixel_coords - ivec2(0, 2)).r;
     }
     else {
-        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_3, pixel_coords + ivec2(e.x, e.y)).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_3, pixel_coords - ivec2(e.x, e.y)).r;
+        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_3, pixel_coords + ivec2(e.x, -e.y)).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_3, pixel_coords - ivec2(e.x, -e.y)).r;
+        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_3, pixel_coords + ivec2(2, 0)).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_3, pixel_coords - ivec2(2, 0)).r;
+        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_3, pixel_coords + ivec2(0, 2)).r;
+        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_3, pixel_coords - ivec2(0, 2)).r;
     }
-
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -378,25 +405,37 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
+        // can be removed / changed to new blend
         float _blend_left = params.blend_left / 100;
         float _blend_right = params.blend_right / 100;
-        float _roughness_value = params.roughness_value / 100;
-        float _roughness_width = params.roughness_width / 100;
 
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
         
-        // No tiling or mirroring
-        // float grain_base = fbm_distorted_2d(uv * grain_base_scale);
-        // grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
-
-        // Create a mirrored base for tiling by blending two base noise textures
-        vec2 mirrored_uv = vec2(1.0 - uv.x, uv.y);
-        float grain_base_a = fbm_distorted_2d(uv * grain_base_scale);
-        float grain_base_b = fbm_distorted_2d(mirrored_uv * grain_base_scale);
-        float blend = smoothstep(_blend_left, _blend_right, uv.x); 
-        float grain_base = mix(grain_base_a, grain_base_b, blend);
+        float grain_base = fbm_distorted_2d(uv * grain_base_scale);
         grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 
+        imageStore(r16f_buffer_1, ivec2(pixel), vec4(vec3(grain_base), 1.0));
+    }
+
+    if (params.stage == 1.0) {
+        float _roughness_value = params.roughness_value / 100;
+        float _roughness_width = params.roughness_width / 100;
+
+        // ADD SEED
+        const float plank_col_seed = 0.123871;
+
+        vec4 plank_bounding_rect = get_plank_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.offset, int(params.pattern));
+        vec4 plank_fill = round(vec4(fract(plank_bounding_rect.xy), plank_bounding_rect.zw - plank_bounding_rect.xy) * params.texture_size) / params.texture_size;
+        vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((plank_col_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
+
+        vec2 plank_uv = fract(uv - vec2(0.5 * (2.0 * random_plank_colour.r - 1.0), 0.250 * (2.0 * random_plank_colour.r - 1.0)));
+        ivec2 transformed_pixel = ivec2(plank_uv * _texture_size);
+
+        vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
+
+        float grain_base = make_tileable(plank_uv, params.blend_strength);
+
+        
         float roughness_input = 1.0 - clamp((grain_base - _roughness_value) / _roughness_width + 0.5, 0.0, 1.0);
         imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness_input), 1.0));
 
@@ -417,20 +456,19 @@ void main() {
         
         // Mix extra layers with the detailed base
         grain_detailed *= dirt * grain_lines;
-        imageStore(rgba32f_buffer_1, ivec2(pixel), vec4(vec3(grain_detailed), 1.0));
+        imageStore(r16f_buffer_2, ivec2(pixel), vec4(vec3(grain_detailed), 1.0));
 
         imageStore(metallic_buffer, ivec2(pixel), vec4(vec3(0.0), 1.0));
     }
 
-
-    if (params.stage == 1.0) {
+    if (params.stage == 2.0) {
         float _gap = params.gap / 100;
 
         // Generate base plank pattern
         vec4 plank_bounding_rect = get_plank_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.offset, int(params.pattern));
         float bevel_noise = fbm_perlin_2d(uv, vec2(13.0, 20.0), 4, 0.50, 0.0, 0.0);
         float pattern = get_plank_pattern(uv, plank_bounding_rect.xy, plank_bounding_rect.zw, 0.0, 0.0, max(0.001, _gap * bevel_noise), 1.0 / params.rows);
-        imageStore(rgba32f_buffer_2, ivec2(pixel), vec4(vec3(pattern), 1.0));
+        imageStore(r16f_buffer_3, ivec2(pixel), vec4(vec3(pattern), 1.0));
 
         // Store occlusion and roughness maps
         float occlusion_tone_val = 1.0 - occlusion_strength;
@@ -440,7 +478,8 @@ void main() {
         imageStore(orm_buffer, ivec2(pixel), vec4(vec3(occlusion_input, roughness_input, 0.0), 1.0));
 
         // Apply colour to the detailed base texture
-        float grain_detailed = imageLoad(rgba32f_buffer_1, ivec2(pixel)).r;
+        float grain_detailed = imageLoad(r16f_buffer_2, ivec2(pixel)).r;
+
         vec3 wood_colour = gradient_fct(clamp(grain_detailed, 0.01, 0.99)).rgb;    
         vec3 coloured_pattern = map_bw_colours(pattern, vec3(1.0), gap_col.rgb);
         vec3 albedo_input = multiply(wood_colour, coloured_pattern, 1.0);
@@ -448,7 +487,7 @@ void main() {
         imageStore(albedo_buffer, ivec2(pixel), vec4(albedo_input, 1.0));
     }
 
-    if (params.stage == 2.0) {
+    if (params.stage == 3.0) {
         float _noise_sobel_strength = params.noise_sobel_strength / 100;
         float _gap_sobel_strength = params.gap_sobel_strength / 100;
 
@@ -466,32 +505,4 @@ void main() {
             imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
         }
     }
-
-
-    /// MISC EXPERIMENTAL TILING (stage 0) - isn't working quite yet, however if the artificial seam can be fixed it will look much better
-    /// The best solution would be to create a tileable grain base / musgrave noise.
-        
-    // // Compute the plank row (every other row needs tiling)
-    // int row = int(mod(floor(uv.y * params.rows), 2.0));
-
-    // float grain_base;
-    // if (row == 0) {
-    //     // For rows that do not need tiling, use the texture without edge blending
-    //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
-    // } else {
-    //     // Apply the edge blending logic for rows that need tiling
-    //     float edge_blend = smoothstep(0.0, 1.0, abs(fract(uv.x) - 0.5) * 2.0);
-
-    //     // Sample the base texture
-    //     grain_base = fbm_distorted_2d(uv * grain_base_scale);
-
-    //     // Blend the left and right edges for seamless tiling
-    //     float left_edge = fbm_distorted_2d(vec2(fract(uv.x - (1.0 / params.columns)), uv.y) * grain_base_scale);
-    //     float right_edge = fbm_distorted_2d(vec2(fract(uv.x + (1.0 / params.columns)), uv.y) * grain_base_scale);
-
-    //     // Combine the left and right edges smoothly
-    //     grain_base = mix(left_edge, right_edge, edge_blend);
-
-    //     // Apply the grain details
-    //     grain_base = mix(grain_base, grain_base_highs, grain_base_lows);
 }
