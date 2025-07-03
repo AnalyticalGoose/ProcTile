@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=45 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://de5bwi55mryfi" path="res://ui/bars/data_bar.gd" id="2_pqncx"]
 [ext_resource type="Script" uid="uid://cmlrcvh4uhiin" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
 [ext_resource type="PackedScene" uid="uid://ci4s2srdlp13f" path="res://ui/menus/export/export.tscn" id="3_34tcw"]
+[ext_resource type="Script" uid="uid://bq13cvggwqb2r" path="res://ui/gizmo_overlay.gd" id="3_vgtty"]
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
@@ -40,6 +41,10 @@
 [ext_resource type="Texture2D" uid="uid://yc88l1n61tf5" path="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg" id="28_l1w2y"]
 [ext_resource type="Texture2D" uid="uid://f2rscwgloa7s" path="res://materials/3D/realistic/grass_lawn/grass_lawn_preview.jpg" id="29_mpvo8"]
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="30_6gefn"]
+[ext_resource type="PackedScene" uid="uid://dy5akndp03yu4" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.tscn" id="41_iw6jt"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
+viewport_path = NodePath("GizmoSubViewport")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
@@ -66,20 +71,36 @@ file_menu = NodePath("NavigationBar/NavigationMenu/FileMenuButton")
 pause_renderer_btn = NodePath("RendererToolbar/RightRendererToolbar/PauseRendererButton")
 params_container = NodePath("ParamsWindow/MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
 
-[node name="RendererWindow" type="Control" parent="."]
+[node name="RendererWindow" type="Control" parent="." node_paths=PackedStringArray("rotation_gizmo")]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -960.0
-offset_top = -540.0
-offset_right = 960.0
-offset_bottom = 540.0
+offset_left = -630.0
+offset_top = -475.0
+offset_right = 630.0
+offset_bottom = 510.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_av4mg")
+rotation_gizmo = NodePath("../GizmoSubViewport/ViewportOrientationGizmo")
+
+[node name="GizmoOverlay" type="TextureRect" parent="RendererWindow" node_paths=PackedStringArray("gizmo_viewport")]
+visibility_layer = 524289
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -97.0
+offset_top = 39.0
+offset_right = 3.0
+offset_bottom = 139.0
+grow_horizontal = 0
+texture = SubResource("ViewportTexture_iw6jt")
+script = ExtResource("3_vgtty")
+gizmo_viewport = NodePath("../../GizmoSubViewport")
 
 [node name="NavigationBar" type="PanelContainer" parent="."]
 top_level = true
@@ -156,6 +177,53 @@ item_count = 13
 popup/item_0/text = "     New..."
 popup/item_0/id = 0
 popup/item_0/disabled = true
+popup/item_1/text = "     Open..."
+popup/item_1/id = 1
+popup/item_1/disabled = true
+popup/item_2/text = "     Recent"
+popup/item_2/id = 2
+popup/item_2/disabled = true
+popup/item_3/id = 3
+popup/item_3/disabled = true
+popup/item_3/separator = true
+popup/item_4/text = "     Save"
+popup/item_4/id = 3
+popup/item_4/disabled = true
+popup/item_5/text = "     Save as..."
+popup/item_5/id = 4
+popup/item_5/disabled = true
+popup/item_6/id = 6
+popup/item_6/disabled = true
+popup/item_6/separator = true
+popup/item_7/text = "     Import material..."
+popup/item_7/id = 5
+popup/item_7/disabled = true
+popup/item_8/text = "     Import mesh..."
+popup/item_8/id = 6
+popup/item_8/disabled = true
+popup/item_9/id = 9
+popup/item_9/disabled = true
+popup/item_9/separator = true
+popup/item_10/text = "     Export..."
+popup/item_10/id = 7
+popup/item_10/disabled = true
+popup/item_11/id = 11
+popup/item_11/disabled = true
+popup/item_11/separator = true
+popup/item_12/text = "     Quit"
+popup/item_12/id = 8
+
+[node name="WindowMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
+visible = false
+layout_mode = 2
+theme = ExtResource("1_x425p")
+text = "Window"
+switch_on_hover = true
+item_count = 13
+popup/item_0/text = "     Direction Gizmo"
+popup/item_0/checkable = 1
+popup/item_0/checked = true
+popup/item_0/id = 0
 popup/item_1/text = "     Open..."
 popup/item_1/id = 1
 popup/item_1/disabled = true
@@ -535,8 +603,23 @@ theme = ExtResource("5_hrfci")
 theme_override_constants/separation = 10
 script = ExtResource("7_08hm7")
 
+[node name="GizmoSubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+physics_object_picking = true
+size = Vector2i(100, 100)
+
+[node name="GizmoCamera3D" type="Camera3D" parent="GizmoSubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0207476, -0.00543851, 0.192096)
+cull_mask = 524288
+projection = 1
+size = 0.3
+far = 1.0
+
+[node name="ViewportOrientationGizmo" parent="GizmoSubViewport" instance=ExtResource("41_iw6jt")]
+
 [connection signal="mouse_entered" from="RendererWindow" to="RendererWindow" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="RendererWindow" to="RendererWindow" method="_on_mouse_exited"]
+[connection signal="gui_input" from="RendererWindow/GizmoOverlay" to="RendererWindow/GizmoOverlay" method="_on_gui_input"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/UndoBtn" to="RendererToolbar" method="_on_undo_btn_pressed"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
@@ -549,5 +632,6 @@ script = ExtResource("7_08hm7")
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="GizmoClicked" from="GizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]

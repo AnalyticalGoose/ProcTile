@@ -1,0 +1,121 @@
+[gd_scene load_steps=14 format=3 uid="uid://dy5akndp03yu4"]
+
+[ext_resource type="Texture2D" uid="uid://cewp58y2ru2ce" path="res://ui/gizmos/viewport_orientation/Xcircle.png" id="1_epmli"]
+[ext_resource type="Script" uid="uid://brkxsdgvcpx0l" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.gd" id="1_nwp2i"]
+[ext_resource type="Texture2D" uid="uid://c5w5ngkufhdcq" path="res://ui/gizmos/viewport_orientation/Ycircle.png" id="2_nwp2i"]
+[ext_resource type="Texture2D" uid="uid://bh2pft4gh5f5a" path="res://ui/gizmos/viewport_orientation/Zcircle.png" id="3_hl2an"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nwp2i"]
+shading_mode = 0
+disable_ambient_light = true
+albedo_color = Color(0.74902, 0.196078, 0.196078, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hl2an"]
+material = SubResource("StandardMaterial3D_nwp2i")
+size = Vector3(0.1, 0.005, 0.005)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_epmli"]
+size = Vector3(0.05, 0.05, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ln52a"]
+shading_mode = 0
+disable_ambient_light = true
+albedo_color = Color(0.439216, 0.611765, 0.109804, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_obdev"]
+material = SubResource("StandardMaterial3D_ln52a")
+size = Vector3(0.005, 0.005, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nwp2i"]
+size = Vector3(0.05, 0.05, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0d455"]
+shading_mode = 0
+disable_ambient_light = true
+albedo_color = Color(0.145098, 0.396078, 0.85098, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_epmli"]
+material = SubResource("StandardMaterial3D_0d455")
+size = Vector3(0.005, 0.005, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hl2an"]
+size = Vector3(0.05, 0.05, 0.05)
+
+[node name="ViewportOrientationGizmo" type="Node3D" node_paths=PackedStringArray("x_axis_sprite", "x_axis_mesh", "y_axis_sprite", "y_axis_mesh", "z_axis_sprite", "z_axis_mesh")]
+script = ExtResource("1_nwp2i")
+x_axis_sprite = NodePath("XAxis")
+x_axis_mesh = NodePath("XAxis/XAxisLine")
+y_axis_sprite = NodePath("YAxis")
+y_axis_mesh = NodePath("YAxis/YAxisLine")
+z_axis_sprite = NodePath("ZAxis")
+z_axis_mesh = NodePath("ZAxis/ZAxisLine")
+
+[node name="XAxis" type="Sprite3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.1, 0, 0)
+layers = 524288
+modulate = Color(0.748304, 0.194245, 0.196512, 1)
+pixel_size = 0.001
+billboard = 1
+double_sided = false
+no_depth_test = true
+texture = ExtResource("1_epmli")
+
+[node name="XAxisLine" type="MeshInstance3D" parent="XAxis"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0.047)
+layers = 524288
+mesh = SubResource("BoxMesh_hl2an")
+
+[node name="XAxisArea3D" type="Area3D" parent="XAxis"]
+
+[node name="XAxisCollisionShape3D" type="CollisionShape3D" parent="XAxis/XAxisArea3D"]
+shape = SubResource("BoxShape3D_epmli")
+
+[node name="YAxis" type="Sprite3D" parent="."]
+transform = Transform3D(1.91069e-15, 1, 4.37114e-08, 4.37114e-08, -4.37114e-08, 1, 1, 0, -4.37114e-08, 0, 0.1, 0)
+layers = 524288
+modulate = Color(0.437673, 0.610706, 0.110658, 1)
+pixel_size = 0.001
+billboard = 1
+double_sided = false
+no_depth_test = true
+texture = ExtResource("2_nwp2i")
+
+[node name="YAxisLine" type="MeshInstance3D" parent="YAxis"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.10872e-10, -1.10872e-10, -0.0474635)
+layers = 524288
+mesh = SubResource("BoxMesh_obdev")
+
+[node name="YAxisArea3D" type="Area3D" parent="YAxis"]
+
+[node name="YAxisCollisionShape3D" type="CollisionShape3D" parent="YAxis/YAxisArea3D"]
+shape = SubResource("BoxShape3D_nwp2i")
+
+[node name="ZAxis" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+layers = 524288
+modulate = Color(0.143521, 0.39533, 0.849149, 1)
+pixel_size = 0.001
+billboard = 1
+double_sided = false
+no_depth_test = true
+texture = ExtResource("3_hl2an")
+
+[node name="ZAxisLine" type="MeshInstance3D" parent="ZAxis"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0473175)
+layers = 524288
+mesh = SubResource("BoxMesh_epmli")
+
+[node name="ZAxisArea3D" type="Area3D" parent="ZAxis"]
+
+[node name="ZAxisCollisionShade3D" type="CollisionShape3D" parent="ZAxis/ZAxisArea3D"]
+shape = SubResource("BoxShape3D_hl2an")
+
+[connection signal="input_event" from="XAxis/XAxisArea3D" to="." method="_on_x_axis_area_3d_input_event"]
+[connection signal="mouse_entered" from="XAxis/XAxisArea3D" to="." method="_on_x_axis_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="XAxis/XAxisArea3D" to="." method="_on_x_axis_area_3d_mouse_exited"]
+[connection signal="input_event" from="YAxis/YAxisArea3D" to="." method="_on_y_axis_area_3d_input_event"]
+[connection signal="mouse_entered" from="YAxis/YAxisArea3D" to="." method="_on_y_axis_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="YAxis/YAxisArea3D" to="." method="_on_y_axis_area_3d_mouse_exited"]
+[connection signal="input_event" from="ZAxis/ZAxisArea3D" to="." method="_on_z_axis_area_3d_input_event"]
+[connection signal="mouse_entered" from="ZAxis/ZAxisArea3D" to="." method="_on_z_axis_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="ZAxis/ZAxisArea3D" to="." method="_on_z_axis_area_3d_mouse_exited"]

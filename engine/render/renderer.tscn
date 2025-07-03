@@ -56,6 +56,7 @@ skeleton = NodePath("")
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+cull_mask = 524287
 
 [node name="Environment" type="Node3D" parent="."]
 
