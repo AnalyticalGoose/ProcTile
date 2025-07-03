@@ -48,13 +48,6 @@ script = ExtResource("1_11juy")
 [node name="MeshPivot" type="Node3D" parent="."]
 
 [node name="Mesh" type="MeshInstance3D" parent="MeshPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
-material_override = SubResource("ShaderMaterial_cnb6x")
-mesh = ExtResource("3_8fw8p")
-skeleton = NodePath("")
-
-[node name="Mesh2" type="MeshInstance3D" parent="MeshPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 material_override = SubResource("ShaderMaterial_cnb6x")
 mesh = ExtResource("3_8fw8p")
 skeleton = NodePath("")

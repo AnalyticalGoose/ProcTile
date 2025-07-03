@@ -24,6 +24,7 @@ layout(set = 2, binding = 0, std430) buffer readonly Seeds {
     float grain_seed_x;
     float grain_seed_y;
     float grain_lines_seed;
+    float uv_seed;
 } seed;
 
 layout(set = 3, binding = 0, std430) buffer readonly GradientOffsets {
@@ -51,11 +52,8 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float roughness_width;
     float noise_sobel_strength;
     float gap_sobel_strength;
-    float blend_left;
-    float blend_right;
     float lines_scale_factor;
     float lines_opacity;
-    float blend_strength;
     float normals_format;
 	float texture_size;
 	float stage;
@@ -68,6 +66,8 @@ const float grain_base_lows = 0.1;
 const float grain_detailed_scale = 4.6;
 const int grain_detailed_iterations = 8;
 const float grain_detailed_size = 2.5;
+
+const float blend_strength = 0.12;
 
 const vec2 dirt_scale = vec2(0.01, 0.15);
 const int dirt_iterations = 15;
@@ -405,10 +405,6 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
-        // can be removed / changed to new blend
-        float _blend_left = params.blend_left / 100;
-        float _blend_right = params.blend_right / 100;
-
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
         
         float grain_base = fbm_distorted_2d(uv * grain_base_scale);
@@ -421,21 +417,16 @@ void main() {
         float _roughness_value = params.roughness_value / 100;
         float _roughness_width = params.roughness_width / 100;
 
-        // ADD SEED
-        const float plank_col_seed = 0.123871;
-
         vec4 plank_bounding_rect = get_plank_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.offset, int(params.pattern));
         vec4 plank_fill = round(vec4(fract(plank_bounding_rect.xy), plank_bounding_rect.zw - plank_bounding_rect.xy) * params.texture_size) / params.texture_size;
-        vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((plank_col_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
+        vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((seed.uv_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
 
         vec2 plank_uv = fract(uv - vec2(0.5 * (2.0 * random_plank_colour.r - 1.0), 0.250 * (2.0 * random_plank_colour.r - 1.0)));
         ivec2 transformed_pixel = ivec2(plank_uv * _texture_size);
 
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
+        float grain_base = make_tileable(plank_uv, blend_strength);
 
-        float grain_base = make_tileable(plank_uv, params.blend_strength);
-
-        
         float roughness_input = 1.0 - clamp((grain_base - _roughness_value) / _roughness_width + 0.5, 0.0, 1.0);
         imageStore(roughness_buffer, ivec2(pixel), vec4(vec3(roughness_input), 1.0));
 
