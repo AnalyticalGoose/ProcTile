@@ -79,8 +79,8 @@ func rebuild_mesh() -> void:
 	normals = surface_array[Mesh.ARRAY_NORMAL]
 	uvs = surface_array[Mesh.ARRAY_TEX_UV]
 	
-	_update_uvs()
 	mesh_instance.mesh = rebuilt_mesh
+	_update_uvs()
 
 
 func _load_mesh_settings() -> void:
