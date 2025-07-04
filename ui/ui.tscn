@@ -1,13 +1,13 @@
-[gd_scene load_steps=45 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=46 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
 [ext_resource type="Theme" uid="uid://dfgva2nypdu6x" path="res://ui/ui_theme.tres" id="1_x425p"]
 [ext_resource type="Script" uid="uid://ccw2pwtqgw5yk" path="res://materials/asset_manager.gd" id="2_iuucp"]
 [ext_resource type="Script" uid="uid://de5bwi55mryfi" path="res://ui/bars/data_bar.gd" id="2_pqncx"]
-[ext_resource type="Script" uid="uid://cmlrcvh4uhiin" path="res://ui/menus/file_menu.gd" id="2_y3rwe"]
+[ext_resource type="Script" uid="uid://cmlrcvh4uhiin" path="res://ui/menus/navigation/file_menu.gd" id="2_y3rwe"]
 [ext_resource type="PackedScene" uid="uid://ci4s2srdlp13f" path="res://ui/menus/export/export.tscn" id="3_34tcw"]
-[ext_resource type="Script" uid="uid://bq13cvggwqb2r" path="res://ui/gizmo_overlay.gd" id="3_vgtty"]
+[ext_resource type="Script" uid="uid://bq13cvggwqb2r" path="res://ui/gizmos/viewport_orientation/orientation_gizmo_overlay.gd" id="3_vgtty"]
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://ijcpej5evkvf" path="res://ui/parameters/uniform_colour/colour.tscn" id="8_iq2nk"]
 [ext_resource type="Texture2D" uid="uid://n33sjanx45ou" path="res://ui/icons/icon_undo.png" id="9_7vcxs"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
+[ext_resource type="Script" uid="uid://b3y7cp5t2up48" path="res://ui/menus/navigation/window_menu.gd" id="9_t1oep"]
 [ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh_settings/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
 [ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
@@ -43,9 +44,6 @@
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="30_6gefn"]
 [ext_resource type="PackedScene" uid="uid://dy5akndp03yu4" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.tscn" id="41_iw6jt"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
-viewport_path = NodePath("GizmoSubViewport")
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
 content_margin_bottom = 0.0
@@ -56,6 +54,9 @@ border_width_bottom = 2
 border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
 border_blend = true
 corner_detail = 1
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
+viewport_path = NodePath("GizmoContainer/OrientationGizmoSubViewport")
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn", "params_container")]
 layout_mode = 3
@@ -85,22 +86,7 @@ offset_bottom = 510.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_av4mg")
-rotation_gizmo = NodePath("../GizmoSubViewport/ViewportOrientationGizmo")
-
-[node name="GizmoOverlay" type="TextureRect" parent="RendererWindow" node_paths=PackedStringArray("gizmo_viewport")]
-visibility_layer = 524289
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -97.0
-offset_top = 39.0
-offset_right = 3.0
-offset_bottom = 139.0
-grow_horizontal = 0
-texture = SubResource("ViewportTexture_iw6jt")
-script = ExtResource("3_vgtty")
-gizmo_viewport = NodePath("../../GizmoSubViewport")
+rotation_gizmo = NodePath("../GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo")
 
 [node name="NavigationBar" type="PanelContainer" parent="."]
 top_level = true
@@ -213,14 +199,13 @@ popup/item_11/separator = true
 popup/item_12/text = "     Quit"
 popup/item_12/id = 8
 
-[node name="WindowMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
-visible = false
+[node name="WindowMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu" node_paths=PackedStringArray("orientation_gizmo_rect")]
 layout_mode = 2
 theme = ExtResource("1_x425p")
 text = "Window"
 switch_on_hover = true
 item_count = 13
-popup/item_0/text = "     Direction Gizmo"
+popup/item_0/text = "Direction Gizmo"
 popup/item_0/checkable = 1
 popup/item_0/checked = true
 popup/item_0/id = 0
@@ -259,6 +244,8 @@ popup/item_11/disabled = true
 popup/item_11/separator = true
 popup/item_12/text = "     Quit"
 popup/item_12/id = 8
+script = ExtResource("9_t1oep")
+orientation_gizmo_rect = NodePath("../../../GizmoContainer/OrientationGizmoOverlay")
 
 [node name="HelpMenuButton" type="MenuButton" parent="NavigationBar/NavigationMenu"]
 visible = false
@@ -603,23 +590,47 @@ theme = ExtResource("5_hrfci")
 theme_override_constants/separation = 10
 script = ExtResource("7_08hm7")
 
-[node name="GizmoSubViewport" type="SubViewport" parent="."]
+[node name="GizmoContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 330.0
+offset_top = 65.0
+offset_right = -330.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OrientationGizmoOverlay" type="TextureRect" parent="GizmoContainer" node_paths=PackedStringArray("orientation_gizmo_viewport")]
+visibility_layer = 524289
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_bottom = 100.0
+grow_horizontal = 0
+texture = SubResource("ViewportTexture_iw6jt")
+script = ExtResource("3_vgtty")
+orientation_gizmo_viewport = NodePath("../OrientationGizmoSubViewport")
+
+[node name="OrientationGizmoSubViewport" type="SubViewport" parent="GizmoContainer"]
 transparent_bg = true
 physics_object_picking = true
 size = Vector2i(100, 100)
 
-[node name="GizmoCamera3D" type="Camera3D" parent="GizmoSubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0207476, -0.00543851, 0.192096)
+[node name="GizmoCamera3D" type="Camera3D" parent="GizmoContainer/OrientationGizmoSubViewport"]
 cull_mask = 524288
 projection = 1
 size = 0.3
 far = 1.0
 
-[node name="ViewportOrientationGizmo" parent="GizmoSubViewport" instance=ExtResource("41_iw6jt")]
+[node name="ViewportOrientationGizmo" parent="GizmoContainer/OrientationGizmoSubViewport" instance=ExtResource("41_iw6jt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0163349, -0.0250849, -0.259362)
 
 [connection signal="mouse_entered" from="RendererWindow" to="RendererWindow" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="RendererWindow" to="RendererWindow" method="_on_mouse_exited"]
-[connection signal="gui_input" from="RendererWindow/GizmoOverlay" to="RendererWindow/GizmoOverlay" method="_on_gui_input"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/UndoBtn" to="RendererToolbar" method="_on_undo_btn_pressed"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
@@ -632,6 +643,7 @@ far = 1.0
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
-[connection signal="GizmoClicked" from="GizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
+[connection signal="gui_input" from="GizmoContainer/OrientationGizmoOverlay" to="GizmoContainer/OrientationGizmoOverlay" method="_on_gui_input"]
+[connection signal="GizmoClicked" from="GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]
