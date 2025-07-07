@@ -6,6 +6,8 @@ extends PanelContainer
 ## Handles changing mesh type, culling faces and scaling UVs by updating mesh data
 ## or by sending a new mesh to the Renderer.
 
+signal close_menu(idx: int)
+
 enum Face { BACK, SIDES }
 enum Meshes { TILE, CUBE, PLANE }
 enum CameraPosition { NEAR, FAR }
@@ -85,7 +87,7 @@ func rebuild_mesh() -> void:
 
 func _load_mesh_settings() -> void:
 	# if user hasn't saved their preferred settings previously, return and use default.
-	if not DataManager.settings_data.size() >= 3 or not DataManager.settings_data[2].name == "mesh_settings":
+	if not DataManager.settings_data[2].name == "mesh_settings":
 		return
 	
 	# else, load settings from database
@@ -228,4 +230,5 @@ func _on_save_settings_btn_pressed() -> void:
 
 
 func _on_close_btn_pressed() -> void:
+	close_menu.emit(1)
 	hide()

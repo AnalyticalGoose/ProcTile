@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bujgh4byim140"
-path.bptc="res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"
+uid="uid://bph2d0ymiv5m3"
+path.bptc="res://.godot/imported/voortrekker_interior_1k.hdr-6dec2a8bd3400df2f5c8d8718e6c671a.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://engine/render/hdri/portland_landing_pad_1k.hdr"
-dest_files=["res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"]
+source_file="res://engine/render/hdri/voortrekker_interior_1k.hdr"
+dest_files=["res://.godot/imported/voortrekker_interior_1k.hdr-6dec2a8bd3400df2f5c8d8718e6c671a.bptc.ctex"]
 
 [params]
 

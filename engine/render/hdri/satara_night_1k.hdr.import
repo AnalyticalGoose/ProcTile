@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bujgh4byim140"
-path.bptc="res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"
+uid="uid://cajegi80o0hci"
+path.bptc="res://.godot/imported/satara_night_1k.hdr-8776b2bdf98a49de4eff69ac249482bf.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://engine/render/hdri/portland_landing_pad_1k.hdr"
-dest_files=["res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"]
+source_file="res://engine/render/hdri/satara_night_1k.hdr"
+dest_files=["res://.godot/imported/satara_night_1k.hdr-8776b2bdf98a49de4eff69ac249482bf.bptc.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bujgh4byim140"
-path.bptc="res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"
+uid="uid://dc3s3kkwh1cst"
+path.bptc="res://.godot/imported/the_sky_is_on_fire_1k.hdr-49e8037b78113cf7e3e7f6225a90355b.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://engine/render/hdri/portland_landing_pad_1k.hdr"
-dest_files=["res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"]
+source_file="res://engine/render/hdri/the_sky_is_on_fire_1k.hdr"
+dest_files=["res://.godot/imported/the_sky_is_on_fire_1k.hdr-49e8037b78113cf7e3e7f6225a90355b.bptc.ctex"]
 
 [params]
 

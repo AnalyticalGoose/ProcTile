@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=48 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -25,14 +25,16 @@
 [ext_resource type="Texture2D" uid="uid://n33sjanx45ou" path="res://ui/icons/icon_undo.png" id="9_7vcxs"]
 [ext_resource type="PackedScene" uid="uid://bsldnikana6eg" path="res://ui/parameters/seed/seeds.tscn" id="9_sniln"]
 [ext_resource type="Script" uid="uid://b3y7cp5t2up48" path="res://ui/menus/navigation/window_menu.gd" id="9_t1oep"]
-[ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/mesh_settings/mesh_settings_menu.tscn" id="10_d81an"]
+[ext_resource type="PackedScene" uid="uid://kukxq0246lch" path="res://ui/menus/renderer_toolbar_settings/mesh_settings/mesh_settings_menu.tscn" id="10_d81an"]
 [ext_resource type="Texture2D" uid="uid://xmm5qggbyrb7" path="res://ui/icons/icon_redo.png" id="10_k2v5f"]
 [ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
 [ext_resource type="Texture2D" uid="uid://bohvlsbw0u1io" path="res://ui/icons/icon_shader_settings.png" id="11_uj4vs"]
-[ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
+[ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/renderer_toolbar_settings/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
 [ext_resource type="Texture2D" uid="uid://dvwro6r1w68qx" path="res://ui/icons/icon_camera_settings.png" id="15_netph"]
-[ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
+[ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/renderer_toolbar_settings/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
 [ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
+[ext_resource type="Texture2D" uid="uid://d35gyc8dy64kh" path="res://ui/icons/icon_lighting_settings.png" id="16_ov2ix"]
+[ext_resource type="PackedScene" uid="uid://dfpvlhxuodpqp" path="res://ui/menus/renderer_toolbar_settings/lighting_settings/lighting_settings_menu.tscn" id="17_l1w2y"]
 [ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D.tscn" id="23_t626t"]
 [ext_resource type="Texture2D" uid="uid://b7nlbxvya41to" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_preview.jpg" id="24_iw6jt"]
 [ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D.tscn" id="24_l0ee1"]
@@ -303,7 +305,7 @@ offset_bottom = 1080.0
 grow_vertical = 2
 theme = ExtResource("1_x425p")
 
-[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "mesh_settings", "shader_settings", "camera_settings")]
+[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "lighting_btn", "lighting_settings", "mesh_settings", "shader_settings", "camera_settings")]
 top_level = true
 layout_mode = 1
 anchors_preset = 10
@@ -321,6 +323,8 @@ pause_btn = NodePath("RightRendererToolbar/PauseRendererButton")
 pause_icon = ExtResource("6_wvlpy")
 play_icon = ExtResource("8_fa1dh")
 mesh_btn = NodePath("RightRendererToolbar/MeshSettingsButton")
+lighting_btn = NodePath("RightRendererToolbar/LightingSettingsButton")
+lighting_settings = NodePath("RightRendererToolbar/LightingSettingsButton/LightingSettings")
 mesh_settings = NodePath("RightRendererToolbar/MeshSettingsButton/MeshSettings")
 shader_settings = NodePath("RightRendererToolbar/ShaderSettingsButton/ShaderSettings")
 camera_settings = NodePath("RightRendererToolbar/CameraSettingsButton/CameraSettings")
@@ -385,6 +389,22 @@ offset_right = -0.0100021
 grow_vertical = 1
 script = null
 metadata/_edit_use_anchors_ = true
+
+[node name="LightingSettingsButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+tooltip_text = "Lighting Settings"
+toggle_mode = true
+icon = ExtResource("16_ov2ix")
+icon_alignment = 1
+expand_icon = true
+
+[node name="LightingSettings" parent="RendererToolbar/RightRendererToolbar/LightingSettingsButton" instance=ExtResource("17_l1w2y")]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+offset_left = -183.0
+offset_right = 9.0
 
 [node name="MeshSettingsButton" type="Button" parent="RendererToolbar/RightRendererToolbar"]
 custom_minimum_size = Vector2(35, 0)
@@ -635,7 +655,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0163349, -0.0250849, -0.25
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/ShaderSettingsButton" to="RendererToolbar" method="_on_shader_settings_button_toggled"]
+[connection signal="toggled" from="RendererToolbar/RightRendererToolbar/LightingSettingsButton" to="RendererToolbar" method="_on_lighting_settings_button_toggled"]
+[connection signal="close_menu" from="RendererToolbar/RightRendererToolbar/LightingSettingsButton/LightingSettings" to="RendererToolbar" method="_on_settings_close_menu"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/MeshSettingsButton" to="RendererToolbar" method="_on_mesh_settings_button_toggled"]
+[connection signal="close_menu" from="RendererToolbar/RightRendererToolbar/MeshSettingsButton/MeshSettings" to="RendererToolbar" method="_on_settings_close_menu"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton" to="RendererToolbar" method="_on_camera_settings_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitContainer/OrbitMeshCheckBox" to="RendererWindow" method="_on_orbit_mesh_check_box_toggled"]
 [connection signal="value_changed" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitSpeedContainer/OrbitSpeedHSlider" to="RendererWindow" method="_on_orbit_speed_h_slider_value_changed"]

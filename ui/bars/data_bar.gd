@@ -3,6 +3,7 @@ extends PanelContainer
 @export var fps_output : Label
 @export var logger_output : Label
 
+
 func _ready() -> void:
 	Logger.output_instance = logger_output
 

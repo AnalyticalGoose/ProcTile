@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://b8hrcusoay5r8" path="res://engine/render/renderer.gd" id="1_11juy"]
 [ext_resource type="Shader" uid="uid://bm7gdwqhpvxeu" path="res://engine/pipeline/material_shader.gdshader" id="2_frhbj"]
 [ext_resource type="ArrayMesh" uid="uid://cpgyb3ggvr0u" path="res://meshes/tile/tile.obj" id="3_8fw8p"]
-[ext_resource type="Texture2D" uid="uid://nr8rjtj3cian" path="res://engine/render/hdri/portland_landing_pad_1k.hdr" id="4_ykixy"]
+[ext_resource type="Texture2D" uid="uid://bujgh4byim140" path="res://engine/render/hdri/portland_landing_pad_1k.hdr" id="4_gc3f3"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_h5fst"]
 
@@ -28,7 +28,7 @@ shader_parameter/texture_3D = true
 shader_parameter/placeholder_texture = true
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_p2h4v"]
-panorama = ExtResource("4_ykixy")
+panorama = ExtResource("4_gc3f3")
 
 [sub_resource type="Sky" id="Sky_eu763"]
 sky_material = SubResource("PanoramaSkyMaterial_p2h4v")

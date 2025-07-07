@@ -2,27 +2,26 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bujgh4byim140"
-path.bptc="res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"
+uid="uid://d35gyc8dy64kh"
+path="res://.godot/imported/icon_lighting_settings.png-d8353d4bb34f7a6dfbd33767567e6e72.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://engine/render/hdri/portland_landing_pad_1k.hdr"
-dest_files=["res://.godot/imported/portland_landing_pad_1k.hdr-c60fa84ffb7f407bf114e0aff22443b2.bptc.ctex"]
+source_file="res://ui/icons/icon_lighting_settings.png"
+dest_files=["res://.godot/imported/icon_lighting_settings.png-d8353d4bb34f7a6dfbd33767567e6e72.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -32,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

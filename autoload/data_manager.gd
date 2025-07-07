@@ -3,6 +3,7 @@ extends Node
 enum DatabaseType {
 	SETTINGS,
 	MATERIAL,
+	LIGHTING,
 	MESH,
 }
 
@@ -115,6 +116,22 @@ func save_mesh_settings(mesh : int, remove_back : bool, remove_bottom : bool, sh
 	_load_settings() # refresh settings data
 
 
+func save_lighting_settings(hdri: int, hdri_visible: bool, tonemap: int) -> void:
+	var cfg_file: ConfigFile = ConfigFile.new()
+	
+	if cfg_file.load(SETTINGS_PATH):
+		Logger.puts_error("Cannot find user settings at" + SETTINGS_PATH)
+	
+	cfg_file.set_value("lighting_settings", "hdri", hdri)
+	cfg_file.set_value("lighting_settings", "hdri_visible", hdri_visible)
+	cfg_file.set_value("lighting_settings", "tonemap", tonemap)
+	
+	if cfg_file.save(SETTINGS_PATH):
+		Logger.puts_error("Cannot save lighting settings to " + SETTINGS_PATH)
+		
+	_load_settings() # refresh settings data
+
+
 func _init_schema(database_type: DatabaseType, database : Database) -> void:
 	match database_type:
 		DatabaseType.SETTINGS:
@@ -142,6 +159,11 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 			database.add_valid_property("remove_bottom_face")
 			database.add_valid_property("shrink_back_UVs")
 			database.add_valid_property("shrink_sides_UVs")
+			
+		DatabaseType.LIGHTING:
+			database.add_valid_property("hdri", TYPE_INT)
+			database.add_valid_property("hdri_visible", TYPE_BOOL)
+			database.add_valid_property("tonemap", TYPE_INT)
 
 
 func _load_settings() -> void:
@@ -163,7 +185,10 @@ func _load_settings() -> void:
 			Logger.call_deferred("puts_error", "Cannot save user settings to " + SETTINGS_PATH)
 	
 	var settings_database : Database = Database.new()
+	
 	_init_schema(DatabaseType.SETTINGS, settings_database)
 	_init_schema(DatabaseType.MESH, settings_database)
+	_init_schema(DatabaseType.LIGHTING, settings_database)
+	
 	settings_database.load_from_path(SETTINGS_PATH)
 	settings_data = settings_database.get_array()

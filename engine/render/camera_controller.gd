@@ -43,10 +43,12 @@ func _input(event: InputEvent) -> void:
 
 func _on_mouse_entered() -> void:
 	mouse_in_render_view = true
+	print("mouse in render view")
 
 
 func _on_mouse_exited() -> void:
 	mouse_in_render_view = false
+	print("mouse out render view")
 
 
 func _on_orbit_mesh_check_box_toggled(toggled_on: bool) -> void:

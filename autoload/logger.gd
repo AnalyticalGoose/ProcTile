@@ -13,18 +13,27 @@ var current_colour : int = 0
 
 
 func puts(output : String) -> void:
+	if not output_instance:
+		await get_tree().process_frame
+	
 	if current_colour != 0:
 		_set_output_colour(0)
 	output_instance.text = output
 
 
 func puts_warning(output: String) -> void:
+	if not output_instance:
+		await get_tree().process_frame
+	
 	if current_colour != 1:
 		_set_output_colour(1)
 	output_instance.text = output
 
 
 func puts_error(output: String, err : Variant = null) -> void:
+	if not output_instance:
+		await get_tree().process_frame
+	
 	if current_colour != 2:
 		_set_output_colour(2)
 	
@@ -34,6 +43,9 @@ func puts_error(output: String, err : Variant = null) -> void:
 
 
 func puts_success(output: String) -> void:
+	if not output_instance:
+		await get_tree().process_frame
+	
 	if current_colour != 3:
 		_set_output_colour(3)
 	output_instance.text = output

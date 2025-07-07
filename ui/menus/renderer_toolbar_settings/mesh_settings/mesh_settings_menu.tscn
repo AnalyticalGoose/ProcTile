@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://kukxq0246lch"]
 
-[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh_settings/mesh_menu_theme.tres" id="1_0mu7x"]
-[ext_resource type="Script" uid="uid://dwl4b4p2j47b" path="res://ui/menus/mesh_settings/mesh_settings.gd" id="2_8udx8"]
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/renderer_toolbar_settings/renderer_menu_theme.tres" id="1_0mu7x"]
+[ext_resource type="Script" uid="uid://dwl4b4p2j47b" path="res://ui/menus/renderer_toolbar_settings/mesh_settings/mesh_settings.gd" id="2_8udx8"]
 [ext_resource type="ArrayMesh" uid="uid://cpgyb3ggvr0u" path="res://meshes/tile/tile.obj" id="3_3qc45"]
 [ext_resource type="ArrayMesh" uid="uid://q2ey5ibvfm1i" path="res://meshes/tile/tile_back_cull.obj" id="5_h5ago"]
 [ext_resource type="ArrayMesh" uid="uid://y57363ump66u" path="res://meshes/tile/tile_bottom_cull.obj" id="5_qvcva"]
@@ -44,7 +44,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -182.0
 offset_right = 10.0
-offset_bottom = 280.0
+offset_bottom = 262.0
 grow_horizontal = 0
 grow_vertical = 0
 theme = ExtResource("1_0mu7x")
@@ -86,6 +86,7 @@ layout_mode = 2
 selected = 0
 item_count = 3
 popup/item_0/text = "Tile"
+popup/item_0/id = 0
 popup/item_1/text = "Cube"
 popup/item_1/id = 1
 popup/item_2/text = "Plane"

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ba73vns3n4ihl"]
 
-[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/mesh_settings/mesh_menu_theme.tres" id="1_2oa6r"]
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/renderer_toolbar_settings/renderer_menu_theme.tres" id="1_2oa6r"]
 
 [node name="CameraSettings" type="PanelContainer"]
 anchors_preset = -1

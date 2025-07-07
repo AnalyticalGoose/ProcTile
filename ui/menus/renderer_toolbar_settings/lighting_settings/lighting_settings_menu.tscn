@@ -1,0 +1,157 @@
+[gd_scene load_steps=13 format=3 uid="uid://dfpvlhxuodpqp"]
+
+[ext_resource type="Theme" uid="uid://b21n7wcdmuo1a" path="res://ui/menus/renderer_toolbar_settings/renderer_menu_theme.tres" id="1_kdal7"]
+[ext_resource type="Script" uid="uid://57aaiu3j2c0h" path="res://ui/menus/renderer_toolbar_settings/lighting_settings/lighting_settings.gd" id="2_yl0yf"]
+[ext_resource type="Texture2D" uid="uid://dblp552jqi7rh" path="res://engine/render/hdri/brown_photostudio_02_1k.hdr" id="3_tey6w"]
+[ext_resource type="Texture2D" uid="uid://bujgh4byim140" path="res://engine/render/hdri/portland_landing_pad_1k.hdr" id="3_vhopl"]
+[ext_resource type="Texture2D" uid="uid://bl03ejcyu72jw" path="res://engine/render/hdri/lilienstein_1k.hdr" id="4_lu5h3"]
+[ext_resource type="Texture2D" uid="uid://f06bbk3i3l2j" path="res://engine/render/hdri/rainforest_trail_1k.hdr" id="6_7njqr"]
+[ext_resource type="Texture2D" uid="uid://cajegi80o0hci" path="res://engine/render/hdri/satara_night_1k.hdr" id="7_p4n1g"]
+[ext_resource type="Texture2D" uid="uid://dc3s3kkwh1cst" path="res://engine/render/hdri/the_sky_is_on_fire_1k.hdr" id="8_qisek"]
+[ext_resource type="Texture2D" uid="uid://bph2d0ymiv5m3" path="res://engine/render/hdri/voortrekker_interior_1k.hdr" id="9_m0q3r"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uav13"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ktrdi"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.332881, 0.332881, 0.33288, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vq8t6"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 7.0
+content_margin_bottom = 2.0
+bg_color = Color(0.197937, 0.197937, 0.197937, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="LightingSettings" type="PanelContainer" node_paths=PackedStringArray("hdri_options", "hdri_background_btn", "tonemap_options", "close_btn")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -182.0
+offset_right = 10.0
+offset_bottom = 214.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("1_kdal7")
+script = ExtResource("2_yl0yf")
+hdri = Array[CompressedTexture2D]([ExtResource("3_tey6w"), ExtResource("4_lu5h3"), ExtResource("3_vhopl"), ExtResource("6_7njqr"), ExtResource("7_p4n1g"), ExtResource("8_qisek"), ExtResource("9_m0q3r")])
+hdri_options = NodePath("MarginContainer/VBoxContainer/HDRIContainer/HDRIOptionButton")
+hdri_background_btn = NodePath("MarginContainer/VBoxContainer/HDRIContainer/HDRIBackgroundButton")
+tonemap_options = NodePath("MarginContainer/VBoxContainer/TonemapContainer/TonemapOptionButton")
+close_btn = NodePath("MarginContainer/VBoxContainer/ButtonsContainer/CloseBtn")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HeadingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Lighting Settings"
+
+[node name="Heading Seperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HDRIContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HDRILabel" type="Label" parent="MarginContainer/VBoxContainer/HDRIContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "HDRI"
+
+[node name="HDRIOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/HDRIContainer"]
+layout_mode = 2
+selected = 0
+item_count = 7
+popup/item_0/text = "Brown Photo Studio"
+popup/item_0/id = 0
+popup/item_1/text = "Lilienstein"
+popup/item_1/id = 1
+popup/item_2/text = "Portland Landing Pad"
+popup/item_2/id = 2
+popup/item_3/text = "Rainforest Trail"
+popup/item_3/id = 3
+popup/item_4/text = "Satara Night"
+popup/item_4/id = 4
+popup/item_5/text = "Sky Is On Fire"
+popup/item_5/id = 5
+popup/item_6/text = "Voortrekker"
+popup/item_6/id = 6
+
+[node name="HDRIBackgroundButton" type="CheckBox" parent="MarginContainer/VBoxContainer/HDRIContainer"]
+layout_mode = 2
+text = "Show HDRI"
+flat = true
+
+[node name="TonemapContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TonemapLabel" type="Label" parent="MarginContainer/VBoxContainer/TonemapContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Tonemap"
+
+[node name="TonemapOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/TonemapContainer"]
+layout_mode = 2
+selected = 0
+item_count = 5
+popup/item_0/text = "Linear"
+popup/item_0/id = 0
+popup/item_1/text = "Reinhard"
+popup/item_1/id = 1
+popup/item_2/text = "Filmic"
+popup/item_2/id = 2
+popup/item_3/text = "ACES"
+popup/item_3/id = 3
+popup/item_4/text = "AgX"
+popup/item_4/id = 4
+
+[node name="ButtonsSeperator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 13
+alignment = 1
+
+[node name="SaveSettingsBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Save Settings"
+
+[node name="CloseBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/focus = SubResource("StyleBoxEmpty_uav13")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ktrdi")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vq8t6")
+action_mode = 0
+text = "Close"
+
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/HDRIContainer/HDRIOptionButton" to="." method="_on_hdri_option_button_item_selected"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/HDRIContainer/HDRIBackgroundButton" to="." method="_on_hdri_background_button_toggled"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/TonemapContainer/TonemapOptionButton" to="." method="_on_tonemap_option_button_item_selected"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/SaveSettingsBtn" to="." method="_on_save_settings_btn_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsContainer/CloseBtn" to="." method="_on_close_btn_pressed"]
