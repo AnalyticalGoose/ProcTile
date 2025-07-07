@@ -46,6 +46,9 @@
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="30_6gefn"]
 [ext_resource type="PackedScene" uid="uid://dy5akndp03yu4" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.tscn" id="41_iw6jt"]
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
+viewport_path = NodePath("GizmoContainer/OrientationGizmoSubViewport")
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deoo3"]
 content_margin_top = 0.0
 content_margin_bottom = 0.0
@@ -56,9 +59,6 @@ border_width_bottom = 2
 border_color = Color(0.0768358, 0.0768358, 0.0768358, 1)
 border_blend = true
 corner_detail = 1
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
-viewport_path = NodePath("GizmoContainer/OrientationGizmoSubViewport")
 
 [node name="UI" type="Control" node_paths=PackedStringArray("undo_btn", "redo_btn", "file_menu", "pause_renderer_btn", "params_container")]
 layout_mode = 3
@@ -89,6 +89,45 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_av4mg")
 rotation_gizmo = NodePath("../GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo")
+
+[node name="GizmoContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 330.0
+offset_top = 65.0
+offset_right = -330.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="OrientationGizmoOverlay" type="TextureRect" parent="GizmoContainer" node_paths=PackedStringArray("orientation_gizmo_viewport")]
+visibility_layer = 524289
+layout_mode = 2
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_bottom = 100.0
+grow_horizontal = 0
+texture = SubResource("ViewportTexture_iw6jt")
+script = ExtResource("3_vgtty")
+orientation_gizmo_viewport = NodePath("../OrientationGizmoSubViewport")
+
+[node name="OrientationGizmoSubViewport" type="SubViewport" parent="GizmoContainer"]
+transparent_bg = true
+physics_object_picking = true
+size = Vector2i(100, 100)
+
+[node name="GizmoCamera3D" type="Camera3D" parent="GizmoContainer/OrientationGizmoSubViewport"]
+cull_mask = 524288
+projection = 1
+size = 0.3
+far = 1.0
+
+[node name="ViewportOrientationGizmo" parent="GizmoContainer/OrientationGizmoSubViewport" instance=ExtResource("41_iw6jt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0163349, -0.0250849, -0.259362)
 
 [node name="NavigationBar" type="PanelContainer" parent="."]
 top_level = true
@@ -610,47 +649,10 @@ theme = ExtResource("5_hrfci")
 theme_override_constants/separation = 10
 script = ExtResource("7_08hm7")
 
-[node name="GizmoContainer" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 330.0
-offset_top = 65.0
-offset_right = -330.0
-offset_bottom = -30.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="OrientationGizmoOverlay" type="TextureRect" parent="GizmoContainer" node_paths=PackedStringArray("orientation_gizmo_viewport")]
-visibility_layer = 524289
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -100.0
-offset_bottom = 100.0
-grow_horizontal = 0
-texture = SubResource("ViewportTexture_iw6jt")
-script = ExtResource("3_vgtty")
-orientation_gizmo_viewport = NodePath("../OrientationGizmoSubViewport")
-
-[node name="OrientationGizmoSubViewport" type="SubViewport" parent="GizmoContainer"]
-transparent_bg = true
-physics_object_picking = true
-size = Vector2i(100, 100)
-
-[node name="GizmoCamera3D" type="Camera3D" parent="GizmoContainer/OrientationGizmoSubViewport"]
-cull_mask = 524288
-projection = 1
-size = 0.3
-far = 1.0
-
-[node name="ViewportOrientationGizmo" parent="GizmoContainer/OrientationGizmoSubViewport" instance=ExtResource("41_iw6jt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0163349, -0.0250849, -0.259362)
-
 [connection signal="mouse_entered" from="RendererWindow" to="RendererWindow" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="RendererWindow" to="RendererWindow" method="_on_mouse_exited"]
+[connection signal="gui_input" from="GizmoContainer/OrientationGizmoOverlay" to="GizmoContainer/OrientationGizmoOverlay" method="_on_gui_input"]
+[connection signal="GizmoClicked" from="GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/UndoBtn" to="RendererToolbar" method="_on_undo_btn_pressed"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
@@ -666,7 +668,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0163349, -0.0250849, -0.25
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
-[connection signal="gui_input" from="GizmoContainer/OrientationGizmoOverlay" to="GizmoContainer/OrientationGizmoOverlay" method="_on_gui_input"]
-[connection signal="GizmoClicked" from="GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]

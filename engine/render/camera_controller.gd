@@ -27,6 +27,7 @@ func _input(event: InputEvent) -> void:
 	if mouse_in_render_view:
 		if Input.is_action_pressed("zoom_in"):
 			camera.position.z = clamp(camera.position.z * 0.90, 0.1, 20.0)
+			
 		elif Input.is_action_pressed("zoom_out"):
 			camera.position.z = clamp(camera.position.z * 1.1, 0.1, 20.0)
 		
