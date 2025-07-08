@@ -100,12 +100,14 @@ func init_compute(init_data : Array, texture_size : int, shader_path : String) -
 		_buffer_rds[i] = rd.texture_create(buffer_tf, RDTextureView.new(), [])
 
 	var image_buffer_uniforms : Array[RDUniform] = []
+	
 	for i : int in num_image_buffers:
 		var uniform : RDUniform = RDUniform.new()
 		uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		uniform.binding = i
 		uniform.add_id(_buffer_rds[i])
 		image_buffer_uniforms.append(uniform)
+	
 	_image_buffer_uniform_set = rd.uniform_set_create(image_buffer_uniforms, shader, 1)
 	
 	var storage_buffer_types : Array = init_data[3]
