@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://exlh18hq5ux6"
+path="res://.godot/imported/grunge_compute.glsl-80f4f7cc4476a2d47f934c6cf5f05ee2.res"
+
+[deps]
+
+source_file="res://materials/2D/base_textures/grunge/grunge_compute.glsl"
+dest_files=["res://.godot/imported/grunge_compute.glsl-80f4f7cc4476a2d47f934c6cf5f05ee2.res"]
+
+[params]
+

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4r2gor7pwfjw"
-path="res://.godot/imported/pixel_wooden_floor_thumb.jpg-91acf4cc7a1c87f0daf93fad9b37a62c.ctex"
+uid="uid://b5ool4bp2u87d"
+path="res://.godot/imported/grunge_thumb.jpg-26f6fa5aa69f1cc4e7655f2cfed547ba.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/2D/pixel/pixel_wooden_floor/pixel_wooden_floor_thumb.jpg"
-dest_files=["res://.godot/imported/pixel_wooden_floor_thumb.jpg-91acf4cc7a1c87f0daf93fad9b37a62c.ctex"]
+source_file="res://materials/2D/base_textures/grunge/grunge_thumb.jpg"
+dest_files=["res://.godot/imported/grunge_thumb.jpg-26f6fa5aa69f1cc4e7655f2cfed547ba.ctex"]
 
 [params]
 

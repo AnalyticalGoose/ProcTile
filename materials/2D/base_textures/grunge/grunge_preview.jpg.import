@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bm40h3qk5cxtb"
-path="res://.godot/imported/pixel_uneven_wall_preview.jpg-2169d52ce1c27aa2a9c1ef384fbc3151.ctex"
+uid="uid://dw1fnais1alld"
+path="res://.godot/imported/grunge_preview.jpg-88cd27c463c7a84a493d7bbd8496804c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://materials/2D/pixel/pixel_uneven_wall/pixel_uneven_wall_preview.jpg"
-dest_files=["res://.godot/imported/pixel_uneven_wall_preview.jpg-2169d52ce1c27aa2a9c1ef384fbc3151.ctex"]
+source_file="res://materials/2D/base_textures/grunge/grunge_preview.jpg"
+dest_files=["res://.godot/imported/grunge_preview.jpg-88cd27c463c7a84a493d7bbd8496804c.ctex"]
 
 [params]
 
