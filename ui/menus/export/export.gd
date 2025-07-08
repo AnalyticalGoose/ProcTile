@@ -10,13 +10,13 @@ signal normals_recalculated
 
 @export var file_dialog : FileDialog
 @export var directory_btn : Button
-@export var template_options_3D : OptionButton
-@export var template_options_2D : OptionButton
-@export var resolution_btn_3D : OptionButton
-@export var resolution_btn_2D : OptionButton
+@export var template_options_PBR : OptionButton
+@export var template_options_single_tex : OptionButton
+@export var resolution_btn : OptionButton
 @export var format_btn : OptionButton
 @export var interp_label : Label
 @export var interp_btn : OptionButton
+@export var normals_label : Label
 @export var normals_btn : OptionButton
 @export var export_mesh_btn : OptionButton
 @export var mesh_format_btn : OptionButton
@@ -30,21 +30,13 @@ var renderer : Renderer
 var compute_shader : ComputeShader
 var exporter : Exporter
 
-var output_resolution_3D : int:
+var output_resolution : int:
 	set(value):
-		output_resolution_3D = value
-		if compute_shader.is_PBR_material:
-			_set_interpolate_ui(output_resolution_3D)
+		output_resolution = value
+		_set_interpolate_ui(output_resolution)
 
-var output_resolution_2D : int:
-	set(value):
-		output_resolution_2D = value
-		if not compute_shader.is_PBR_material:
-			_set_interpolate_ui(output_resolution_2D)
-		
-
-var output_template_3D : int
-var output_template_2D : int
+var output_template_PBR : int
+var output_template_single_tex : int
 var output_filetype : int
 var output_directory : String:
 	set(directory):
@@ -65,8 +57,7 @@ var filename_labels : Array[Node] = []
 
 @onready var mesh_settings_instance : MeshSettings = $/root/ProcTile/UI/RendererToolbar/RightRendererToolbar/MeshSettingsButton/MeshSettings
 
-const RESOLUTIONS_3D : Array[int] = [512, 1024, 2048, 4096]
-const RESOLUTIONS_2D : Array[int] = [32, 64, 128, 256, 512]
+const RESOLUTIONS : Array[int] = [512, 1024, 2048, 4096]
 const FILE_TYPES_STRINGS : Array[String] = [".png", ".jpg"]
 const MESH_FORMATS_STRINGS : Array[String] = [".obj"]
 
@@ -106,7 +97,7 @@ func _init_dependancies() -> void:
 
 
 func _set_radio_buttons() -> void:
-	var template_menu : PopupMenu = template_options_3D.get_popup()
+	var template_menu : PopupMenu = template_options_PBR.get_popup()
 	for i : int in template_menu.get_item_count():
 		template_menu.set_item_as_radio_checkable(i, false)
 
@@ -114,10 +105,9 @@ func _set_radio_buttons() -> void:
 func _load_export_settings() -> void:
 	var settings_data : Dictionary = DataManager.settings_data[1]
 	output_directory = settings_data.get("export_directory", OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS))
-	output_template_3D = settings_data.export_template_3D
-	output_template_2D = settings_data.export_template_2D
-	output_resolution_3D = settings_data.export_resolution_3D
-	output_resolution_2D = settings_data.export_resolution_2D
+	output_template_PBR = settings_data.export_template_PBR
+	output_template_single_tex = settings_data.export_template_single_tex
+	output_resolution = settings_data.export_resolution
 	output_filetype = settings_data.export_format
 	filetype_string = FILE_TYPES_STRINGS[output_filetype]
 	interpolation_type = settings_data.export_interpolation
@@ -131,7 +121,7 @@ func _setup_export_ui() -> void:
 	file_dialog.set_current_dir(output_directory)
 	
 	# get template data
-	var template : int = output_template_3D if compute_shader.is_PBR_material else output_template_2D
+	var template : int = output_template_PBR if compute_shader.is_PBR_material else output_template_single_tex
 	export_template_data = ExportTemplate.get_export_template_data(template)
 	for dataline : Array in export_template_data:
 		filename_maps.append(dataline[2])
@@ -146,16 +136,16 @@ func _setup_export_ui() -> void:
 		mesh_label.hide()
 
 	# update ui from settings
+	resolution_btn.select(resolution_btn.get_item_index(output_resolution / 512.0 as int))
+	normals_btn.disabled = not compute_shader.is_PBR_material
+	normals_label.self_modulate = Color(Color.WHITE if compute_shader.is_PBR_material else Color.GRAY)
+	
 	if compute_shader.is_PBR_material:
-		resolution_btn_3D.show()
-		resolution_btn_3D.select(resolution_btn_3D.get_item_index(output_resolution_3D / 512.0 as int))
-		template_options_3D.show()
-		template_options_3D.select(output_template_3D)
+		template_options_PBR.show()
+		template_options_PBR.select(output_template_PBR)
 	else:
-		resolution_btn_2D.show()
-		resolution_btn_2D.select(resolution_btn_2D.get_item_index(output_resolution_2D / 32.0 as int))
-		template_options_2D.show()
-		template_options_2D.select(template_options_2D.get_item_index(output_template_2D))
+		template_options_single_tex.show()
+		template_options_single_tex.select(template_options_single_tex.get_item_index(output_template_single_tex))
 	
 	format_btn.select(output_filetype)
 	interp_btn.select(interpolation_type)
@@ -191,13 +181,13 @@ func _on_file_dialog_close_requested() -> void:
 
 
 func _on_template_btn_3d_item_selected(template_index: int) -> void:
-	output_template_3D = template_index
+	output_template_PBR = template_index
 	_set_template_data(template_index)
 
 
 func _on_template_btn_2d_item_selected(template_index: int) -> void:
-	template_index = template_options_2D.get_item_id(template_index)
-	output_template_2D = template_index
+	template_index = template_options_single_tex.get_item_id(template_index)
+	output_template_single_tex = template_index
 	_set_template_data(template_index)
 
 
@@ -220,11 +210,7 @@ func _on_file_dialog_dir_selected(dir: String) -> void:
 
 
 func _on_resolution_btn_3d_item_selected(index: int) -> void:
-	output_resolution_3D = RESOLUTIONS_3D[index]
-
-
-func _on_resolution_btn_2d_item_selected(index: int) -> void:
-	output_resolution_2D = RESOLUTIONS_2D[index]
+	output_resolution = RESOLUTIONS[index]
 
 
 func _on_interpolation_btn_item_selected(index: int) -> void:
@@ -274,10 +260,9 @@ func _on_close_requested() -> void:
 func _on_save_btn_pressed() -> void:
 	DataManager.save_export_settings(
 			output_directory, 
-			output_template_3D,
-			output_template_2D,
-			output_resolution_3D,
-			output_resolution_2D,
+			output_template_PBR,
+			output_template_single_tex,
+			output_resolution,
 			output_filetype, 
 			interpolation_type, 
 			normals_type, 
@@ -312,14 +297,12 @@ func _recalculate_normals() -> void:
 func _init_export() -> void:
 	renderer.set_process(false)
 	
-	var res : int = output_resolution_3D if compute_shader.is_PBR_material else output_resolution_2D
-	
 	exporter = Exporter.new()
 	exporter.setup_properties(
 			compute_shader, 
 			self, 
 			material_name, 
-			res,
+			output_resolution,
 			renderer.texture_size, 
 			interpolation_type, 
 			export_mesh,

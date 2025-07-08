@@ -183,6 +183,8 @@ func _create_push_constant(push_constant_data : Array, texture_size : int) -> Pa
 	var push_constant_size : int = _push_constant.size()
 	_push_constant_stage_index = push_constant_size - 1
 	
+	push_constant_padding = 0
+	
 	if (push_constant_size * 4) % 16 != 0:
 		var bytes_needed : int = (16 - (push_constant_size * 4 % 16))
 		for i : int in (bytes_needed / 4.0):

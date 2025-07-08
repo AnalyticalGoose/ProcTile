@@ -82,7 +82,6 @@ func export(export_template_data : Array[Array], type : TextureType, path: Strin
 
 
 func _threaded_texture_export(texture_index: int, format: Image.Format, path_name: String, thread : Thread) -> void:
-
 	RenderingServer.call_on_render_thread(_get_texture_data.bind(basetextures[texture_index], texture_index))
 	
 	while texture_data[texture_index].size() != 134217728:

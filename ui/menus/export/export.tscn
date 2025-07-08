@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://du8w7xnpuogjo" path="res://ui/menus/export/export.gd" id="1_2taha"]
 [ext_resource type="Theme" uid="uid://dy2lqxgww5alo" path="res://ui/menus/export/export_menu_theme.tres" id="1_slfu6"]
 
-[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options_3D", "template_options_2D", "resolution_btn_3D", "resolution_btn_2D", "format_btn", "interp_label", "interp_btn", "normals_btn", "export_mesh_btn", "mesh_format_btn", "filename_line_edit", "filename_labels_container", "mesh_label", "button_container", "progress_bar")]
+[node name="Export" type="Window" node_paths=PackedStringArray("file_dialog", "directory_btn", "template_options_PBR", "template_options_single_tex", "resolution_btn", "format_btn", "interp_label", "interp_btn", "normals_label", "normals_btn", "export_mesh_btn", "mesh_format_btn", "filename_line_edit", "filename_labels_container", "mesh_label", "button_container", "progress_bar")]
 title = "Export"
 initial_position = 1
 size = Vector2i(544, 425)
@@ -12,13 +12,13 @@ theme = ExtResource("1_slfu6")
 script = ExtResource("1_2taha")
 file_dialog = NodePath("FileDialog")
 directory_btn = NodePath("MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn")
-template_options_3D = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateBtn3D")
-template_options_2D = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateBtn2D")
-resolution_btn_3D = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn3D")
-resolution_btn_2D = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn2D")
+template_options_PBR = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateBtnPBR")
+template_options_single_tex = NodePath("MarginContainer/VBoxContainer/TemplateContainer/TemplateBtnSingle")
+resolution_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn")
 format_btn = NodePath("MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn")
 interp_label = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationLabel")
 interp_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn")
+normals_label = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/NormalsLabel")
 normals_btn = NodePath("MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton")
 export_mesh_btn = NodePath("MarginContainer/VBoxContainer/MeshExportContainer/ExportMeshBtn")
 mesh_format_btn = NodePath("MarginContainer/VBoxContainer/MeshExportContainer/MeshFormatBtn")
@@ -68,7 +68,7 @@ custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Output template"
 
-[node name="TemplateBtn3D" type="OptionButton" parent="MarginContainer/VBoxContainer/TemplateContainer"]
+[node name="TemplateBtnPBR" type="OptionButton" parent="MarginContainer/VBoxContainer/TemplateContainer"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -78,7 +78,7 @@ popup/item_0/id = 0
 popup/item_1/text = "glTF PBR (Split ORM)"
 popup/item_1/id = 1
 
-[node name="TemplateBtn2D" type="OptionButton" parent="MarginContainer/VBoxContainer/TemplateContainer"]
+[node name="TemplateBtnSingle" type="OptionButton" parent="MarginContainer/VBoxContainer/TemplateContainer"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -95,8 +95,7 @@ custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 text = "Output Resolution"
 
-[node name="ResolutionBtn3D" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
-visible = false
+[node name="ResolutionBtn" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 4
@@ -108,22 +107,6 @@ popup/item_2/text = "2048"
 popup/item_2/id = 4
 popup/item_3/text = "4096"
 popup/item_3/id = 8
-
-[node name="ResolutionBtn2D" type="OptionButton" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-item_count = 5
-popup/item_0/text = "32"
-popup/item_0/id = 1
-popup/item_1/text = "64"
-popup/item_1/id = 2
-popup/item_2/text = "128"
-popup/item_2/id = 4
-popup/item_3/text = "256"
-popup/item_3/id = 8
-popup/item_4/text = "512"
-popup/item_4/id = 16
 
 [node name="FormatLabel" type="Label" parent="MarginContainer/VBoxContainer/ResolutionContainer"]
 custom_minimum_size = Vector2(110, 0)
@@ -307,10 +290,9 @@ step = 1.0
 [connection signal="close_requested" from="FileDialog" to="." method="_on_file_dialog_close_requested"]
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/OutputContainer/DirectoryBtn" to="." method="_on_directory_btn_pressed"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateBtn3D" to="." method="_on_template_btn_3d_item_selected"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateBtn2D" to="." method="_on_template_btn_2d_item_selected"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn3D" to="." method="_on_resolution_btn_3d_item_selected"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn2D" to="." method="_on_resolution_btn_2d_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateBtnPBR" to="." method="_on_template_btn_3d_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/TemplateContainer/TemplateBtnSingle" to="." method="_on_template_btn_2d_item_selected"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/ResolutionBtn" to="." method="_on_resolution_btn_3d_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/ResolutionContainer/FormatBtn" to="." method="_on_format_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/InterpolationBtn" to="." method="_on_interpolation_btn_item_selected"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/InterpolationContainer/NormalsButton" to="." method="_on_normals_button_item_selected"]

@@ -73,8 +73,8 @@ func load_material_settings(cfg_file : ConfigFile) -> Array[Array]:
 
 
 func save_export_settings(
-		dir : String, template_3D : int, template_2D : int, res_3D : int, res_2D : int, 
-		format : int, interp : int, normals : int, mesh_export : int, mesh : int
+		dir: String, template_PBR: int, template_single_tex: int, resolution: int, 
+		format: int, interp: int, normals: int, mesh_export: int, mesh: int
 	) -> void:
 	var cfg_file : ConfigFile = ConfigFile.new()
 	
@@ -82,10 +82,9 @@ func save_export_settings(
 		Logger.puts_error("Cannot find user settings at" + SETTINGS_PATH)
 	
 	cfg_file.set_value("export_settings", "export_directory", dir)
-	cfg_file.set_value("export_settings", "export_template_3D", template_3D)
-	cfg_file.set_value("export_settings", "export_template_2D", template_2D)
-	cfg_file.set_value("export_settings", "export_resolution_3D", res_3D)
-	cfg_file.set_value("export_settings", "export_resolution_2D", res_2D)
+	cfg_file.set_value("export_settings", "export_template_PBR", template_PBR)
+	cfg_file.set_value("export_settings", "export_template_single_tex", template_single_tex)
+	cfg_file.set_value("export_settings", "export_resolution", resolution)
 	cfg_file.set_value("export_settings", "export_format", format)
 	cfg_file.set_value("export_settings", "export_interpolation", interp)
 	cfg_file.set_value("export_settings", "export_normals", normals)
@@ -137,10 +136,9 @@ func _init_schema(database_type: DatabaseType, database : Database) -> void:
 		DatabaseType.SETTINGS:
 			database.add_valid_property("shader_resolution")
 			database.add_valid_property("export_directory")
-			database.add_valid_property("export_template_3D")
-			database.add_valid_property("export_template_2D")
-			database.add_valid_property("export_resolution_3D")
-			database.add_valid_property("export_resolution_2D")
+			database.add_valid_property("export_template_PBR")
+			database.add_valid_property("export_template_single_tex")
+			database.add_valid_property("export_resolution")
 			database.add_valid_property("export_format")
 			database.add_valid_property("export_interpolation")
 			database.add_valid_property("export_normals")
@@ -171,10 +169,9 @@ func _load_settings() -> void:
 		var cfg_file : ConfigFile = ConfigFile.new()
 		
 		cfg_file.set_value("shader_settings", "shader_resolution", 4096)
-		cfg_file.set_value("export_settings", "export_template_3D", 1)
-		cfg_file.set_value("export_settings", "export_template_2D", 2)
-		cfg_file.set_value("export_settings", "export_resolution_3D", 1024)
-		cfg_file.set_value("export_settings", "export_resolution_2D", 64)
+		cfg_file.set_value("export_settings", "export_template_PBR", 1)
+		cfg_file.set_value("export_settings", "export_template_single_tex", 2)
+		cfg_file.set_value("export_settings", "export_resolution", 1024)
 		cfg_file.set_value("export_settings", "export_format", 0)
 		cfg_file.set_value("export_settings", "export_interpolation", 4)
 		cfg_file.set_value("export_settings", "export_normals", 0)
