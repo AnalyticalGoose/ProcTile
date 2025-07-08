@@ -19,11 +19,16 @@ var paused : bool = false
 func free_compute_resources() -> void:
 	set_process(false)
 		
+	var rd: RenderingDevice = compute_shader.rd
 	for rid : RID in compute_shader._buffer_rds:
-		compute_shader.rd.free_rid(rid)
+		rd.free_rid(rid)
 	for rid : RID in compute_shader.base_textures_rds:
-		compute_shader.rd.free_rid(rid)
-		
+		rd.free_rid(rid)
+	for rid : RID in compute_shader._uniform_rds:
+		rd.free_rid(rid)
+
+	rd.free_rid(compute_shader.shader)
+	
 	shader_material.set_shader_parameter("albedo_input", Texture2DRD.new())
 	shader_material.set_shader_parameter("occlusion_input", Texture2DRD.new())
 	shader_material.set_shader_parameter("roughness_input", Texture2DRD.new())
