@@ -2,12 +2,12 @@ extends Node3D
 class_name Renderer
 
 enum MaterialType {
-	PBR_3D,
-	PIXEL_2D,
+	PBR,
+	SINGLE_TEX,
 }
 
 var compute_shader : ComputeShader
-var material_type : MaterialType = MaterialType.PBR_3D
+var material_type : MaterialType = MaterialType.PBR
 var texture_size : int
 var paused : bool = false
 
@@ -66,10 +66,10 @@ func set_shader_material(shader_data : Array, shader_path : String) -> void:
 
 
 func change_mesh_shader(type: int) -> void:
-	if type == MaterialType.PBR_3D:
-		shader_material.set_shader_parameter("texture_3D", true)
-	elif type == MaterialType.PIXEL_2D:
-		shader_material.set_shader_parameter("texture_3D", false)
+	if type == MaterialType.PBR:
+		shader_material.set_shader_parameter("texture_PBR", true)
+	elif type == MaterialType.SINGLE_TEX:
+		shader_material.set_shader_parameter("texture_PBR", false)
 	
 	material_type = type as MaterialType
 	DataManager.current_material_type = material_type

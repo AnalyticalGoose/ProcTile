@@ -20,8 +20,8 @@ var selected_btn : Button
 
 
 func _ready() -> void:
-		assets_filter.set_item_tooltip(0, "3D PBR")
-		assets_filter.set_item_tooltip(1, "2D Pixel (EXPERIMENTAL)")
+		assets_filter.set_item_tooltip(0, "Realistic PBR")
+		assets_filter.set_item_tooltip(1, "Base Textures")
 		asset_selector_offets = DataManager.material_offets
 
 
@@ -36,7 +36,7 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	
 	if current_asset_type != current_asset_selector_idx: # Different material shader needed
 		current_asset_type = current_asset_selector_idx
-		renderer.change_mesh_shader(current_asset_type)#
+		renderer.change_mesh_shader(current_asset_type)
 	
 	if placeholder_material:
 		renderer.remove_placeholder_material()

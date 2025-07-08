@@ -33,13 +33,13 @@ var exporter : Exporter
 var output_resolution_3D : int:
 	set(value):
 		output_resolution_3D = value
-		if compute_shader.is_3D_material:
+		if compute_shader.is_PBR_material:
 			_set_interpolate_ui(output_resolution_3D)
 
 var output_resolution_2D : int:
 	set(value):
 		output_resolution_2D = value
-		if not compute_shader.is_3D_material:
+		if not compute_shader.is_PBR_material:
 			_set_interpolate_ui(output_resolution_2D)
 		
 
@@ -131,7 +131,7 @@ func _setup_export_ui() -> void:
 	file_dialog.set_current_dir(output_directory)
 	
 	# get template data
-	var template : int = output_template_3D if compute_shader.is_3D_material else output_template_2D
+	var template : int = output_template_3D if compute_shader.is_PBR_material else output_template_2D
 	export_template_data = ExportTemplate.get_export_template_data(template)
 	for dataline : Array in export_template_data:
 		filename_maps.append(dataline[2])
@@ -146,7 +146,7 @@ func _setup_export_ui() -> void:
 		mesh_label.hide()
 
 	# update ui from settings
-	if compute_shader.is_3D_material:
+	if compute_shader.is_PBR_material:
 		resolution_btn_3D.show()
 		resolution_btn_3D.select(resolution_btn_3D.get_item_index(output_resolution_3D / 512.0 as int))
 		template_options_3D.show()
@@ -312,7 +312,7 @@ func _recalculate_normals() -> void:
 func _init_export() -> void:
 	renderer.set_process(false)
 	
-	var res : int = output_resolution_3D if compute_shader.is_3D_material else output_resolution_2D
+	var res : int = output_resolution_3D if compute_shader.is_PBR_material else output_resolution_2D
 	
 	exporter = Exporter.new()
 	exporter.setup_properties(

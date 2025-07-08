@@ -6,7 +6,7 @@ uniform sampler2D roughness_input;
 uniform sampler2D metallic_input;
 uniform sampler2D normal_input;
 
-uniform bool texture_3D;
+uniform bool texture_PBR;
 uniform bool placeholder_texture;
 
 // The source-color compiler hint isn't working for the albedo-input for some reason
@@ -30,7 +30,7 @@ void fragment() {
 		vec4 albedo_tex = texture(albedo_input, UV);
 		ALBEDO = toLinear(albedo_tex).rgb;
 
-		if (texture_3D == true) {
+		if (texture_PBR == true) {
 			vec4 occlusion_tex = texture(occlusion_input, UV);
 			vec4 roughness_tex = texture(roughness_input, UV);
 			vec4 metallic_tex = texture(metallic_input, UV);

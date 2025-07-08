@@ -32,13 +32,8 @@ var export_progress : int = 0:
 		export_window.progress_update(export_progress)
 
 var texture_data : Array[PackedByteArray] = [
-												PackedByteArray([]), 
-												PackedByteArray([]), 
-												PackedByteArray([]), 
-												PackedByteArray([]), 
-												PackedByteArray([]), 
-												PackedByteArray([])
-											]
+	PackedByteArray([]), PackedByteArray([]), PackedByteArray([]), 
+	PackedByteArray([]), PackedByteArray([]), PackedByteArray([])]
 
 
 func setup_properties(
