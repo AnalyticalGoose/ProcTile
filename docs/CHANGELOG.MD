@@ -10,13 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - Add UI rotation gizmo to view and reset camera position [GH-0681889](https://github.com/AnalyticalGoose/ProcTile/commit/0681889d27c2d53c528e9beaba9128eaee4275aa)
 - Add lighting settings menu to change HDRI & Tonemapping [GH-e6ad379](https://github.com/AnalyticalGoose/ProcTile/commit/e6ad379516dea5baf81435ba935e59b076783a1d)
+- Add Grunge base texture material [GH-464c39f](https://github.com/AnalyticalGoose/ProcTile/commit/464c39f80426b8dc5590a64e6aa079ffbb193353)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
 - Improve Grass Lawn Material to by adding seamless tiling [GH-2fa0c63](https://github.com/AnalyticalGoose/ProcTile/commit/2fa0c63593d12aa1d77310c417ab7ad6d7de0b13)
 - Improve Hardwood Floor Material by adding tiling and UV offsets for the planks [GH-09837ca](https://github.com/AnalyticalGoose/ProcTile/commit/09837caf9b87d4e42f2935840a53c156025332e2)
+- Remove experimental 2D Pixel Materials & refactor to support 2D base textures such as noise and patterns [GH-9d00dc9](https://github.com/AnalyticalGoose/ProcTile/commit/9d00dc9dafddc0700427458f569add1279a49cb9)
 
 ### Fixed
+- Fix a memory leak due to compute shader RIDs not being freed [GH-824020a](https://github.com/AnalyticalGoose/ProcTile/commit/824020a8c7a52bee3351f54775c115ed455e3157)
+- Fix a bug resulting in DirectX normals not exporting correctly [GH-d380c14](https://github.com/AnalyticalGoose/ProcTile/commit/d380c1468adcda088bb9d46824b1179d524a68ad#diff-654237cf80a113c0176d04de0e79c80e8ad9f980800baaafc6d74fc93001daae) 
 
 
 ## [0.1.1] - 2025-03-17
