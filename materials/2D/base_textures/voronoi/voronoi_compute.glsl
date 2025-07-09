@@ -143,6 +143,10 @@ void main() {
 				float voronoi_edge = voronoi_edge_distance(p, cell_count, seed.voronoi_seed, false).r;
 				_output = vec3(voronoi_edge);
 				break;
+			case 5:
+				vec3 voronoi_3d = voronoi_edge_distance(p, cell_count, seed.voronoi_seed, false);
+				_output = voronoi_3d;
+				break;
 		}
 
 		vec3 albedo = clamp((_output - params.tone_value) / params.tone_width + 0.5, 0.0, 1.0);

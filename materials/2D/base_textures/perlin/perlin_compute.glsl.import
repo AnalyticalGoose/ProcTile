@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bp24ffkbtkgsi"
+path="res://.godot/imported/perlin_compute.glsl-dafff614d9e456a5abd258368ddd7c3e.res"
+
+[deps]
+
+source_file="res://materials/2D/base_textures/perlin/perlin_compute.glsl"
+dest_files=["res://.godot/imported/perlin_compute.glsl-dafff614d9e456a5abd258368ddd7c3e.res"]
+
+[params]
+
