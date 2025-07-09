@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - Add UI rotation gizmo to view and reset camera position [GH-0681889](https://github.com/AnalyticalGoose/ProcTile/commit/0681889d27c2d53c528e9beaba9128eaee4275aa)
 - Add lighting settings menu to change HDRI & Tonemapping [GH-e6ad379](https://github.com/AnalyticalGoose/ProcTile/commit/e6ad379516dea5baf81435ba935e59b076783a1d)
-- Add Grunge base texture material [GH-464c39f](https://github.com/AnalyticalGoose/ProcTile/commit/464c39f80426b8dc5590a64e6aa079ffbb193353)
+- Add new materials: 
+    - Grunge Texture [GH-464c39f](https://github.com/AnalyticalGoose/ProcTile/commit/464c39f80426b8dc5590a64e6aa079ffbb193353)
+    - Voronoi Noise [GH-3dd3098](https://github.com/AnalyticalGoose/ProcTile/commit/3dd30987e05edcaa7c599f56b7a6ccfd0bf56360)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
