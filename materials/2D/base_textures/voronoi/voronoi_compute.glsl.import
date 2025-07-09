@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://wfmn56nb26ae"
+path="res://.godot/imported/voronoi_compute.glsl-9a3c622124537f16d621c16c0f1384bc.res"
+
+[deps]
+
+source_file="res://materials/2D/base_textures/voronoi/voronoi_compute.glsl"
+dest_files=["res://.godot/imported/voronoi_compute.glsl-9a3c622124537f16d621c16c0f1384bc.res"]
+
+[params]
+

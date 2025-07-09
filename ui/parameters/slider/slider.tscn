@@ -26,6 +26,7 @@ scrollable = false
 [node name="SliderValue" type="LineEdit" parent="Container"]
 layout_mode = 2
 alignment = 1
+expand_to_text_length = true
 context_menu_enabled = false
 
 [connection signal="drag_ended" from="Container/Slider" to="." method="_on_slider_drag_ended"]

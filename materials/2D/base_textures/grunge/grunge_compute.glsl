@@ -36,22 +36,6 @@ layout(push_constant, std430) uniform restrict readonly Params {
 } params;
 
 
-// S0 - Grunge Texture Parameters
-// const vec2 size = vec2(6.0, 6.0);
-// const int grunge_iterations = 10;
-// const float persistence = 0.61;
-// const float offset = 0.00;
-// const float mingle_opacity = 1.0;
-// const float mingle_step = 0.5;
-// const float mingle_warp_x = 0.5;
-// const float mingle_warp_y = 0.5;
-
-// const float mingle_warp_strength = 1.5; // todo
-// const float mingle_smooth = 0.5;
-// const float tone_value = 0.8;
-// const float tone_width = 0.4;
-
-
 // Random / noise functions
 float rand(vec2 x) {
 	return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
