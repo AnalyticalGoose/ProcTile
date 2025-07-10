@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://34glhypgmic1"
+path="res://.godot/imported/white_noise_compute.glsl-7fa422bbb55d7e1b8845b63acc821840.res"
+
+[deps]
+
+source_file="res://materials/2D/base_textures/white_noise/white_noise_compute.glsl"
+dest_files=["res://.godot/imported/white_noise_compute.glsl-7fa422bbb55d7e1b8845b63acc821840.res"]
+
+[params]
+
