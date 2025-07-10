@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - Grunge Texture [GH-464c39f](https://github.com/AnalyticalGoose/ProcTile/commit/464c39f80426b8dc5590a64e6aa079ffbb193353)
     - Voronoi Noise [GH-3dd3098](https://github.com/AnalyticalGoose/ProcTile/commit/3dd30987e05edcaa7c599f56b7a6ccfd0bf56360)
     - Perlin Noise [GH-eafbd2c](https://github.com/AnalyticalGoose/ProcTile/commit/eafbd2ce8a145f175a662ce2ba03602111340172)
+    - White Noise [GH-429b7ea](https://github.com/AnalyticalGoose/ProcTile/commit/429b7ea0fc8f0145f981f94faafc6dd2fd920b95)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
