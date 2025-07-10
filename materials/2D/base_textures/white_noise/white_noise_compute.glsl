@@ -8,7 +8,7 @@ layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
 layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer;
 
 layout(set = 2, binding = 0, std430) buffer readonly Seeds {
-    float value_seed;
+    float white_noise_seed;
 } seed;
 
 layout(push_constant, std430) uniform restrict readonly Params {
@@ -41,7 +41,7 @@ void main() {
 	vec2 uv = pixel / _texture_size;
 
     if (params.stage == 0.0) {
-		float white_noise = white_noise(pixel, params.size, seed.value_seed);
+		float white_noise = white_noise(pixel, params.size, seed.white_noise_seed);
 		float albedo = clamp((white_noise - params.tone_value) / params.tone_width + 0.5, 0.0, 1.0);
 		imageStore(albedo_buffer, ivec2(pixel), vec4(vec3(albedo), 1.0));
     }

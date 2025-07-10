@@ -1,15 +1,17 @@
-[gd_scene load_steps=12 format=3 uid="uid://qs8g653e8e0b"]
+[gd_scene load_steps=14 format=3 uid="uid://qs8g653e8e0b"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_hn53t"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_61vkc"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_yqtfe"]
 [ext_resource type="Texture2D" uid="uid://dw1fnais1alld" path="res://materials/2D/base_textures/grunge/grunge_preview.jpg" id="4_c068h"]
+[ext_resource type="Texture2D" uid="uid://b50j4bs7exoj7" path="res://materials/2D/base_textures/cracks/cracks_preview.jpg" id="4_en11n"]
 [ext_resource type="Texture2D" uid="uid://dkqwnaqgsuh0u" path="res://materials/2D/base_textures/voronoi/voronoi_preview.jpg" id="5_3pcye"]
 [ext_resource type="Texture2D" uid="uid://b5ool4bp2u87d" path="res://materials/2D/base_textures/grunge/grunge_thumb.jpg" id="5_5df0m"]
 [ext_resource type="Texture2D" uid="uid://ducl5qv61v454" path="res://materials/2D/base_textures/perlin/perlin_preview.jpg" id="5_gnb8n"]
 [ext_resource type="Texture2D" uid="uid://b0iin4ty73bhl" path="res://materials/2D/base_textures/white_noise/white_noise_preview.jpg" id="7_fc4k1"]
 [ext_resource type="Texture2D" uid="uid://chlp374l4jcd4" path="res://materials/2D/base_textures/voronoi/voronoi_thumb.jpg" id="7_j8hmt"]
 [ext_resource type="Texture2D" uid="uid://m1cu263j2io4" path="res://materials/2D/base_textures/perlin/perlin_thumb.jpg" id="8_v2iwr"]
+[ext_resource type="Texture2D" uid="uid://qh2r77ewxb7c" path="res://materials/2D/base_textures/cracks/cracks_thumb.jpg" id="9_ujsge"]
 [ext_resource type="Texture2D" uid="uid://cujdpg20lvxxg" path="res://materials/2D/base_textures/white_noise/white_noise_thumb.jpg" id="11_qa3te"]
 
 [node name="AssetSelector_2D" type="GridContainer"]
@@ -21,9 +23,21 @@ theme = ExtResource("1_hn53t")
 columns = 4
 script = ExtResource("2_61vkc")
 asset_preview_scene = ExtResource("3_yqtfe")
-preview_images = Array[CompressedTexture2D]([ExtResource("4_c068h"), ExtResource("5_gnb8n"), ExtResource("5_3pcye"), ExtResource("7_fc4k1")])
+preview_images = Array[CompressedTexture2D]([ExtResource("4_en11n"), ExtResource("4_c068h"), ExtResource("5_gnb8n"), ExtResource("5_3pcye"), ExtResource("7_fc4k1")])
 
-[node name="GrungeTexture" type="Button" parent="."]
+[node name="Cracks" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Cracks 
+Texture"
+icon = ExtResource("9_ujsge")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="Grunge" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
@@ -35,7 +49,7 @@ icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
 
-[node name="PerlinNoise" type="Button" parent="."]
+[node name="Perlin" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
@@ -47,7 +61,7 @@ icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
 
-[node name="VoronoiNoise" type="Button" parent="."]
+[node name="Voronoi" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10

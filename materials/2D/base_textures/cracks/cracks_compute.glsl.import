@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://de5yucemchuwh"
+path="res://.godot/imported/cracks_compute.glsl-0974b4bb63a911d2036e7e2af83e9c57.res"
+
+[deps]
+
+source_file="res://materials/2D/base_textures/cracks/cracks_compute.glsl"
+dest_files=["res://.godot/imported/cracks_compute.glsl-0974b4bb63a911d2036e7e2af83e9c57.res"]
+
+[params]
+
