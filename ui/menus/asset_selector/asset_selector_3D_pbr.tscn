@@ -18,7 +18,7 @@
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0vw2s"]
 
-[node name="AssetSelector_3D" type="GridContainer"]
+[node name="AssetSelector_3D_PBR" type="GridContainer"]
 offset_right = 264.0
 offset_bottom = 800.0
 size_flags_horizontal = 0

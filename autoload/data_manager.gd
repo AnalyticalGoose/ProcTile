@@ -8,7 +8,7 @@ enum DatabaseType {
 }
 
 var material_data : Array[Dictionary]
-var material_offets : Array[int] = [0]
+var material_offsets : Array[int] = [0]
 var settings_data : Array[Dictionary]
 var shader_paths : Dictionary = {}
 
@@ -18,7 +18,11 @@ var current_material_type : int = 0
 var current_save_path : String = ""
 
 const SETTINGS_PATH : String = "user://settings.cfg"
-const MATERIAL_DIRS : Array[String] = ["res://materials/3D/realistic/", "res://materials/2D/base_textures/"]
+const MATERIAL_DIRS : Array[String] = [
+	"res://materials/3D/realistic/", 
+	"res://materials/3D/stylised/", 
+	"res://materials/2D/base_textures/"
+	]
 
 func _ready() -> void:
 	_load_settings()
@@ -31,7 +35,7 @@ func _ready() -> void:
 	for path : String in MATERIAL_DIRS:
 		var material_dir : DirAccess = DirAccess.open(path)
 		var dir_array : PackedStringArray = material_dir.get_directories()
-		material_offets.append(dir_array.size())
+		material_offsets.append(dir_array.size() + i)
 		
 		for dir : String in dir_array:
 			var base_path : String = path + dir + "/" + dir

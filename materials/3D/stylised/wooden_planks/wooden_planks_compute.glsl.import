@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://lcc2tioj1h8x"
+path="res://.godot/imported/wooden_planks_compute.glsl-04022bd52bbc614782236723be133c45.res"
+
+[deps]
+
+source_file="res://materials/3D/stylised/wooden_planks/wooden_planks_compute.glsl"
+dest_files=["res://.godot/imported/wooden_planks_compute.glsl-04022bd52bbc614782236723be133c45.res"]
+
+[params]
+

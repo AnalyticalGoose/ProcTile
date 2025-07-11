@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://qh2r77ewxb7c" path="res://materials/2D/base_textures/cracks/cracks_thumb.jpg" id="9_ujsge"]
 [ext_resource type="Texture2D" uid="uid://cujdpg20lvxxg" path="res://materials/2D/base_textures/white_noise/white_noise_thumb.jpg" id="11_qa3te"]
 
-[node name="AssetSelector_2D" type="GridContainer"]
+[node name="AssetSelector_2D_Base" type="GridContainer"]
 offset_right = 264.0
 offset_bottom = 800.0
 size_flags_horizontal = 0

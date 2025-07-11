@@ -12,7 +12,7 @@ extends PanelContainer
 var compute_shader : ComputeShader
 var current_asset_selector_idx : int = 0
 var current_asset_type : int = 0
-var asset_selector_offets : Array[int]
+var asset_selector_offsets : Array[int]
 var placeholder_material : bool = true
 var selected_btn : Button
 
@@ -21,8 +21,9 @@ var selected_btn : Button
 
 func _ready() -> void:
 		assets_filter.set_item_tooltip(0, "Realistic PBR")
-		assets_filter.set_item_tooltip(1, "Base Textures")
-		asset_selector_offets = DataManager.material_offets
+		assets_filter.set_item_tooltip(1, "Stylised PBR")
+		assets_filter.set_item_tooltip(2, "Base Textures")
+		asset_selector_offsets = DataManager.material_offsets
 
 
 func load_material(index : int, load_from_save : bool = false) -> void:
@@ -30,7 +31,8 @@ func load_material(index : int, load_from_save : bool = false) -> void:
 	if load_from_save:
 		material_index = index
 	else:
-		material_index = index + asset_selector_offets[current_asset_selector_idx]
+		material_index = index + asset_selector_offsets[current_asset_selector_idx]
+		
 		DataManager.current_save_path = ""
 		file_menu.toggle_save_button(true)
 	

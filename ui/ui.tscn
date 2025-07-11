@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=50 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -32,18 +32,20 @@
 [ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/renderer_toolbar_settings/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
 [ext_resource type="Texture2D" uid="uid://dvwro6r1w68qx" path="res://ui/icons/icon_camera_settings.png" id="15_netph"]
 [ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/renderer_toolbar_settings/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
-[ext_resource type="Texture2D" uid="uid://dx8juddabnn11" path="res://ui/icons/icon_pixel_mat.png" id="16_hkc0u"]
 [ext_resource type="Texture2D" uid="uid://d35gyc8dy64kh" path="res://ui/icons/icon_lighting_settings.png" id="16_ov2ix"]
 [ext_resource type="PackedScene" uid="uid://dfpvlhxuodpqp" path="res://ui/menus/renderer_toolbar_settings/lighting_settings/lighting_settings_menu.tscn" id="17_l1w2y"]
-[ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D.tscn" id="23_t626t"]
+[ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D_pbr.tscn" id="23_t626t"]
 [ext_resource type="Texture2D" uid="uid://b7nlbxvya41to" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_preview.jpg" id="24_iw6jt"]
-[ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D.tscn" id="24_l0ee1"]
+[ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D_base.tscn" id="24_l0ee1"]
 [ext_resource type="Texture2D" uid="uid://cq7fq88hfmut5" path="res://materials/3D/realistic/brick_wall/brick_wall_preview.jpg" id="25_vgtty"]
+[ext_resource type="Texture2D" uid="uid://cbu1f3b76ef0t" path="res://ui/icons/icon_texture.png" id="27_l1w2y"]
+[ext_resource type="Texture2D" uid="uid://pcap8htphb13" path="res://ui/icons/icon_3d_stylised.png" id="27_mpvo8"]
 [ext_resource type="Texture2D" uid="uid://bswnyx2puee3h" path="res://materials/3D/realistic/castle_wall/castle_wall_preview.jpg" id="27_ov2ix"]
 [ext_resource type="PackedScene" uid="uid://cf557mf4s6koj" path="res://ui/parameters/presets/presets.tscn" id="27_p762i"]
 [ext_resource type="Texture2D" uid="uid://yc88l1n61tf5" path="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg" id="28_l1w2y"]
 [ext_resource type="Texture2D" uid="uid://f2rscwgloa7s" path="res://materials/3D/realistic/grass_lawn/grass_lawn_preview.jpg" id="29_mpvo8"]
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="30_6gefn"]
+[ext_resource type="PackedScene" uid="uid://xakor1censho" path="res://ui/menus/asset_selector/asset_selector_3D_stylised.tscn" id="36_6gefn"]
 [ext_resource type="PackedScene" uid="uid://dy5akndp03yu4" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.tscn" id="41_iw6jt"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
@@ -552,7 +554,7 @@ params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
 assets_search = NodePath("AssetsMargin/AssetsVBox/AssetsSearch")
 assets_filter = NodePath("AssetsMargin/AssetsVBox/AssetsFilter")
-asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D")]
+asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_PBR"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Stylised"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D_Base")]
 
 [node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
 layout_mode = 2
@@ -583,22 +585,27 @@ custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"FilterItemList"
 auto_height = true
-item_count = 2
+item_count = 3
 max_columns = 8
 icon_mode = 0
 fixed_icon_size = Vector2i(28, 28)
 item_0/icon = ExtResource("6_1sqbh")
-item_1/icon = ExtResource("16_hkc0u")
+item_1/icon = ExtResource("27_mpvo8")
+item_2/icon = ExtResource("27_l1w2y")
 
 [node name="AssetSelector" type="Panel" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 custom_minimum_size = Vector2(0, 800)
 layout_mode = 2
 
-[node name="AssetSelector_3D" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("23_t626t")]
+[node name="AssetSelector_3D_PBR" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("23_t626t")]
 layout_mode = 0
 preview_images = Array[CompressedTexture2D]([ExtResource("24_iw6jt"), ExtResource("25_vgtty"), ExtResource("27_ov2ix"), ExtResource("28_l1w2y"), ExtResource("29_mpvo8"), ExtResource("30_6gefn")])
 
-[node name="AssetSelector_2D" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("24_l0ee1")]
+[node name="AssetSelector_3D_Stylised" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("36_6gefn")]
+visible = false
+layout_mode = 0
+
+[node name="AssetSelector_2D_Base" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("24_l0ee1")]
 visible = false
 layout_mode = 0
 
@@ -666,7 +673,8 @@ script = ExtResource("7_08hm7")
 [connection signal="value_changed" from="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings/MarginContainer/VBoxContainer/OrbitSpeedContainer/OrbitSpeedHSlider" to="RendererWindow" method="_on_orbit_speed_h_slider_value_changed"]
 [connection signal="text_changed" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsSearch" to="AssetsWindow" method="_on_assets_search_text_changed"]
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
-[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
-[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_PBR" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Stylised" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D_Base" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]
