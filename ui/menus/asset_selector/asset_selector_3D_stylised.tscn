@@ -1,10 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://xakor1censho"]
+[gd_scene load_steps=6 format=3 uid="uid://xakor1censho"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_mqe4l"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_e25jb"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_f5ufc"]
-
-[sub_resource type="Texture2DRD" id="Texture2DRD_fqhdl"]
+[ext_resource type="Texture2D" uid="uid://dpcrkvbssjhst" path="res://materials/3D/stylised/wooden_planks/wood_planks_preview.jpg" id="4_58quh"]
+[ext_resource type="Texture2D" uid="uid://d38a8auhuebe4" path="res://materials/3D/stylised/wooden_planks/wood_planks_thumb.jpg" id="5_8beff"]
 
 [node name="AssetSelector_3D_Stylised" type="GridContainer"]
 offset_right = 264.0
@@ -15,7 +15,7 @@ theme = ExtResource("1_mqe4l")
 columns = 4
 script = ExtResource("2_e25jb")
 asset_preview_scene = ExtResource("3_f5ufc")
-preview_images = Array[CompressedTexture2D]([null])
+preview_images = Array[CompressedTexture2D]([ExtResource("4_58quh")])
 
 [node name="WoodenPlanks" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
@@ -24,7 +24,7 @@ theme_override_font_sizes/font_size = 10
 toggle_mode = true
 text = "Wooden 
 Planks"
-icon = SubResource("Texture2DRD_fqhdl")
+icon = ExtResource("5_8beff")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true

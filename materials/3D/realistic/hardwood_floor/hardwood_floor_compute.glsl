@@ -422,7 +422,7 @@ void main() {
         vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((seed.uv_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
 
         vec2 plank_uv = fract(uv - vec2(0.5 * (2.0 * random_plank_colour.r - 1.0), 0.250 * (2.0 * random_plank_colour.r - 1.0)));
-        ivec2 transformed_pixel = ivec2(plank_uv * _texture_size);
+        // ivec2 transformed_pixel = ivec2(plank_uv * _texture_size);
 
         vec2 grain_base_scale = vec2(params.grain_base_scale_x, params.grain_base_scale_y);
         float grain_base = make_tileable(plank_uv, blend_strength);
