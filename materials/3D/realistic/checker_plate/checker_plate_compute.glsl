@@ -12,7 +12,7 @@ layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
 layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
 layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer;
+layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer;
 layout(r16f, set = 1, binding = 1) uniform image2D noise_buffer;
 layout(r16f, set = 1, binding = 2) uniform image2D mask_buffer;
 
@@ -192,20 +192,27 @@ float map_bw_colours(float x, float col_white, float col_black) {
     }
 }
 
+
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
+
 // Generate normals
-vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
+vec3 sobel_filter(ivec2 coord, float amount) {
+    float size = params.texture_size;
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
     vec2 rv = vec2(0.0);
 
     // Apply Sobel-like filter to compute gradient
-    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, e.y)).r;
-    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, e.y)).r;
-    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, -e.y)).r;
-    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, -e.y)).r;
-    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(2, 0)).r;
-    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(2, 0)).r;
-    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(0, 2)).r;
-    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(0, 2)).r;
+    rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer, wrap_coord(coord + ivec2(e.x, e.y))).r;
+    rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer, wrap_coord(coord - ivec2(e.x, e.y))).r;
+    rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+    rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+    rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer, wrap_coord(coord + ivec2(2, 0))).r;
+    rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer, wrap_coord(coord - ivec2(2, 0))).r;
+    rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer, wrap_coord(coord + ivec2(0, 2))).r;
+    rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer, wrap_coord(coord - ivec2(0, 2))).r;
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -213,6 +220,7 @@ vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
     // Generate the normal vector and remap to [0, 1] for visualization
     return vec3(0.5) + 0.5 * normalize(vec3(rv, -1.0));
 }
+
 
 // Reorientated Normal Mapping - Stephen Hill & Colin Barre-Brisebois - https://blog.selfshadow.com/publications/blending-in-detail/
 // https://www.shadertoy.com/view/4t2SzR
@@ -290,7 +298,7 @@ void main() {
         float fbm_bump = fbm_perlin_2d(uv, vec2(params.bump_scale), 10, 1.0, 0.0, seed.bump_noise_seed);
         float fbm_blend = multiply(fbm_bump, fbm_brushed, params.noise_blend); // may wish to reverse args
 
-        imageStore(rgba32f_buffer, ivec2(pixel), vec4(vec3(fbm_blend), 1.0));
+        imageStore(r16f_buffer, ivec2(pixel), vec4(vec3(fbm_blend), 1.0));
     }
 
     if (params.stage == 1.0) {
@@ -300,7 +308,7 @@ void main() {
         vec2 gradient = vec2(tile_weave.y, tile_weave.z);
         vec3 checker_normals = normalize(vec3(-gradient, -1.0));
         checker_normals = checker_normals * 0.5 + 0.5;
-        vec3 noise_normals = sobel_filter(ivec2(pixel), _normals_strength, params.texture_size);
+        vec3 noise_normals = sobel_filter(ivec2(pixel), _normals_strength);
 
         float checker_min = 1.0 - min(checker_normals.r, min(checker_normals.g, checker_normals.b));
         float checker_mask = map_bw_colours(checker_min, 1.0, 0.0);

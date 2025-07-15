@@ -325,21 +325,26 @@ float slope_blur(vec2 uv) {
     return rv / sum;
 }
 
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
 
 // Generate normals
-vec3 sobel_filter(ivec2 pixel_coords, float amount, float size) {
+vec3 sobel_filter(ivec2 coord, float amount) {
+    float size = params.texture_size;
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
     vec2 rv = vec2(0.0);
 
     // Apply Sobel-like filter to compute gradient
-    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, e.y)).r;
-    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, e.y)).r;
-    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(e.x, -e.y)).r;
-    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(e.x, -e.y)).r;
-    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(2, 0)).r;
-    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(2, 0)).r;
-    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, pixel_coords + ivec2(0, 2)).r;
-    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, pixel_coords - ivec2(0, 2)).r;
+    rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer, wrap_coord(coord + ivec2(e.x, e.y))).r;
+    rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer, wrap_coord(coord - ivec2(e.x, e.y))).r;
+    rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+    rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+    rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer, wrap_coord(coord + ivec2(2, 0))).r;
+    rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer, wrap_coord(coord - ivec2(2, 0))).r;
+    rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer, wrap_coord(coord + ivec2(0, 2))).r;
+    rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer, wrap_coord(coord - ivec2(0, 2))).r;
 
     // Scale the gradient
     rv *= size * amount / 128.0;
@@ -463,7 +468,7 @@ void main() {
     }
 
     if (params.stage == 3.0) {
-		vec3 normals = sobel_filter(ivec2(pixel), sobel_strength, params.texture_size);
+		vec3 normals = sobel_filter(ivec2(pixel), sobel_strength);
         
         if (params.normals_format == 0.0) {
             vec3 opengl_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);

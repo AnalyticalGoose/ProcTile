@@ -182,32 +182,38 @@ vec4 map_bw_colours(float x, vec4 col_white, vec4 col_black) {
     return col_white;
 }
 
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
+
 // Generate normals
-vec3 sobel_filter(ivec2 pixel_coords, float amount, float size, bool noise) {
+vec3 sobel_filter(ivec2 coord, float amount, bool noise) {
+    float size = params.texture_size;
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0); // Offsets in UV space converted to pixel space
     vec2 rv = vec2(0.0);
 
     if (noise == true) {
         // Apply Sobel-like filter to compute gradient
-        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_1, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_1, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord + ivec2(e.x, e.y))).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord - ivec2(e.x, e.y))).r;
+        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord + ivec2(2, 0))).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord - ivec2(2, 0))).r;
+        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord + ivec2(0, 2))).r;
+        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_1, wrap_coord(coord - ivec2(0, 2))).r;
     }
 
     else if (noise == false) {
-        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_2, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_2, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord + ivec2(e.x, e.y))).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord - ivec2(e.x, e.y))).r;
+        rv += vec2(1.0, 1.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+        rv += vec2(2.0, 0.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord + ivec2(2, 0))).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord - ivec2(2, 0))).r;
+        rv += vec2(0.0, 2.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord + ivec2(0, 2))).r;
+        rv += vec2(0.0, -2.0) * imageLoad(rgba32f_buffer_2, wrap_coord(coord - ivec2(0, 2))).r;
     }
 
     // Scale the gradient
@@ -267,8 +273,8 @@ void main() {
         float _grout = params.grout / 100;
         float _roughness = params.tile_roughness / 100;
 
-        vec3 noise_normals = sobel_filter(ivec2(pixel), params.noise_sobel_strength , params.texture_size, true);
-        vec3 grout_normals = sobel_filter(ivec2(pixel), grout_sobel_strength, params.texture_size, false);
+        vec3 noise_normals = sobel_filter(ivec2(pixel), params.noise_sobel_strength, true);
+        vec3 grout_normals = sobel_filter(ivec2(pixel), grout_sobel_strength, false);
         vec3 blended_normals = normal_rnm_blend(noise_normals, grout_normals);
         
         if (params.normals_format == 0.0) {

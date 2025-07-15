@@ -334,42 +334,47 @@ vec4 gradient_fct(float x, int gradient) {
     }
 }
 
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
 
 // Generate normals
-vec3 sobel_filter(ivec2 pixel_coords, float amount, float size, int index) {
+vec3 sobel_filter(ivec2 coord, float amount, int index) {
+    float size = params.texture_size;
     vec3 e = vec3(1.0 / size, -1.0 / size, 0.0);
     vec2 rv = vec2(0.0);
 
     if (index == 0) { // soil
-        rv += vec2(1.0, 0.0) * imageLoad(soil_perlin_buffer, pixel_coords + ivec2(1, 0)).r;
-        rv += vec2(0.0, 1.0) * imageLoad(soil_perlin_buffer, pixel_coords + ivec2(0, 1)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(soil_perlin_buffer, pixel_coords).r;
+        rv += vec2(1.0, 0.0) * imageLoad(soil_perlin_buffer, wrap_coord(coord + ivec2(1, 0))).r;
+        rv += vec2(0.0, 1.0) * imageLoad(soil_perlin_buffer, wrap_coord(coord + ivec2(0, 1))).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(soil_perlin_buffer, wrap_coord(coord)).r;
 
         rv *= size * amount / 20.0;
     }
 
     else if (index == 1) {
-        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_1, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_1, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_1, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_1, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_1, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_1, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_1, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_1, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_1, wrap_coord(coord + ivec2(e.x, e.y))).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_1, wrap_coord(coord - ivec2(e.x, e.y))).r;
+        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_1, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_1, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_1, wrap_coord(coord + ivec2(2, 0))).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_1, wrap_coord(coord - ivec2(2, 0))).r;
+        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_1, wrap_coord(coord + ivec2(0, 2))).r;
+        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_1, wrap_coord(coord - ivec2(0, 2))).r;
 
         rv *= size * amount / 128.0;
     }
 
     else if (index == 2) {
-        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_0, pixel_coords + ivec2(e.x, e.y)).r;
-        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_0, pixel_coords - ivec2(e.x, e.y)).r;
-        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_0, pixel_coords + ivec2(e.x, -e.y)).r;
-        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_0, pixel_coords - ivec2(e.x, -e.y)).r;
-        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_0, pixel_coords + ivec2(2, 0)).r;
-        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_0, pixel_coords - ivec2(2, 0)).r;
-        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_0, pixel_coords + ivec2(0, 2)).r;
-        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_0, pixel_coords - ivec2(0, 2)).r;
+        rv += vec2(1.0, -1.0) * imageLoad(r16f_buffer_0, wrap_coord(coord + ivec2(e.x, e.y))).r;
+        rv += vec2(-1.0, 1.0) * imageLoad(r16f_buffer_0, wrap_coord(coord - ivec2(e.x, e.y))).r;
+        rv += vec2(1.0, 1.0) * imageLoad(r16f_buffer_0, wrap_coord(coord + ivec2(e.x, -e.y))).r;
+        rv += vec2(-1.0, -1.0) * imageLoad(r16f_buffer_0, wrap_coord(coord - ivec2(e.x, -e.y))).r;  
+        rv += vec2(2.0, 0.0) * imageLoad(r16f_buffer_0, wrap_coord(coord + ivec2(2, 0))).r;
+        rv += vec2(-2.0, 0.0) * imageLoad(r16f_buffer_0, wrap_coord(coord - ivec2(2, 0))).r;
+        rv += vec2(0.0, 2.0) * imageLoad(r16f_buffer_0, wrap_coord(coord + ivec2(0, 2))).r;
+        rv += vec2(0.0, -2.0) * imageLoad(r16f_buffer_0, wrap_coord(coord - ivec2(0, 2))).r;
 
         rv *= size * amount / 128.0;
     }
@@ -440,9 +445,9 @@ void main() {
     if (params.stage == 4.0) {
         float clover_mask = step(imageLoad(r16f_buffer_0, ivec2(pixel)).r, (dot(imageLoad(r16f_buffer_1, ivec2(pixel)).r, 1.0) / 3.0));
 
-        vec3 soil_normals = sobel_filter(ivec2(pixel), 0.5, params.texture_size, 0);
-        vec3 grass_normals = sobel_filter(ivec2(pixel), 1.0, params.texture_size, 1);
-        vec3 clover_normals = sobel_filter(ivec2(pixel), 2.0, params.texture_size, 2);
+        vec3 soil_normals = sobel_filter(ivec2(pixel), 0.5, 0);
+        vec3 grass_normals = sobel_filter(ivec2(pixel), 1.0, 1);
+        vec3 clover_normals = sobel_filter(ivec2(pixel), 2.0, 2);
 
         vec3 grass_soil_rnm = normal_rnm_blend(soil_normals, grass_normals, 0.5);
         vec3 normals = normal_rnm_blend(grass_soil_rnm, clover_normals, clover_mask);
