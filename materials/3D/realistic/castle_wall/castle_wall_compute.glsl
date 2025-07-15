@@ -509,6 +509,10 @@ float map_bw_colours(float x, float limit) {
     return 1.0;
 }
 
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
 
 vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) { 
     // Scale UV to texture size
@@ -521,8 +525,8 @@ vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) {
     // Compute slope using precomputed heightmap
     float dx = 1.0 / 1024;
     vec2 slope = vec2(
-        imageLoad(r16f_buffer_0, pixel_coords + ivec2(1, 0)).r - v,
-        imageLoad(r16f_buffer_0, pixel_coords + ivec2(0, 1)).r - v
+        imageLoad(r16f_buffer_0, wrap_coord(pixel_coords + ivec2(1, 0))).r - v,
+        imageLoad(r16f_buffer_0, wrap_coord(pixel_coords + ivec2(0, 1))).r - v
     );
 
     // Normalize slope
@@ -557,11 +561,6 @@ vec4 slope_blur(vec2 uv, float sigma_strength, float iterations, int idx) {
 
     // Normalize result
     return rv / sum;
-}
-
-ivec2 wrap_coord(ivec2 coord) {
-    float s = params.texture_size;
-    return ivec2(mod(mod(coord, s + s), s));
 }
 
 // Generate normals

@@ -284,6 +284,10 @@ vec4 gradient_fct(float x) {
     return gradient_col[count - 1];
 }
 
+ivec2 wrap_coord(ivec2 coord) {
+    float s = params.texture_size;
+    return ivec2(mod(mod(coord, s + s), s));
+}
 
 float slope_blur(vec2 uv) {
     // Scale UV to texture size & fetch buffer
@@ -293,8 +297,8 @@ float slope_blur(vec2 uv) {
     // Compute slope using precomputed heightmap
     const float dx = 1.0 / params.texture_size;
     const vec2 slope = vec2(
-        imageLoad(noise_buffer, pixel_coords + ivec2(1, 0)).r - v,
-        imageLoad(noise_buffer, pixel_coords + ivec2(0, 1)).r - v
+        imageLoad(noise_buffer, wrap_coord(pixel_coords + ivec2(1, 0))).r - v,
+        imageLoad(noise_buffer, wrap_coord(pixel_coords + ivec2(0, 1))).r - v
     );
 
     // Normalize slope & setup blur loop
@@ -313,7 +317,7 @@ float slope_blur(vec2 uv) {
         // Fetch mask at offset UV
         float fi = float(i);
         float coef = norm_factor * exp(-0.5 * fi * fi * inv_sigma);
-        ivec2 pixel = pixel_coords + ivec2(norm_slope * fi);
+        ivec2 pixel = wrap_coord(pixel_coords + ivec2(norm_slope * fi));
         float mask_value = imageLoad(r16f_buffer_1, pixel).r;
 
         // Accumulate weighted mask
@@ -323,11 +327,6 @@ float slope_blur(vec2 uv) {
 
     // Normalize result
     return rv / sum;
-}
-
-ivec2 wrap_coord(ivec2 coord) {
-    float s = params.texture_size;
-    return ivec2(mod(mod(coord, s + s), s));
 }
 
 // Generate normals
