@@ -4,6 +4,7 @@ class_name Renderer
 enum MaterialType {
 	PBR,
 	STYLISED,
+	BASE,
 	SINGLE_TEX,
 }
 
@@ -67,10 +68,11 @@ func set_shader_material(shader_data : Array, shader_path : String) -> void:
 
 
 func change_mesh_shader(type: int) -> void:
-	if type == MaterialType.PBR or type == MaterialType.STYLISED:
-		shader_material.set_shader_parameter("texture_PBR", true)
-	elif type == MaterialType.SINGLE_TEX:
+	if type == MaterialType.SINGLE_TEX:
 		shader_material.set_shader_parameter("texture_PBR", false)
+	else:
+		shader_material.set_shader_parameter("texture_PBR", true)
+
 	
 	material_type = type as MaterialType
 	DataManager.current_material_type = material_type

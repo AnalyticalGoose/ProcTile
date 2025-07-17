@@ -22,7 +22,8 @@ var selected_btn : Button
 func _ready() -> void:
 		assets_filter.set_item_tooltip(0, "Realistic PBR")
 		assets_filter.set_item_tooltip(1, "Stylised PBR")
-		assets_filter.set_item_tooltip(2, "Base Textures")
+		assets_filter.set_item_tooltip(2, "Single Material PBR")
+		assets_filter.set_item_tooltip(3, "Base Textures")
 		asset_selector_offsets = DataManager.material_offsets
 
 

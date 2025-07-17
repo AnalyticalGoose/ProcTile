@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dlytpdhyv487x"
+path="res://.godot/imported/carbon_fibre_compute.glsl-6f0475bc9e2fe9cf9a1992068b51dead.res"
+
+[deps]
+
+source_file="res://materials/3D/single/carbon_fibre/carbon_fibre_compute.glsl"
+dest_files=["res://.godot/imported/carbon_fibre_compute.glsl-6f0475bc9e2fe9cf9a1992068b51dead.res"]
+
+[params]
+

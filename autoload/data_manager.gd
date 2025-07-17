@@ -20,7 +20,8 @@ var current_save_path : String = ""
 const SETTINGS_PATH : String = "user://settings.cfg"
 const MATERIAL_DIRS : Array[String] = [
 	"res://materials/3D/realistic/", 
-	"res://materials/3D/stylised/", 
+	"res://materials/3D/stylised/",
+	"res://materials/3D/single/",
 	"res://materials/2D/base_textures/"
 	]
 

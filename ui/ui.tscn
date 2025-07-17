@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=52 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -43,9 +43,11 @@
 [ext_resource type="Texture2D" uid="uid://bswnyx2puee3h" path="res://materials/3D/realistic/castle_wall/castle_wall_preview.jpg" id="27_ov2ix"]
 [ext_resource type="PackedScene" uid="uid://cf557mf4s6koj" path="res://ui/parameters/presets/presets.tscn" id="27_p762i"]
 [ext_resource type="Texture2D" uid="uid://yc88l1n61tf5" path="res://materials/3D/realistic/checker_plate/checker_plate_preview.jpg" id="28_l1w2y"]
+[ext_resource type="Texture2D" uid="uid://po3isma7kfbk" path="res://ui/icons/icon_base_mat.png" id="28_s6gi7"]
 [ext_resource type="Texture2D" uid="uid://f2rscwgloa7s" path="res://materials/3D/realistic/grass_lawn/grass_lawn_preview.jpg" id="29_mpvo8"]
 [ext_resource type="Texture2D" uid="uid://chr4uhmmqaqmb" path="res://materials/3D/realistic/hardwood_floor/hardwood_floor_preview.jpg" id="30_6gefn"]
 [ext_resource type="PackedScene" uid="uid://xakor1censho" path="res://ui/menus/asset_selector/asset_selector_3D_stylised.tscn" id="36_6gefn"]
+[ext_resource type="PackedScene" uid="uid://crqyd8337d00g" path="res://ui/menus/asset_selector/asset_selector_3D_single.tscn" id="38_se2vu"]
 [ext_resource type="PackedScene" uid="uid://dy5akndp03yu4" path="res://ui/gizmos/viewport_orientation/viewport_orientation_gizmo.tscn" id="41_iw6jt"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_iw6jt"]
@@ -554,7 +556,7 @@ params_manager = NodePath("../ParamsWindow")
 menu_manager = NodePath("../NavigationBar/NavigationMenu")
 assets_search = NodePath("AssetsMargin/AssetsVBox/AssetsSearch")
 assets_filter = NodePath("AssetsMargin/AssetsVBox/AssetsFilter")
-asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_PBR"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Stylised"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D_Base")]
+asset_selectors = [NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_PBR"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Stylised"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Single"), NodePath("AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D_Base")]
 
 [node name="AssetsMargin" type="MarginContainer" parent="AssetsWindow"]
 layout_mode = 2
@@ -585,13 +587,14 @@ custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"FilterItemList"
 auto_height = true
-item_count = 3
+item_count = 4
 max_columns = 8
 icon_mode = 0
 fixed_icon_size = Vector2i(28, 28)
 item_0/icon = ExtResource("6_1sqbh")
 item_1/icon = ExtResource("27_mpvo8")
-item_2/icon = ExtResource("27_l1w2y")
+item_2/icon = ExtResource("28_s6gi7")
+item_3/icon = ExtResource("27_l1w2y")
 
 [node name="AssetSelector" type="Panel" parent="AssetsWindow/AssetsMargin/AssetsVBox"]
 custom_minimum_size = Vector2(0, 800)
@@ -602,6 +605,10 @@ layout_mode = 0
 preview_images = Array[CompressedTexture2D]([ExtResource("24_iw6jt"), ExtResource("25_vgtty"), ExtResource("27_ov2ix"), ExtResource("28_l1w2y"), ExtResource("29_mpvo8"), ExtResource("30_6gefn")])
 
 [node name="AssetSelector_3D_Stylised" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("36_6gefn")]
+visible = false
+layout_mode = 0
+
+[node name="AssetSelector_3D_Single" parent="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector" instance=ExtResource("38_se2vu")]
 visible = false
 layout_mode = 0
 
@@ -675,6 +682,7 @@ script = ExtResource("7_08hm7")
 [connection signal="item_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetsFilter" to="AssetsWindow" method="_on_assets_filter_item_selected"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_PBR" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Stylised" to="AssetsWindow" method="_on_asset_selector_item_activated"]
+[connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_3D_Single" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 [connection signal="asset_selected" from="AssetsWindow/AssetsMargin/AssetsVBox/AssetSelector/AssetSelector_2D_Base" to="AssetsWindow" method="_on_asset_selector_item_activated"]
 
 [editable path="RendererToolbar/RightRendererToolbar/CameraSettingsButton/CameraSettings"]
