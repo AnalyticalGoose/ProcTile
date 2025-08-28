@@ -1,10 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://crqyd8337d00g"]
+[gd_scene load_steps=6 format=3 uid="uid://crqyd8337d00g"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_qs7xq"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_dsi5q"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_lrtkc"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_a8cdk"]
+[ext_resource type="Texture2D" uid="uid://bbkkv075lg3eu" path="res://materials/3D/single/carbon_fibre/carbon_fibre_preview.jpg" id="4_qs7xq"]
+[ext_resource type="Texture2D" uid="uid://bkupgd4or2jgw" path="res://materials/3D/single/carbon_fibre/carbon_fibre_thumb.jpg" id="5_dsi5q"]
 
 [node name="AssetSelector_3D_Single" type="GridContainer"]
 offset_right = 264.0
@@ -15,16 +15,16 @@ theme = ExtResource("1_qs7xq")
 columns = 4
 script = ExtResource("2_dsi5q")
 asset_preview_scene = ExtResource("3_lrtkc")
-preview_images = Array[CompressedTexture2D]([null])
+preview_images = Array[CompressedTexture2D]([ExtResource("4_qs7xq")])
 
 [node name="CarbonFibre" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 toggle_mode = true
-text = "Wooden 
-Planks"
-icon = SubResource("PlaceholderTexture2D_a8cdk")
+text = "Carbon 
+Fibre"
+icon = ExtResource("5_dsi5q")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
