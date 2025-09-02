@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - White Noise [GH-429b7ea](https://github.com/AnalyticalGoose/ProcTile/commit/429b7ea0fc8f0145f981f94faafc6dd2fd920b95)
     - Stylised Wood Planks [GH-65f6a3e](https://github.com/AnalyticalGoose/ProcTile/commit/65f6a3e2d3951eb932fc6a93dd8ac5703467da5c)
     - Carbon Fibre [GH-2a6cb6a](https://github.com/AnalyticalGoose/ProcTile/commit/2a6cb6a4fa911ef07af87faf28e773cc207333b5)
+    - Wood Grain [GH-1fadd41](https://github.com/AnalyticalGoose/ProcTile/commit/1fadd416ac07ddfccd8888af548265af1e8dd563)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
