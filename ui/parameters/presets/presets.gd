@@ -5,8 +5,10 @@ extends VBoxContainer
 
 @export var option_button : OptionButton
 
+var compute_shader : ComputeShader
 var params_container : ParamSection
 var presets_data : Array[Array] = []
+
 
 func setup_properties(data : Array) -> void:
 	var menu_entries : int = data.size()
@@ -23,3 +25,4 @@ func setup_properties(data : Array) -> void:
 
 func _on_option_button_item_selected(index: int) -> void:
 	params_container.load_serialised_properties(presets_data[index])
+	compute_shader.stage = 0

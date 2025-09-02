@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dfgrjf4ian33g"
+path="res://.godot/imported/wood_grain_compute.glsl-906c579e4405f23bcfccb9522944ba7a.res"
+
+[deps]
+
+source_file="res://materials/3D/single/wood_grain/wood_grain_compute.glsl"
+dest_files=["res://.godot/imported/wood_grain_compute.glsl-906c579e4405f23bcfccb9522944ba7a.res"]
+
+[params]
+

@@ -199,7 +199,7 @@ func _render_process() -> void:
 	push_constant.set(_push_constant_stage_index, stage)
 
 	if stage != _max_stage:
-			stage += 1
+		stage += 1
 		
 	var packed_byte_array : PackedByteArray = push_constant.to_byte_array()
 

@@ -39,6 +39,7 @@ func build_params_ui(ui_data : Array, presets_data : Array, shader : ComputeShad
 		params_container.add_child(current_container)
 		var presets : ParamPresets = presets_scene.instantiate() as ParamPresets
 		presets.setup_properties(presets_data)
+		presets.compute_shader = compute_shader
 		presets.params_container = params_container
 		current_container.add_child(presets)
 		current_container.children.append(presets)
