@@ -29,7 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 - Fix a memory leak due to compute shader RIDs not being freed [GH-824020a](https://github.com/AnalyticalGoose/ProcTile/commit/824020a8c7a52bee3351f54775c115ed455e3157)
 - Fix a bug resulting in DirectX normals not exporting correctly [GH-d380c14](https://github.com/AnalyticalGoose/ProcTile/commit/d380c1468adcda088bb9d46824b1179d524a68ad#diff-654237cf80a113c0176d04de0e79c80e8ad9f980800baaafc6d74fc93001daae) 
-- Fix kernal coordinate overflow in sobel filter function across all 3D shaders 
 - Fix kernal coordinate overflows:
     - Sobel filter across all 3D shaders [GH-0fbb997](https://github.com/AnalyticalGoose/ProcTile/commit/0fbb9973e38b501c5343e72482d34cd09eef7e67)
     - Slope blur in Brick Wall and Castle Wall shaders [GH-99c9fb4](https://github.com/AnalyticalGoose/ProcTile/commit/99c9fb4de38fb45a4645b912e91f7d592e93ac9a)
