@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://djvh2o10gs3l5"
+path="res://.godot/imported/craggy_rock_compute.glsl-324336d1c42bef493020bac2a9b8e44b.res"
+
+[deps]
+
+source_file="res://materials/3D/stylised/craggy_rock/craggy_rock_compute.glsl"
+dest_files=["res://.godot/imported/craggy_rock_compute.glsl-324336d1c42bef493020bac2a9b8e44b.res"]
+
+[params]
+

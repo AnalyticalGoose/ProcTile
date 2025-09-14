@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://xakor1censho"]
+[gd_scene load_steps=7 format=3 uid="uid://xakor1censho"]
 
 [ext_resource type="Theme" uid="uid://dhr13gkln210c" path="res://ui/menus/asset_selector/asset_selector_theme.tres" id="1_mqe4l"]
 [ext_resource type="Script" uid="uid://byfud4tytdmn8" path="res://ui/menus/asset_selector/asset_selector.gd" id="2_e25jb"]
 [ext_resource type="PackedScene" uid="uid://b5ogoumbcxvpp" path="res://ui/menus/asset_selector/asset_preview.tscn" id="3_f5ufc"]
 [ext_resource type="Texture2D" uid="uid://dpcrkvbssjhst" path="res://materials/3D/stylised/wooden_planks/wood_planks_preview.jpg" id="4_58quh"]
 [ext_resource type="Texture2D" uid="uid://d38a8auhuebe4" path="res://materials/3D/stylised/wooden_planks/wood_planks_thumb.jpg" id="5_8beff"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_58quh"]
 
 [node name="AssetSelector_3D_Stylised" type="GridContainer"]
 offset_right = 264.0
@@ -15,7 +17,19 @@ theme = ExtResource("1_mqe4l")
 columns = 4
 script = ExtResource("2_e25jb")
 asset_preview_scene = ExtResource("3_f5ufc")
-preview_images = Array[CompressedTexture2D]([ExtResource("4_58quh")])
+preview_images = Array[CompressedTexture2D]([null, ExtResource("4_58quh")])
+
+[node name="CraggyRock" type="Button" parent="."]
+custom_minimum_size = Vector2(66, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+toggle_mode = true
+text = "Craggy 
+Rock"
+icon = SubResource("Texture2DRD_58quh")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
 
 [node name="WoodenPlanks" type="Button" parent="."]
 custom_minimum_size = Vector2(66, 100)
