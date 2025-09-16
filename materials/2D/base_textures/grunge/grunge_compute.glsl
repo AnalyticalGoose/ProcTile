@@ -3,11 +3,11 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
 
-layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer;
+layout(r16f, set = 1, binding = 0) uniform restrict image2D r16f_buffer;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
     float perlin_seed_1;
     float perlin_seed_2;
     float perlin_seed_3;
@@ -29,7 +29,6 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float mingle_smooth;
     float tone_value;
     float tone_width;
-
     float normals_format_unused;
 	float texture_size;
 	float stage;

@@ -3,17 +3,17 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform restrict writeonly image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform restrict writeonly image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform restrict writeonly image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform restrict writeonly image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 5) uniform restrict writeonly image2D orm_buffer;
 
-layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_0;
-layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1;
-layout(r16f, set = 1, binding = 2) uniform image2D clover_buffer;
-layout(r16f, set = 1, binding = 3) uniform image2D soil_perlin_buffer;
+layout(r16f, set = 1, binding = 0) uniform restrict image2D r16f_buffer_0;
+layout(r16f, set = 1, binding = 1) uniform restrict image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 2) uniform restrict image2D clover_buffer;
+layout(r16f, set = 1, binding = 3) uniform restrict image2D soil_perlin_buffer;
 
 layout(push_constant, std430) uniform restrict readonly Params {
     float blades_spacing;
@@ -30,33 +30,33 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float stage;
 } params;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
     float grass_seed;
     float clover_seed;
     float soil_perlin_seed;
 } seed;
 
-layout(set = 3, binding = 0, std430) buffer readonly GrassOffsets {
+layout(set = 3, binding = 0, std430) buffer restrict readonly GrassOffsets {
     float grass_offsets[];
 };
 
-layout(set = 4, binding = 0, std430) buffer readonly GrassColours {
+layout(set = 4, binding = 0, std430) buffer restrict readonly GrassColours {
     vec4 grass_col[];
 };
 
-layout(set = 5, binding = 0, std430) buffer readonly SoilOffsets {
+layout(set = 5, binding = 0, std430) buffer restrict readonly SoilOffsets {
     float soil_offsets[];
 };
 
-layout(set = 6, binding = 0, std430) buffer readonly SoilColours {
+layout(set = 6, binding = 0, std430) buffer restrict readonly SoilColours {
     vec4 soil_col[];
 };
 
-layout(set = 7, binding = 0, std430) buffer readonly CloverOffsets {
+layout(set = 7, binding = 0, std430) buffer restrict readonly CloverOffsets {
     float clover_offsets[];
 };
 
-layout(set = 8, binding = 0, std430) buffer readonly CloverColours {
+layout(set = 8, binding = 0, std430) buffer restrict readonly CloverColours {
     vec4 clover_col[];
 };
 

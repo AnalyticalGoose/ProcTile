@@ -5,27 +5,27 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform restrict writeonly image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform restrict writeonly image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform restrict writeonly image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform restrict writeonly image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 5) uniform restrict writeonly image2D orm_buffer;
 
 // Reusing buffers was giving me Ebola, so... fuck it, everyone gets their own buffer.
 // Condensing these is a problem for future me.
-layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_0;
-layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_1;
-layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_2;
-layout(r16f, set = 1, binding = 3) uniform image2D r16f_buffer_3;
-layout(r16f, set = 1, binding = 4) uniform image2D r16f_buffer_4;
-layout(r16f, set = 1, binding = 5) uniform image2D r16f_buffer_5;
-layout(r16f, set = 1, binding = 6) uniform image2D r16f_buffer_6;
-layout(r16f, set = 1, binding = 7) uniform image2D r16f_buffer_7;
-layout(rgba32f, set = 1, binding = 8) uniform image2D rgba32f_buffer; 
-layout(rgba32f, set = 1, binding = 9) uniform image2D rgba32f_buffer_2;
+layout(r16f, set = 1, binding = 0) uniform restrict image2D r16f_buffer_0;
+layout(r16f, set = 1, binding = 1) uniform restrict image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 2) uniform restrict image2D r16f_buffer_2;
+layout(r16f, set = 1, binding = 3) uniform restrict image2D r16f_buffer_3;
+layout(r16f, set = 1, binding = 4) uniform restrict image2D r16f_buffer_4;
+layout(r16f, set = 1, binding = 5) uniform restrict image2D r16f_buffer_5;
+layout(r16f, set = 1, binding = 6) uniform restrict image2D r16f_buffer_6;
+layout(r16f, set = 1, binding = 7) uniform restrict image2D r16f_buffer_7;
+layout(rgba32f, set = 1, binding = 8) uniform restrict image2D rgba32f_buffer; 
+layout(rgba32f, set = 1, binding = 9) uniform restrict image2D rgba32f_buffer_2;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
 	float brick_pattern_seed;
     float perlin_seed;
     float stones_seed;
@@ -34,31 +34,31 @@ layout(set = 2, binding = 0, std430) buffer readonly Seeds {
 
 } seed;
 
-layout(set = 3, binding = 0, std430) buffer readonly StoneOffsets {
+layout(set = 3, binding = 0, std430) buffer restrict readonly StoneOffsets {
     float stone_offsets[];
 };
 
-layout(set = 4, binding = 0, std430) buffer readonly StoneColours {
+layout(set = 4, binding = 0, std430) buffer restrict readonly StoneColours {
     vec4 stone_col[];
 };
 
-layout(set = 5, binding = 0, std430) buffer readonly AggregateOffsets {
+layout(set = 5, binding = 0, std430) buffer restrict readonly AggregateOffsets {
     float aggregate_offsets[];
 };
 
-layout(set = 6, binding = 0, std430) buffer readonly AggregateColours {
+layout(set = 6, binding = 0, std430) buffer restrict readonly AggregateColours {
     vec4 aggregate_col[];
 };
 
-layout(set = 7, binding = 0, std430) buffer readonly MortarOffsets {
+layout(set = 7, binding = 0, std430) buffer restrict readonly MortarOffsets {
     float mortar_offsets[];
 };
 
-layout(set = 8, binding = 0, std430) buffer readonly MortarColours {
+layout(set = 8, binding = 0, std430) buffer restrict readonly MortarColours {
     vec4 mortar_col[];
 };
 
-layout(set = 9, binding = 0, std430) buffer readonly StoneBaseColour {
+layout(set = 9, binding = 0, std430) buffer restrict readonly StoneBaseColour {
     vec4 stone_base_col;
 };
 

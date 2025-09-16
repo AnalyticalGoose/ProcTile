@@ -3,15 +3,15 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform restrict image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform restrict image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform restrict writeonly image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform restrict writeonly image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 5) uniform restrict writeonly image2D orm_buffer;
 
-layout(rgba32f, set = 1, binding = 0) uniform image2D rgba32f_buffer_1;
-layout(rgba32f, set = 1, binding = 1) uniform image2D rgba32f_buffer_2;
+layout(rgba32f, set = 1, binding = 0) uniform restrict image2D rgba32f_buffer_1;
+layout(rgba32f, set = 1, binding = 1) uniform restrict image2D rgba32f_buffer_2;
 
 layout(push_constant, std430) uniform restrict readonly Params {
     float pattern;
@@ -32,16 +32,16 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float stage;
 } params;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
 	float micro_perlin_seed;
 	float macro_perlin_seed;
 } seed;
 
-layout(set = 3, binding = 0, std430) buffer readonly Tile {
+layout(set = 3, binding = 0, std430) buffer restrict readonly Tile {
     vec4 tile_col;
 };
 
-layout(set = 4, binding = 0, std430) buffer readonly Grout {
+layout(set = 4, binding = 0, std430) buffer restrict readonly Grout {
     vec4 grout_col;
 };
 

@@ -5,16 +5,16 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout(derivative_group_quadsNV) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform restrict writeonly image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform restrict writeonly image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform restrict writeonly image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform restrict writeonly image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 5) uniform restrict writeonly image2D orm_buffer;
 
-layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer;
-layout(r16f, set = 1, binding = 1) uniform image2D noise_buffer;
-layout(r16f, set = 1, binding = 2) uniform image2D mask_buffer;
+layout(r16f, set = 1, binding = 0) uniform restrict image2D r16f_buffer;
+layout(r16f, set = 1, binding = 1) uniform restrict image2D noise_buffer;
+layout(r16f, set = 1, binding = 2) uniform restrict image2D mask_buffer;
 
 layout(push_constant, std430) uniform restrict readonly Params {
     float bars_type;
@@ -36,12 +36,12 @@ layout(push_constant, std430) uniform restrict readonly Params {
 	float stage;
 } params;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
     float brushed_noise_seed;
     float bump_noise_seed;
 } seed;
 
-layout(set = 3, binding = 0, std430) buffer readonly PlateColour {
+layout(set = 3, binding = 0, std430) buffer restrict readonly PlateColour {
     vec4 plate_col;
 };
 

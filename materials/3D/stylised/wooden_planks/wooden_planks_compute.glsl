@@ -3,37 +3,37 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba16f, set = 0, binding = 0) uniform image2D albedo_buffer;
-layout(rgba16f, set = 0, binding = 1) uniform image2D occlusion_buffer;
-layout(rgba16f, set = 0, binding = 2) uniform image2D roughness_buffer;
-layout(rgba16f, set = 0, binding = 3) uniform image2D metallic_buffer;
-layout(rgba16f, set = 0, binding = 4) uniform image2D normal_buffer;
-layout(rgba16f, set = 0, binding = 5) uniform image2D orm_buffer;
+layout(rgba16f, set = 0, binding = 0) uniform restrict writeonly image2D albedo_buffer;
+layout(rgba16f, set = 0, binding = 1) uniform restrict writeonly image2D occlusion_buffer;
+layout(rgba16f, set = 0, binding = 2) uniform restrict writeonly image2D roughness_buffer;
+layout(rgba16f, set = 0, binding = 3) uniform restrict writeonly image2D metallic_buffer;
+layout(rgba16f, set = 0, binding = 4) uniform restrict writeonly image2D normal_buffer;
+layout(rgba16f, set = 0, binding = 5) uniform restrict writeonly image2D orm_buffer;
 
-layout(r16f, set = 1, binding = 0) uniform image2D r16f_buffer_1;
-layout(r16f, set = 1, binding = 1) uniform image2D r16f_buffer_2;
-layout(r16f, set = 1, binding = 2) uniform image2D r16f_buffer_3;
+layout(r16f, set = 1, binding = 0) uniform restrict image2D r16f_buffer_1;
+layout(r16f, set = 1, binding = 1) uniform restrict image2D r16f_buffer_2;
+layout(r16f, set = 1, binding = 2) uniform restrict image2D r16f_buffer_3;
 
-layout(set = 2, binding = 0, std430) buffer readonly Seeds {
+layout(set = 2, binding = 0, std430) buffer restrict readonly Seeds {
     float warp_perlin_seed;
     float grain_perlin_seed;
     float bevel_noise_seed;
     float plank_colour_seed;
 } seed;
 
-layout(set = 3, binding = 0, std430) buffer readonly GradientOffsets {
+layout(set = 3, binding = 0, std430) buffer restrict readonly GradientOffsets {
     float gradient_offsets[];
 };
 
-layout(set = 4, binding = 0, std430) buffer readonly GradientColours {
+layout(set = 4, binding = 0, std430) buffer restrict readonly GradientColours {
     vec4 gradient_col[];
 };
 
-layout(set = 5, binding = 0, std430) buffer readonly GapColour {
+layout(set = 5, binding = 0, std430) buffer restrict readonly GapColour {
 	vec4 gap_col;
 };
 
-layout(set = 6, binding = 0, std430) buffer readonly NailColour {
+layout(set = 6, binding = 0, std430) buffer restrict readonly NailColour {
     vec4 nail_col;
 };
 
@@ -44,26 +44,21 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float plank_repeat;
     float plank_offset;
     float plank_bevel;
-
     float nails_disabled; // reversed to UI (nicer to have enabled == true be first in UI, i.e. 0 in the shader)
     float nail_size;
     float nail_edge;
     float nail_margin;
-
     float grain_perlin_x;
     float grain_perlin_y;
     float grain_perlin_persistence;
-
     float warp_perlin_x;
     float warp_perlin_y;
     float warp_perlin_persistence;
-
     float roughness_tone_value;
     float roughness_tone_width;
     float occlusion_tone_width;
     float plank_normal_strength;
     float bevel_normal_strength;
-
     float normals_format;
 	float texture_size;
 	float stage;
