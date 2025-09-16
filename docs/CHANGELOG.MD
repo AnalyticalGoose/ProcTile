@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - Stylised Wood Planks [GH-65f6a3e](https://github.com/AnalyticalGoose/ProcTile/commit/65f6a3e2d3951eb932fc6a93dd8ac5703467da5c)
     - Carbon Fibre [GH-2a6cb6a](https://github.com/AnalyticalGoose/ProcTile/commit/2a6cb6a4fa911ef07af87faf28e773cc207333b5)
     - Wood Grain [GH-1fadd41](https://github.com/AnalyticalGoose/ProcTile/commit/1fadd416ac07ddfccd8888af548265af1e8dd563)
+    - Stylised Craggy Rock [GH-bd05a43](https://github.com/AnalyticalGoose/ProcTile/commit/bd05a43f83c13e64c61e8ea15069c24c3946819b)
 
 ### Changed
 - Improve Brick Wall Material to make mortar more realistic [GH-313a2f3](https://github.com/AnalyticalGoose/ProcTile/commit/313a2f39fbc86c69082b6ceab349872c5c0f9ade)
@@ -29,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 - Fix a memory leak due to compute shader RIDs not being freed [GH-824020a](https://github.com/AnalyticalGoose/ProcTile/commit/824020a8c7a52bee3351f54775c115ed455e3157)
 - Fix a bug resulting in DirectX normals not exporting correctly [GH-d380c14](https://github.com/AnalyticalGoose/ProcTile/commit/d380c1468adcda088bb9d46824b1179d524a68ad#diff-654237cf80a113c0176d04de0e79c80e8ad9f980800baaafc6d74fc93001daae) 
-- Fix kernal coordinate overflows:
+- Fix kernel coordinate overflows:
     - Sobel filter across all 3D shaders [GH-0fbb997](https://github.com/AnalyticalGoose/ProcTile/commit/0fbb9973e38b501c5343e72482d34cd09eef7e67)
     - Slope blur in Brick Wall and Castle Wall shaders [GH-99c9fb4](https://github.com/AnalyticalGoose/ProcTile/commit/99c9fb4de38fb45a4645b912e91f7d592e93ac9a)
 
