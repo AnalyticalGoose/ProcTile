@@ -163,7 +163,6 @@ void main() {
     }
 
     if (params.stage == 2.0) {
-
         float _normals_strength = params.normals_strength;
 
         if (params.clearcoat == 1.0) {
@@ -171,6 +170,14 @@ void main() {
         }
 
         vec3 normals = sobel_filter(ivec2(pixel), _normals_strength);
-        imageStore(normal_buffer, ivec2(pixel), vec4(normals, 1.0));
+
+        if (params.normals_format == 0.0) {
+            vec3 opengl_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(opengl_normals, 1.0));
+        } 
+        else if (params.normals_format == 1.0) {
+            vec3 directx_normals = normals * vec3(-1.0, -1.0, -1.0) + vec3(1.0, 1.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
+        }
     }
 }

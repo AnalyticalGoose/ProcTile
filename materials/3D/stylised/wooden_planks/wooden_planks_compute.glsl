@@ -403,7 +403,15 @@ void main() {
     if (params.stage == 2.0) { // Normal maps
         vec3 gap_normals = sobel_filter(ivec2(pixel), params.bevel_normal_strength, true);
         vec3 plank_normals = sobel_filter(ivec2(pixel), params.plank_normal_strength, false);
-        vec3 normals = normal_rnm_blend(gap_normals, plank_normals);
-        imageStore(normal_buffer, ivec2(pixel), vec4(normals, 1.0));
+        vec3 normals_blend = normal_rnm_blend(gap_normals, plank_normals);
+        
+        if (params.normals_format == 0.0) {
+            vec3 opengl_normals = normals_blend * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(opengl_normals, 1.0));
+        } 
+        else if (params.normals_format == 1.0) {
+            vec3 directx_normals = normals_blend * vec3(-1.0, -1.0, -1.0) + vec3(1.0, 1.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
+        }
     }
 }

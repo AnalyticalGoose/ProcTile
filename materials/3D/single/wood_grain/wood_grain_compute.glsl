@@ -50,7 +50,7 @@ layout(push_constant, std430) uniform restrict readonly Params {
     float roughness_width;
     float blend_strength;
     float normals_strength;
-    float normals_format_unused;
+    float normals_format;
 	float texture_size;
 	float stage;
 } params;
@@ -255,6 +255,13 @@ void main() {
 
     if (params.stage == 3.0) {
         vec3 normals = sobel_filter(ivec2(pixel), params.normals_strength);
-        imageStore(normal_buffer, ivec2(pixel), vec4(normals, 1.0));
+        if (params.normals_format == 0.0) {
+            vec3 opengl_normals = normals * vec3(-1.0, 1.0, -1.0) + vec3(1.0, 0.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(opengl_normals, 1.0));
+        } 
+        else if (params.normals_format == 1.0) {
+            vec3 directx_normals = normals * vec3(-1.0, -1.0, -1.0) + vec3(1.0, 1.0, 1.0);
+            imageStore(normal_buffer, ivec2(pixel), vec4(directx_normals, 1.0));
+        }
     }
 }
