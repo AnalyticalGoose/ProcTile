@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Improve Hardwood Floor Material by adding tiling and UV offsets for the planks [GH-09837ca](https://github.com/AnalyticalGoose/ProcTile/commit/09837caf9b87d4e42f2935840a53c156025332e2)
 - Remove experimental 2D Pixel Materials & refactor to support 2D base textures such as noise and patterns [GH-9d00dc9](https://github.com/AnalyticalGoose/ProcTile/commit/9d00dc9dafddc0700427458f569add1279a49cb9)
 - Add stricter memory qualifiers to shader storage [GH-363fab3](https://github.com/AnalyticalGoose/ProcTile/commit/363fab385c6bb4b3b3f2b5274d614f163b698bc3)
+- Updated hashing functions for 10% reduced frame time in heavy noise generation sections [GH-0b2ee6b](https://github.com/AnalyticalGoose/ProcTile/commit/0b2ee6b413f035ff8bb6a3bb2e22e36d5d0bfc65)
 
 ### Fixed
 - Fix a memory leak due to compute shader RIDs not being freed [GH-824020a](https://github.com/AnalyticalGoose/ProcTile/commit/824020a8c7a52bee3351f54775c115ed455e3157)
