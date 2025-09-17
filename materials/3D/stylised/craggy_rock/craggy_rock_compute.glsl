@@ -76,14 +76,15 @@ const float ao_offset_high = 0.75;
 const float ao_col_low = 0.25;
 
 
-
-float rand(vec2 x) {
-	return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
+// On generating random numbers, with help of y= [(a+x)sin(bx)] mod 1 - W.J.J. Rey - 
+// 22nd European Meeting of Statisticians and the 7th Vilnius Conference on Probability Theory and Mathematical Statistics, August 1998
+float hash12(vec2 p) {
+    return fract(43757.5453 * sin(dot(p, vec2(12.9898, 78.233))));
 }
 
-vec2 rand2(vec2 x) {
-    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
+vec2 hash22(vec2 p) {
+    return fract(cos(mod(vec2(dot(p, vec2(13.9898, 8.141)),
+						      dot(p, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
 
 // Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
@@ -158,7 +159,7 @@ vec4 voronoi_site_box(vec2 x, vec2 grid_size, float randomness, float seed) {
 vec3 generate_island_uv(vec2 uv, vec4 cell_info, float seed) {
     // Remap the original UV into the [0, 1] range of the source box.
     vec2 island_uv = fract(uv - cell_info.xy) / cell_info.zw;
-    float island_random_value = rand(vec2(seed) + cell_info.xy);
+    float island_random_value = hash12(vec2(seed) + cell_info.xy);
     return vec3(island_uv, island_random_value);
 }
 
@@ -243,14 +244,14 @@ vec4 gradient_fct(float x) {
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash22(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
-    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
-    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[0] = hash12(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = hash12(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = hash12(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = hash12(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
 
     vec2 v[4];
     v[0] = vec2(cos(a[0]), sin(a[0]));

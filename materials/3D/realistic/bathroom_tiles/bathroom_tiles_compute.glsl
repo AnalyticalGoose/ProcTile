@@ -57,28 +57,42 @@ const float tones_output_max = 0.60;
 const float grout_sobel_strength = 1.00;
 
 
+uint murmurHash12(uvec2 src) {
+    const uint M = 0x5bd1e995u;
+    uint h = 1190494759u;
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
+}
+
+float hash12(vec2 src) {
+    uint h = murmurHash12(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
+}
+
+// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
+vec2 hash_ws2(vec2 x) {
+    vec3 x3 = fract(vec3(x.xyx) * vec3(0.1031, 0.1030, 0.0973));
+    x3 += dot(x3, x3.yzx + 19.19);
+    return fract(vec2((x3.x + x3.y)  *x3.z, (x3.x + x3.z) * x3.y));
+}
+
+
 float normal(float base, float blend, float opacity) {
     return opacity * base + (1.0 - opacity) * blend;
 }
 
-float rand(vec2 p) {
-	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
-vec2 rand2(vec2 x) {
-    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
-}
 
 float perlin_noise_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash_ws2(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
-    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
-    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[0] = hash12(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = hash12(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = hash12(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = hash12(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
 
     vec2 v[4];
     v[0] = vec2(cos(a[0]), sin(a[0]));

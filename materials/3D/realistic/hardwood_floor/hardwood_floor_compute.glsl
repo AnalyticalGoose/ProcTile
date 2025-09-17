@@ -84,20 +84,24 @@ const float lines_size = 2.5;
 const float occlusion_strength = 0.1;
 
 
-float rand(vec2 x) {
-	return fract(sin(dot(x, vec2(12.9898, 78.233))) * 43758.5453);
+// On generating random numbers, with help of y= [(a+x)sin(bx)] mod 1 - W.J.J. Rey - 
+// 22nd European Meeting of Statisticians and the 7th Vilnius Conference on Probability Theory and Mathematical Statistics, August 1998
+float hash12(vec2 p) {
+    return fract(43757.5453 * sin(dot(p, vec2(12.9898, 78.233))));
 }
 
-vec2 rand2(vec2 x) {
-    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-						      dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
+vec2 hash22(vec2 p) {
+    return fract(cos(mod(vec2(dot(p, vec2(13.9898, 8.141)),
+						      dot(p, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
 }
 
-vec3 rand3(vec2 x) {
-    return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
-							  dot(x, vec2(3.4562, 17.398)),
-                              dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
+// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
+vec3 hash_ws3(vec2 p) {
+	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
+    p3 += dot(p3, p3.yxz+19.19);
+    return fract((p3.xxy+p3.yzz) * p3.zyx);
 }
+
 
 vec3 multiply(vec3 base, vec3 blend, float opacity) {
 	return opacity * base * blend + (1.0 - opacity) * blend;
@@ -170,14 +174,14 @@ float get_plank_pattern(vec2 uv, vec2 plank_min, vec2 plank_max, float gap, floa
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash22(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
-    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
-    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[0] = hash12(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = hash12(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = hash12(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = hash12(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
 
     vec2 v[4];
     v[0] = vec2(cos(a[0]), sin(a[0]));
@@ -424,7 +428,7 @@ void main() {
 
         vec4 plank_bounding_rect = get_plank_bounds(uv, vec2(params.columns, params.rows), params.repeat, params.offset, int(params.pattern));
         vec4 plank_fill = round(vec4(fract(plank_bounding_rect.xy), plank_bounding_rect.zw - plank_bounding_rect.xy) * params.texture_size) / params.texture_size;
-        vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), rand3(vec2(float((seed.uv_seed)), rand(vec2(rand(plank_fill.xy), rand(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
+        vec3 random_plank_colour = mix(vec3(0.0, 0.0, 0.0), hash_ws3(vec2(float((seed.uv_seed)), hash12(vec2(hash12(plank_fill.xy), hash12(plank_fill.zw))))), step(0.0000001, dot(plank_fill.zw, vec2(1.0))));
 
         vec2 plank_uv = fract(uv - vec2(0.5 * (2.0 * random_plank_colour.r - 1.0), 0.250 * (2.0 * random_plank_colour.r - 1.0)));
         // ivec2 transformed_pixel = ivec2(plank_uv * _texture_size);

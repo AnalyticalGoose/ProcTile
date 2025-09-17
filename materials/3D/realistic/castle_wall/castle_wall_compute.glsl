@@ -115,14 +115,32 @@ const float roughness_tone_value = 1.0;
 const float roughness_tone_width = 0.5;
 
 
-
-float rand(vec2 x) {
-    return fract(cos(mod(dot(x, vec2(13.9898, 8.141)), 3.14)) * 43758.5);
+uint murmurHash12(uvec2 src) {
+    const uint M = 0x5bd1e995u;
+    uint h = 1190494759u;
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
 }
 
-vec2 rand2(vec2 x) {
-    return fract(cos(mod(vec2(dot(x, vec2(13.9898, 8.141)),
-		dot(x, vec2(3.4562, 17.398))), vec2(3.14, 3.14))) * 43758.5);
+float hash12(vec2 src) {
+    uint h = murmurHash12(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
+}
+
+uvec2 murmurHash22(uvec2 src) {
+    const uint M = 0x5bd1e995u;
+    uvec2 h = uvec2(1190494759u, 2147483647u);
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
+}
+
+vec2 hash22(vec2 src) {
+    uvec2 h = murmurHash22(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
 }
 
 // Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
@@ -132,11 +150,6 @@ vec2 hash_ws2(vec2 x) {
     return fract(vec2((x3.x + x3.y)  *x3.z, (x3.x + x3.z) * x3.y));
 }
 
-vec3 rand3(vec2 x) {
-    return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
-							  dot(x, vec2(3.4562, 17.398)),
-                              dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
-}
 
 // Blending
 float normal(float base, float blend, float opacity) {
@@ -228,7 +241,7 @@ bool point_left_of_line(vec4 line, vec2 c) {
 vec2 skewed_uneven_cut(vec2 x, vec2 size, float randomness) {
     const float grid_size = 4096.0;
     randomness = abs(randomness) < 0.001 ? 0.001 : randomness;
-    return 0.5 + (rand2(round(mod(x, size) * grid_size) / grid_size) - 0.5) * randomness;
+    return 0.5 + (hash22(round(mod(x, size) * grid_size) / grid_size) - 0.5) * randomness;
 }
 
 
@@ -354,14 +367,14 @@ vec3 voronoi(vec2 x, float size, float seed) {
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash22(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
-    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
-    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[0] = hash12(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = hash12(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = hash12(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = hash12(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
 
     vec2 v[4];
     v[0] = vec2(cos(a[0]), sin(a[0]));
@@ -419,8 +432,8 @@ vec2 tile_stones(vec2 uv, vec2 tile, vec2 seed_offset) {
             vec2 pos = uv * tile + vec2(float(dx), float(dy));
             pos = fract((floor(mod(pos, tile)) + 0.5) / tile) - 0.5;
             
-            vec2 rand_seed = rand2(pos + seed_offset);
-            float rand_colour = rand(rand_seed);
+            vec2 rand_seed = hash22(pos + seed_offset);
+            float rand_colour = hash12(rand_seed);
             
             // Random offset variation & compute local UV relative to tile.
             pos = fract(pos + 1.0 * rand_seed / tile);

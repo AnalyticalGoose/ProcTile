@@ -68,21 +68,43 @@ const float roughness_tone_width = 0.25;
 const float ao_tone_value = 0.90;
 const float ao_tone_width = 1.0;
 
-float rand(vec2 p) {
-    return fract(cos(mod(dot(p, vec2(13.9898, 8.141)), 3.14)) * 43758.5);
+
+uint murmurHash12(uvec2 src) {
+    const uint M = 0x5bd1e995u;
+    uint h = 1190494759u;
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
 }
 
-vec3 rand3(vec2 p) {
+float hash12(vec2 src) {
+    uint h = murmurHash12(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
+}
+
+uvec2 murmurHash22(uvec2 src) {
+    const uint M = 0x5bd1e995u;
+    uvec2 h = uvec2(1190494759u, 2147483647u);
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
+}
+
+vec2 hash22(vec2 src) {
+    uvec2 h = murmurHash22(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
+}
+
+// Adapted from 'Hash without Sine' by David Hoskins - https://www.shadertoy.com/view/4djSRW
+vec3 hash_ws3(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
     p3 += dot(p3, p3.yxz+19.19);
     return fract((p3.xxy+p3.yzz) * p3.zyx);
 }
 
-vec2 rand2(vec2 p) {
-	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-    p3 += dot(p3, p3.yzx+19.19);
-    return fract((p3.xx+p3.yz) * p3.zy);
-}
+
 
 vec3 normal(vec3 base, vec3 blend, float opacity) {
     return opacity * base + (1.0 - opacity) * blend;
@@ -102,14 +124,14 @@ float multiply(float base, float blend, float opacity) {
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + rand2(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash22(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
-    a[0] = rand(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
-    a[1] = rand(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[2] = rand(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
-    a[3] = rand(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[0] = hash12(mod(o, size)) * 6.28318530718 + offset * 6.28318530718;
+    a[1] = hash12(mod(o + vec2(0.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[2] = hash12(mod(o + vec2(1.0, 0.0), size)) * 6.28318530718 + offset * 6.28318530718;
+    a[3] = hash12(mod(o + vec2(1.0, 1.0), size)) * 6.28318530718 + offset * 6.28318530718;
 
     vec2 v[4];
     v[0] = vec2(cos(a[0]), sin(a[0]));
@@ -148,13 +170,13 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 // https://github.com/Bycob/world/blob/develop/projects/vkworld/shaders/terrains/texture-grass.frag
 float get_grass_blade(vec2 position, vec2 grass_pos) {
     // Random blade vector in [-1.0, 1.0]. Scale and bias z component [0.0, 0.4]
-    vec3 rand_blade = rand3(grass_pos * 123512.41 * seed.grass_seed) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
+    vec3 rand_blade = hash_ws3(grass_pos * 123512.41 * seed.grass_seed) * 2.0 - vec3(params.direction_bias_x, params.direction_bias_y, 1.0);
     rand_blade.z = rand_blade.z * 0.2 + 0.2;
    
     // Direction, length and relative position to pixel
     vec2 blade_dir = normalize(rand_blade.xy);
     float length_bias = max((params.lookup_dist / 100) - 0.06, 0.01);
-    float blade_length = rand(grass_pos * 102348.7) * length_bias + 0.012;
+    float blade_length = hash12(grass_pos * 102348.7) * length_bias + 0.012;
    
     // Calculate relative position with proper wrapping
     vec2 rel_pos = position - grass_pos;
@@ -213,7 +235,7 @@ float tile_grass(vec2 position) {
             int wrapped_y = (oy + j + y_count * 100) % y_count;
             
             vec2 u_pos = vec2(wrapped_x, wrapped_y);
-            vec2 grass_pos = mod((u_pos * blades_spacing + rand2(u_pos) * 0.004), 1.0);
+            vec2 grass_pos = mod((u_pos * blades_spacing + hash22(u_pos) * 0.004), 1.0);
             
             float z = get_grass_blade(wrapped_position, grass_pos);
             if (z > max_z) {
@@ -253,12 +275,12 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
         for (int dy = -2; dy <= 2; ++dy) {
             vec2 pos = uv * tile + vec2(float(dx), float(dy)); 
             pos = fract((floor(mod(pos, tile)) + vec2(0.5)) / tile) - vec2(0.5);
-			vec2 seed = rand2(pos+seed_offset);
-			float col = rand(seed);
+			vec2 seed = hash22(pos+seed_offset);
+			float col = hash12(seed);
 			pos = fract(pos + vec2(0.0 / tile.x, 0.0) * floor(mod(pos.y * tile.y, 2.0)) + 1.0 * seed / tile);
 
 			vec2 pv = fract(uv - pos) - vec2(0.5);
-			seed = rand2(seed);
+			seed = hash22(seed);
 			float angle = (seed.x * 2.0 - 1.0) * 180.0 * 0.01745329251;
 			float ca = cos(angle);
 			float sa = sin(angle);
@@ -266,7 +288,7 @@ vec2 tile_clover(vec2 uv, vec2 tile, vec2 seed_offset) {
 			pv *= (seed.y-0.5) * 2.0 * _scale_variation + 1.0;
 			pv /= (vec2(params.clover_scale) / 100);
 			pv += vec2(0.5);
-			seed = rand2(seed);
+			seed = hash22(seed);
 			vec2 clamped_pv = clamp(pv, vec2(0.0), vec2(1.0));
 			if (pv.x != clamped_pv.x || pv.y != clamped_pv.y) {
 				continue;
