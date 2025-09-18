@@ -31,6 +31,7 @@ func _on_file_selected(path: String) -> void:
 	var material_settings : Array[Array] = DataManager.load_material_settings(cfg_file)
 	DataManager.current_save_path = path
 	params_container.load_serialised_properties(material_settings)
+	asset_manager.compute_shader.stage = 0 # force shader to reset
 	queue_free()
 
 
