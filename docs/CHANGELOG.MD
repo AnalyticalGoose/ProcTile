@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
+## [0.1.3] - UNRELEASED
+
+### Added
+
+
+### Changed
+- Parse .ptm savefiles before loading to attempt to filter RCE attempts [GH-b53382a](https://github.com/AnalyticalGoose/ProcTile/commit/b53382a8235b644b7d47c90e167da63724c5b18e)
+
+### Fixed
+- Fix a bug resulting in the material at index 0 not being loaded from a savefile [GH-b53382a](https://github.com/AnalyticalGoose/ProcTile/commit/b53382a8235b644b7d47c90e167da63724c5b18e)
+
+
 ## [0.1.2] - 2025-09-18
 
 ### Added
