@@ -118,7 +118,7 @@ vec3 voronoi(vec2 x, float size, float seed) {
 
 
 float perlin_2d(vec2 coord, vec2 size, float offset, float seed) {
-    vec2 o = floor(coord) + hash22(vec2(seed, 1.0 - seed)) + size;
+    vec2 o = floor(coord) + hash_ws2(vec2(seed, 1.0 - seed)) + size;
     vec2 f = fract(coord);
 
     float a[4];
@@ -148,8 +148,9 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 	float normalize_factor = 0.0;
 	float value = 0.0;
 	float scale = 1.0;
+    float _seed = (seed + 0.001) * 1024.0;
 	for (int i = 0; i < iterations; i++) {
-		float noise = perlin_2d(coord * size, size, offset, seed);
+		float noise = perlin_2d(coord * size, size, offset, _seed);
 		value += noise * scale;
 		normalize_factor += scale;
 		size *= 2.0;

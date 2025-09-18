@@ -155,8 +155,9 @@ float fbm_perlin_2d(vec2 coord, vec2 size, int iterations, float persistence, fl
 	float normalize_factor = 0.0;
 	float value = 0.0;
 	float scale = 1.0;
+    float _seed = (seed + 0.001) * 1024.0;
 	for (int i = 0; i < iterations; i++) {
-		float noise = perlin_2d(coord * size, size, offset, seed);
+		float noise = perlin_2d(coord * size, size, offset, _seed);
 		value += noise * scale;
 		normalize_factor += scale;
 		size *= 2.0;
