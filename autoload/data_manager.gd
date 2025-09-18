@@ -50,11 +50,11 @@ func _ready() -> void:
 	material_data = material_database.get_array()
 
 
-func get_material_index_from_id(material_id : int) -> int:
+func get_material_index_from_id(material_id : int) -> Array[int]:
 	for i : int in material_data.size():
 		if material_data[i].id == material_id:
-			return i
-	return 0
+			return [true, i]
+	return [false, 0]
 
 
 func save_material(path : String, serialised_data : Array[Array]) -> void:
