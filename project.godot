@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="ProcTile"
-config/version="0.1.2"
+config/description="A procedural texture generation tool for game developers and artists"
+config/version="0.1.2.0"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/show_image=false
