@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Fix a bug resulting in the material at index 0 not being loaded from a savefile [GH-b53382a](https://github.com/AnalyticalGoose/ProcTile/commit/b53382a8235b644b7d47c90e167da63724c5b18e)
+- Fix unpleasant / inconsistent colours in Voronoi colour shader [GH-03afc28](https://github.com/AnalyticalGoose/ProcTile/commit/03afc280c863a24258fd4c598a390c472e51418c)
 
 
 ## [0.1.2] - 2025-09-18
