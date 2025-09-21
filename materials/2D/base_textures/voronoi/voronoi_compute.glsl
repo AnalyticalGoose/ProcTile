@@ -34,10 +34,12 @@ vec2 hash_ws2(vec2 x) {
     return fract(vec2((x3.x + x3.y)  *x3.z, (x3.x + x3.z) * x3.y));
 }
 
-vec3 hash_ws3(vec2 p) {
-	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-    p3 += dot(p3, p3.yxz+33.33);
-    return fract((p3.xxy+p3.yzz)*p3.zyx);
+// On generating random numbers, with help of y= [(a+x)sin(bx)] mod 1 - W.J.J. Rey - 
+// 22nd European Meeting of Statisticians and the 7th Vilnius Conference on Probability Theory and Mathematical Statistics, August 1998
+vec3 hash32(vec2 x) {
+    return fract(cos(mod(vec3(dot(x, vec2(13.9898, 8.141)),
+							  dot(x, vec2(3.4562, 17.398)),
+                              dot(x, vec2(13.254, 5.867))), vec3(3.14, 3.14, 3.14))) * 43758.5);
 }
 
 
@@ -131,7 +133,7 @@ void main() {
 				break;
 			case 3:
 				float voronoi_col = voronoi(p, cell_count, seed.voronoi_seed).y;
-				_output = mix(vec3(0.0, 0.0, 0.0), hash_ws3(vec2(float((seed.voronoi_col)), voronoi_col)), step(0.0000001, dot(voronoi_col, 1.0)));
+				_output = mix(vec3(0.0, 0.0, 0.0), hash32(vec2(float((seed.voronoi_col)), voronoi_col)), step(0.0000001, dot(voronoi_col, 1.0)));
 				break;
 			case 4:
 				float voronoi_edge = voronoi_edge_distance(p, cell_count, seed.voronoi_seed, false).r;
