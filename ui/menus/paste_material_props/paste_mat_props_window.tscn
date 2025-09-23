@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwgg0wq6h8gju"]
+
+[ext_resource type="Script" uid="uid://bnjk3is0uypgj" path="res://ui/menus/paste_material_props/paste_mat_props_window.gd" id="1_7kpxd"]
+[ext_resource type="Theme" uid="uid://kgt8dmdcyubl" path="res://ui/menus/paste_material_props/paste_mat_props_menu_theme.tres" id="1_r7sqh"]
+
+[node name="PasteMatPropsWindow" type="Window" node_paths=PackedStringArray("paste_box")]
+title = "Paste Material Properties"
+initial_position = 1
+size = Vector2i(800, 200)
+theme = ExtResource("1_r7sqh")
+script = ExtResource("1_7kpxd")
+paste_box = NodePath("MarginContainer/VBoxContainer/PasteBox")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PasteBox" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 10
+wrap_mode = 1
+autowrap_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "TEST"
+horizontal_alignment = 2
+
+[node name="LoadBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Load"
+alignment = 2
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]

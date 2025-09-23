@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://sjoei1q5m1ma"]
+[gd_scene load_steps=55 format=3 uid="uid://sjoei1q5m1ma"]
 
 [ext_resource type="Script" uid="uid://bh5earwwwnbp6" path="res://engine/render/camera_controller.gd" id="1_av4mg"]
 [ext_resource type="Script" uid="uid://cre4a6drb0lgs" path="res://ui/ui_manager.gd" id="1_cnay4"]
@@ -11,7 +11,7 @@
 [ext_resource type="Theme" uid="uid://wrjfe6mxcq45" path="res://ui/parameters/params_theme.tres" id="5_hrfci"]
 [ext_resource type="Texture2D" uid="uid://bshqj7vtej43s" path="res://ui/icons/icon_3d_mat.png" id="6_1sqbh"]
 [ext_resource type="PackedScene" uid="uid://dmeof6kgt3rjj" path="res://ui/parameters/section/section.tscn" id="6_87c7t"]
-[ext_resource type="PackedScene" uid="uid://1grqiac6heen" path="res://ui/menus/load_material/load_material.tscn" id="6_ievu1"]
+[ext_resource type="PackedScene" uid="uid://1grqiac6heen" path="res://ui/menus/load_material/load_material_menu.tscn" id="6_ievu1"]
 [ext_resource type="Script" uid="uid://slarikbtnlgw" path="res://ui/bars/renderer_toolbar.gd" id="6_s0trs"]
 [ext_resource type="PackedScene" uid="uid://c01quywq314dv" path="res://ui/parameters/slider/slider.tscn" id="6_tarje"]
 [ext_resource type="Texture2D" uid="uid://cx42hbrly0fvi" path="res://ui/icons/icon_pause.png" id="6_wvlpy"]
@@ -30,10 +30,13 @@
 [ext_resource type="Texture2D" uid="uid://ot0lrfsw15d4" path="res://ui/icons/icon_mesh_settings.png" id="11_rhyqh"]
 [ext_resource type="Texture2D" uid="uid://bohvlsbw0u1io" path="res://ui/icons/icon_shader_settings.png" id="11_uj4vs"]
 [ext_resource type="PackedScene" uid="uid://cgiow31lvkawx" path="res://ui/menus/renderer_toolbar_settings/shader_settings/shader_settings_menu.tscn" id="12_6v7e3"]
+[ext_resource type="PackedScene" uid="uid://dwgg0wq6h8gju" path="res://ui/menus/paste_material_props/paste_mat_props_window.tscn" id="14_x7fo6"]
 [ext_resource type="Texture2D" uid="uid://dvwro6r1w68qx" path="res://ui/icons/icon_camera_settings.png" id="15_netph"]
 [ext_resource type="PackedScene" uid="uid://ba73vns3n4ihl" path="res://ui/menus/renderer_toolbar_settings/camera_settings/camera_settings_menu.tscn" id="15_urh8k"]
+[ext_resource type="Texture2D" uid="uid://rw0cqjctnruu" path="res://ui/icons/icon_copy.png" id="16_lj7mf"]
 [ext_resource type="Texture2D" uid="uid://d35gyc8dy64kh" path="res://ui/icons/icon_lighting_settings.png" id="16_ov2ix"]
 [ext_resource type="PackedScene" uid="uid://dfpvlhxuodpqp" path="res://ui/menus/renderer_toolbar_settings/lighting_settings/lighting_settings_menu.tscn" id="17_l1w2y"]
+[ext_resource type="Texture2D" uid="uid://cwarhcwofywem" path="res://ui/icons/icon_paste.png" id="17_s7rsi"]
 [ext_resource type="PackedScene" uid="uid://dcq3ymn0d0he4" path="res://ui/menus/asset_selector/asset_selector_3D_pbr.tscn" id="23_t626t"]
 [ext_resource type="Texture2D" uid="uid://b7nlbxvya41to" path="res://materials/3D/realistic/bathroom_tiles/bathroom_tiles_preview.jpg" id="24_iw6jt"]
 [ext_resource type="PackedScene" uid="uid://qs8g653e8e0b" path="res://ui/menus/asset_selector/asset_selector_2D_base.tscn" id="24_l0ee1"]
@@ -314,7 +317,7 @@ offset_bottom = 1080.0
 grow_vertical = 2
 theme = ExtResource("1_x425p")
 
-[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "lighting_btn", "lighting_settings", "mesh_settings", "shader_settings", "camera_settings")]
+[node name="RendererToolbar" type="PanelContainer" parent="." node_paths=PackedStringArray("undo_btn", "redo_btn", "pause_btn", "mesh_btn", "lighting_btn", "lighting_settings", "mesh_settings", "shader_settings", "camera_settings", "params_container")]
 top_level = true
 layout_mode = 1
 anchors_preset = 10
@@ -337,6 +340,8 @@ lighting_settings = NodePath("RightRendererToolbar/LightingSettingsButton/Lighti
 mesh_settings = NodePath("RightRendererToolbar/MeshSettingsButton/MeshSettings")
 shader_settings = NodePath("RightRendererToolbar/ShaderSettingsButton/ShaderSettings")
 camera_settings = NodePath("RightRendererToolbar/CameraSettingsButton/CameraSettings")
+params_container = NodePath("../ParamsWindow/MarginContainer/ScrollContainer/MarginContainer/ParamsContainer")
+paste_mat_props_scene = ExtResource("14_x7fo6")
 
 [node name="LeftRendererToolbar" type="HBoxContainer" parent="RendererToolbar"]
 modulate = Color(0.8, 0.8, 0.8, 1)
@@ -358,6 +363,22 @@ layout_mode = 2
 tooltip_text = "Redo"
 disabled = true
 icon = ExtResource("10_k2v5f")
+icon_alignment = 1
+expand_icon = true
+
+[node name="CopyMatPropsBtn" type="Button" parent="RendererToolbar/LeftRendererToolbar"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+tooltip_text = "Redo"
+icon = ExtResource("16_lj7mf")
+icon_alignment = 1
+expand_icon = true
+
+[node name="PasteMatPropsBtn" type="Button" parent="RendererToolbar/LeftRendererToolbar"]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+tooltip_text = "Redo"
+icon = ExtResource("17_s7rsi")
 icon_alignment = 1
 expand_icon = true
 
@@ -635,6 +656,8 @@ script = ExtResource("7_08hm7")
 [connection signal="GizmoClicked" from="GizmoContainer/OrientationGizmoSubViewport/ViewportOrientationGizmo" to="RendererWindow" method="_on_viewport_orientation_gizmo_gizmo_clicked"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/UndoBtn" to="RendererToolbar" method="_on_undo_btn_pressed"]
 [connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/RedoBtn" to="RendererToolbar" method="_on_redo_btn_pressed"]
+[connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/CopyMatPropsBtn" to="RendererToolbar" method="_on_copy_mat_props_btn_pressed"]
+[connection signal="pressed" from="RendererToolbar/LeftRendererToolbar/PasteMatPropsBtn" to="RendererToolbar" method="_on_paste_mat_props_btn_pressed"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/PauseRendererButton" to="RendererToolbar" method="_on_pause_renderer_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/ShaderSettingsButton" to="RendererToolbar" method="_on_shader_settings_button_toggled"]
 [connection signal="toggled" from="RendererToolbar/RightRendererToolbar/LightingSettingsButton" to="RendererToolbar" method="_on_lighting_settings_button_toggled"]

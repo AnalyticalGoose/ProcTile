@@ -40,8 +40,30 @@ func serialise_properties() -> Array[Array]:
 	return properties
 
 
+func stringify_material_properties() -> String:
+	var properties: Array[String] = ["S"]
+	var sections : Array[Node] = get_children()
+	
+	for section : ParamSection in sections:
+		var section_data : Array[String] = ["s"]
+		var section_nodes : Array[Node] = section.get_children()
+	
+		for i : int in section_nodes.size():
+			var node : Node = section_nodes[i]
+			if node is ParamSlider:
+				var index : String = str(i)
+				var val : String = String.num((node as ParamSlider).slider_val) + "f"
+				section_data.append(index + "0" + val)
+		
+		section_data.append("e")
+		properties.append(String().join(section_data))
+
+	return String().join(properties)
+
+
 func load_serialised_properties(data : Array[Array]) -> void:
 	var sections : Array[Node] = get_children()
+	
 	for i : int in data.size():
 		var section : ParamSection = sections[i] as ParamSection
 		for param : Array in data[i]:

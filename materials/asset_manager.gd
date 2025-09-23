@@ -25,6 +25,8 @@ func _ready() -> void:
 		assets_filter.set_item_tooltip(2, "Single Material PBR")
 		assets_filter.set_item_tooltip(3, "Base Textures")
 		asset_selector_offsets = DataManager.material_offsets
+		
+		MaterialDataLoader.asset_manager = self
 
 
 func load_material(index : int, load_from_save : bool = false) -> void:

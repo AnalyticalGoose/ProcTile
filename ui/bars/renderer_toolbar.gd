@@ -12,6 +12,9 @@ extends Node
 @export var mesh_settings: MeshSettings
 @export var shader_settings: PanelContainer
 @export var camera_settings: PanelContainer
+@export var params_container: ParamSection
+@export var paste_mat_props_scene: PackedScene
+
 
 enum SettingsType {
 	LIGHTING,
@@ -95,6 +98,30 @@ func _on_undo_btn_pressed() -> void:
 
 func _on_redo_btn_pressed() -> void:
 	ActionsManager.redo_action()
+
+
+func _on_copy_mat_props_btn_pressed() -> void:
+	var properties_state: Array[Array] = params_container.serialise_properties()
+
+	## TODO - version with string.remove_chars(".")
+	var _version: String = ProjectSettings.get_setting("application/config/version")
+
+	properties_state.push_back([
+		DataManager.current_material_id,
+		DataManager.current_material_type
+		])
+
+	var packed_props : PackedByteArray = var_to_bytes(properties_state)
+	var compressed_props : PackedByteArray = packed_props.compress(FileAccess.COMPRESSION_DEFLATE)
+	var compact_str : String = Marshalls.raw_to_base64(compressed_props)
+
+	DisplayServer.clipboard_set(compact_str)
+	Logger.show_snackbar_popup("Copied material settings to clipboard")
+
+
+func _on_paste_mat_props_btn_pressed() -> void:
+	var paste_mat_props_menu : PasteMatPropsWindow = paste_mat_props_scene.instantiate()
+	add_child(paste_mat_props_menu)
 
 
 func _on_settings_close_menu(menu_idx: int) -> void:
